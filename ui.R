@@ -38,9 +38,9 @@ dashboardPage( skin = "green",
       ),
       
       selectInput(
-        "selectId",
+        "selectOrganism",
         "Select organism name:",
-        c("Arabidopsis thaliana", "Caenorhabditis elegans","Danio rerio", "Drosophila melanogaster","H. sapiens", "M. cf. platyphylla", "Mus musculus", "Saccharomyces cervisiae", "Xenopus laevis"),
+        c("Arabidopsis thaliana", "Caenorhabditis elegans","Danio rerio", "Drosophila melanogaster","Homo sapiens", "Mus musculus", "Saccharomyces cervisiae", "Xenopus laevis"),
         selected = NULL,
         multiple = FALSE,
         selectize = TRUE,
@@ -118,7 +118,7 @@ dashboardPage( skin = "green",
             collapsible = FALSE,
             sliderInput("pValueCutoff", "P-Value cutoff", min = 0, max = 1, value = 0.05),
             sliderInput("logFC", "log2 FoldChange cutoff", min = 0, max = 10, value = 1),
-            downloadButton('downloadFilteredTable', 'Download filtered table'),
+            downloadButton("downloadFilteredTable", label = "Download filtered data table", icon = shiny::icon("download")),
             width = 4
           )
         ),

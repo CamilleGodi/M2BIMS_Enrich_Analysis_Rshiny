@@ -18,32 +18,25 @@ library(stringr)  # For regex
 ################################################################################
 ################################################################################
 
-isEnsemblLink <- function( gene_id ) {
-  if ( str_detect( gene_id, "^ENS[:upper:]+[:digit:]{11}$" ) ) {
-    return( TRUE )
-  } else {
-    return( FALSE)
-  }
+isEnsemblID <- function( gene_id ) {
+  status <- ifelse ( str_detect( gene_id, "^ENS[:upper:]+[:digit:]{11}$"), TRUE, FALSE )
+  return(status)
 }
 
 createEnsemblLink <- function(organism, gene_id) {
-  if ( organism == "" | gene_id == "" | is.na(gene_id) ) {
-    return( NA )
-  } else if ( ! isEnsemblLink( gene_id ) ) {
-    return( NA )
-  } else {
-    return( sprintf("https://www.ensembl.org/%s/Gene/Summary?g=%s", organism, gene_id) )
-  }
+  organism <- sub(" ", "_", organism)
+  link <- ifelse( isEnsemblID( gene_id ),
+         sprintf("https://www.ensembl.org/%s/Gene/Summary?g=%s", organism, gene_id),
+         NA )
+  return(link)
 }
 
 createEnsemblHTMLlink <- function(organism, gene_id) {
-  if ( organism == "" | gene_id == "" | is.na(gene_id) ) {
-    return( NA )
-  } else if ( ! isEnsemblLink( gene_id ) ) {
-    return( NA )
-  } else {
-    sprintf('<a href="https://www.ensembl.org/%s/Gene/Summary?g=%s">%s</a>', organism, gene_id, gene_id)
-  }
+  organism <- sub(" ", "_", organism)
+  link <- ifelse( isEnsemblID( gene_id ),
+                  sprintf('<a href="https://www.ensembl.org/%s/Gene/Summary?g=%s">%s</a>', organism, gene_id),
+                  NA )
+  return(link)
 }
 
 ################################################################################
@@ -108,6 +101,9 @@ function(input, output, session) {
     content = function(file) {
       data <- reactiveDataExpDiff()
       
+      # Create Ensembl link for genes with an Ensembl ID
+      data$EnsemblLink <- createEnsemblLink(input$selectOrganism, data$ID)
+      
       # On filtre les valeurs par rapport aux valeurs des sliders
       cutoff_logFC <- input$logFC
       cutoff_padj <- input$pValueCutoff
@@ -116,7 +112,7 @@ function(input, output, session) {
         data$log2FC <= -cutoff_logFC & data$padj <= cutoff_padj, 'Underexpressed',
         ifelse(data$log2FC >= cutoff_logFC & data$padj <= cutoff_padj, 'Overexpressed', 'Not Highlighted')
       )
-      
+
       filtered_data <- data[data$highlight != 'Not Highlighted', ]
       
       # Write the filtered data to the specified file
