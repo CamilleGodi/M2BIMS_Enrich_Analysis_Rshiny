@@ -13,6 +13,12 @@ library(shinydashboard)
 library(DT)      
 library(plotly)   
 
+
+################################################################################
+################################################################################
+################################################################################
+
+
 dashboardPage( skin = "green",
   
   ### Header ###
@@ -44,12 +50,19 @@ dashboardPage( skin = "green",
       
       sidebarMenu(
         menuItem("Whole Data Inspection", tabName = "WholeData", icon = icon("table")),
-        menuItem("GO Term Enrichment", tabName = "GOEnrichment", icon = icon("sitemap")),
-        menuItem("Pathway Enrichment", tabName = "PathwayEnrichment", icon = icon("project-diagram")),
+        menuItem("GO Term Enrichment", tabName = "GOTermEnrichment", icon = icon("sitemap"),
+                 menuSubItem("ORA", tabName = "GOTermORA"),
+                 menuSubItem("GSEA", tabName = "GOTermGSEA")),
+        menuItem("Pathway Enrichment", tabName = "PathwayEnrichment", icon = icon("project-diagram"),
+                 menuSubItem("ORA", tabName = "pathORA"),
+                 menuSubItem("GSEA", tabName = "pathGSEA")),
         menuItem("About", tabName = "About", icon = icon("info-circle"))
       )
     )
   ),
+  
+  ##############################################################################
+  ##############################################################################
   
   ### Body ###
   dashboardBody(
@@ -71,11 +84,16 @@ dashboardPage( skin = "green",
     ),
     
     tabItems(
+      
+      ##########################################################################
+      
       ### Home ###
       tabItem(
         tabName = "Home",
         h2("Home", style = "text-align: center")
       ),
+      
+      ##########################################################################
       
       ### Whole Data Inspection ###
       tabItem(
@@ -116,7 +134,45 @@ dashboardPage( skin = "green",
             
           )
         )
+      ),
+      
+      ##########################################################################
+      
+      ### GO Term Enrichment : ORA ###
+      tabItem(
+        tabName = "GOTermORA",
+        h2("GO Term Enrichment : ORA", style = "text-align: center")
+      ),
+      
+      ##########################################################################
+      
+      ### GO Term Enrichment : GSEA ###
+      tabItem(
+        tabName = "GOTermGSEA",
+        h2("GO Term Enrichment : GSEA", style = "text-align: center")
+      ),
+      
+      ##########################################################################
+      
+      ### Pathway Enrichment : ORA ###
+      tabItem(
+        tabName = "pathORA",
+        h2("Pathway Enrichment : ORA", style = "text-align: center")
+      ),
+      
+      ##########################################################################
+      
+      ### Pathway Enrichment : GSEA ###
+      tabItem(
+        tabName = "pathGSEA",
+        h2("Pathway Enrichment : GSEA", style = "text-align: center")
       )
+      
+      ##########################################################################
     )
   )
 )
+
+################################################################################
+################################################################################
+################################################################################
