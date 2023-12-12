@@ -7,6 +7,7 @@
 # Contact me at: victor.bailleul@univ-rouen.fr
 
 library(shiny)
+library(shinyjs)
 library(shinydashboard)
 library(shinydashboardPlus)
 library(DT)       # For the data table visualisation
@@ -25,18 +26,18 @@ isEnsemblID <- function( gene_id ) {
 
 createEnsemblLink <- function(organism, gene_id) {
   organism <- sub(" ", "_", organism)
-  link <- ifelse( isEnsemblID( gene_id ),
+  links <- ifelse( isEnsemblID( gene_id ),
          sprintf("https://www.ensembl.org/%s/Gene/Summary?g=%s", organism, gene_id),
          NA )
-  return(link)
+  return(links)
 }
 
 createEnsemblHTMLlink <- function(organism, gene_id) {
   organism <- sub(" ", "_", organism)
-  link <- ifelse( isEnsemblID( gene_id ),
-                  sprintf('<a href="https://www.ensembl.org/%s/Gene/Summary?g=%s">%s</a>', organism, gene_id),
-                  NA )
-  return(link)
+  links <- ifelse( isEnsemblID( gene_id ),
+                  sprintf('<a href="https://www.ensembl.org/%s/Gene/Summary?g=%s">%s</a>', organism, gene_id, gene_id),
+                  gene_id )
+  return(links)
 }
 
 ################################################################################
@@ -79,6 +80,9 @@ function(input, output, session) {
   output$dataPreview <- renderDT({
     data <- reactiveDataExpDiff()
     
+    # Create Ensembl link for genes with an Ensembl ID
+    data$ID <- createEnsemblHTMLlink(input$selectOrganism, data$ID)
+    
     # On filtre les valeurs par rapport aux valeurs des sliders
     cutoff_logFC <- input$logFC
     cutoff_padj <- input$pValueCutoff
@@ -89,8 +93,8 @@ function(input, output, session) {
     )
     filtered_data <- data[data$highlight != 'Not Highlighted', ]
     
-    # Affichage de l'aperçu
-    DT::datatable(filtered_data, options = list(pageLength = 5))
+    # Preview of the filtered data table ( "escape = FALSE" allows HTML formatting )
+    DT::datatable(filtered_data, options = list(pageLength = 5), escape = FALSE)
   })
   
   ### Gestion du téléchargement du tableau filtré [Whole data inspection] ###
