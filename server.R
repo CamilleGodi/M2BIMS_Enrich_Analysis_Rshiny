@@ -58,7 +58,7 @@ function(input, output, session) {
     req(input$inputFile)
     inFile <- input$inputFile
     ext <- tools::file_ext(inFile$datapath) # Récupération de l'extension
-    data <- read.csv(inFile$datapath, sep = ";", header = TRUE, stringsAsFactors = FALSE) # Lecture du csv
+    data <- data.table::fread(inFile$datapath, header = TRUE) # csv reading
     
     # Verification de l'extension et des colonnes du csv
     required_columns <- c('GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj')
