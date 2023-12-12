@@ -6,7 +6,6 @@
 # Infos: To run this application, you need to install the following packages:
 # shiny, shinydashboard, shinythemes, ggplot2, plotly, DT, data.table
 
-
 library(shinydashboard)
 library(shinythemes)
 library(ggplot2)
