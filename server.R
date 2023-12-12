@@ -17,12 +17,32 @@ library(plotly)   # Utilisé pour le plot interactif
 ################################################################################
 ################################################################################
 
+isEnsemblLink <- function( gene_id ) {
+  if ( str_detect( gene_id, "^ENS[:upper:]+[:digit:]{11}$" ) ) {
+    return( TRUE )
+  } else {
+    return( FALSE)
+  }
+}
+
 createEnsemblLink <- function(organism, gene_id) {
-  sprintf("https://www.ensembl.org/%s/Gene/Summary?g=%s", organism, gene_id)
+  if ( organism == "" | gene_id == "" | is.na(gene_id) ) {
+    return( NA )
+  } else if ( ! isEnsemblLink( gene_id ) ) {
+    return( NA )
+  } else {
+    return( sprintf("https://www.ensembl.org/%s/Gene/Summary?g=%s", organism, gene_id) )
+  }
 }
 
 createEnsemblHTMLlink <- function(organism, gene_id) {
-  sprintf('<a href="https://www.ensembl.org/%s/Gene/Summary?g=%s">%s</a>', organism, gene_id, gene_id)
+  if ( organism == "" | gene_id == "" | is.na(gene_id) ) {
+    return( NA )
+  } else if ( ! isEnsemblLink( gene_id ) ) {
+    return( NA )
+  } else {
+    sprintf('<a href="https://www.ensembl.org/%s/Gene/Summary?g=%s">%s</a>', organism, gene_id, gene_id)
+  }
 }
 
 ################################################################################
