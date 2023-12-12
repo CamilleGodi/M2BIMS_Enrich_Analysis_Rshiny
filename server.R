@@ -9,9 +9,10 @@
 library(shiny)
 library(shinydashboard)
 library(shinydashboardPlus)
-library(DT)       # Utilisé pour l'affichage de tableaux
+library(DT)       # For the data table visualisation
 library(ggplot2) 
-library(plotly)   # Utilisé pour le plot interactif
+library(plotly)   # For interactive plot
+library(stringr)  # For regex
 
 ################################################################################
 ################################################################################
