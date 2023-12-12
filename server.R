@@ -13,6 +13,18 @@ library(DT)       # Utilisé pour l'affichage de tableaux
 library(ggplot2) 
 library(plotly)   # Utilisé pour le plot interactif
 
+################################################################################
+
+createEnsemblLink <- function(organism, gene_id) {
+  sprintf("https://www.ensembl.org/%s/Gene/Summary?g=%s", organism, gene_id)
+}
+
+createEnsemblHTMLlink <- function(organism, gene_id) {
+  sprintf('<a href="https://www.ensembl.org/%s/Gene/Summary?g=%s">%s</a>', organism, gene_id, gene_id)
+}
+
+################################################################################
+
 function(input, output, session) {
   
   ### Stockage des données du .csv dans un objet "reactive" (si .csv valide) ###
