@@ -105,9 +105,6 @@ function(input, output, session) {
     content = function(file) {
       data <- reactiveDataExpDiff()
       
-      # Create Ensembl link for genes with an Ensembl ID
-      data$EnsemblLink <- createEnsemblLink(input$selectOrganism, data$ID)
-      
       # On filtre les valeurs par rapport aux valeurs des sliders
       cutoff_logFC <- input$logFC
       cutoff_padj <- input$pValueCutoff
@@ -117,6 +114,9 @@ function(input, output, session) {
         ifelse(data$log2FC >= cutoff_logFC & data$padj <= cutoff_padj, 'Overexpressed', 'Not Highlighted')
       )
 
+      # Create Ensembl link for genes with an Ensembl ID
+      data$EnsemblLink <- createEnsemblLink(input$selectOrganism, data$ID)
+      
       filtered_data <- data[data$highlight != 'Not Highlighted', ]
       
       # Write the filtered data to the specified file
