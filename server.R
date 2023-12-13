@@ -35,7 +35,7 @@ createEnsemblLink <- function(organism, gene_id) {
 createEnsemblHTMLlink <- function(organism, gene_id) {
   organism <- sub(" ", "_", organism)
   links <- ifelse( isEnsemblID( gene_id ),
-                  sprintf('<a href="https://www.ensembl.org/%s/Gene/Summary?g=%s">%s</a>', organism, gene_id, gene_id),
+                  sprintf('<a href="https://www.ensembl.org/%s/Gene/Summary?g=%s" target="_blank">%s</a>', organism, gene_id, gene_id),
                   gene_id )
   return(links)
 }
