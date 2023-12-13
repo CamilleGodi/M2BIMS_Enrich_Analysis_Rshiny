@@ -110,8 +110,8 @@ dashboardPage( skin = "purple",
             status = "warning", # Cosmetic purpose only
             solidHeader = TRUE, 
             collapsible = FALSE,
-            sliderInput("pValueCutoff", "P-Value cutoff", min = 0, max = 1, value = 0.05),
-            sliderInput("logFC", "log2 FoldChange cutoff", min = 0, max = 10, value = 1),
+            sliderInput("padj_cutoff", "P-Value cutoff", min = 0, max = 1, value = 0.05),
+            sliderInput("fc_cutoff", "log2 FoldChange cutoff", min = 0, max = 10, value = 1),
             downloadButton("downloadFilteredTable", label = "Download filtered data table", icon = shiny::icon("download")),
             width = 4
           )

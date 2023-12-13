@@ -26,49 +26,57 @@ createEnsemblHTMLlink <- function(organism, gene_id) {
 
 ################################################################################
 
-draw_volcano = function(res,
+### FILTER DATATABLE
+
+
+filter_dt <- function(deseqData,
+                      fc_cutoff = 1,
+                      padj_cutoff = 0.05){
+  
+  deseqData$diffexpressed <- ifelse(
+    deseqData$log2FC <= - fc_cutoff & deseqData$padj <= padj_cutoff, "DOWN",
+    ifelse(deseqData$log2FC >= fc_cutoff & deseqData$padj <= padj_cutoff, "UP", "NO_DE")
+  )
+  filtered_data <- deseqData[deseqData$diffexpressed != 'NO_DE', ]
+  return(filtered_data)
+}
+
+
+
+
+### VOLCANO PLOT
+
+draw_volcano = function(deseqData,
                         title = "Volcanoplot",
                         xlab = "Log2(FoldChange)",
-                        ylab = "-Log10(p-valeurs)",
+                        ylab = "-Log10(p-value adjusted)",
                         xlim = NA,
                         ylim = NA,
                         fc_cutoff = 1,
-                        alpha = 0.05,
+                        padj_cutoff = 0.05,
                         lines = FALSE) {
-  df = as.data.frame(res)
-  df = df[!is.na(df$padj),]       # retirer les valeurs n'ayant pas passé le filtre indépendant si resultat de DESeq2
-  df$diffexpressed = "NO_DE"
-  df$diffexpressed[df$log2FC < - fc_cutoff & df$padj < alpha] = "DOWN"
-  df$diffexpressed[df$log2FC > fc_cutoff & df$padj < alpha] = "UP"
-  
-  colors <- c()
-  for (i in sort(unique(df$diffexpressed)))
-  {
-    if (i == "DOWN")
-    { colors <- c(colors, "cyan4")
-    } else if (i == "NO_DE")
-    { colors <- c(colors, "gray70")
-    } else if (i == "UP")
-    { colors <- c(colors, "orangered1")
-    }
-  }
-  fig = ggplot2::ggplot(data = df,
+  deseqData = deseqData[!is.na(deseqData$padj),]       # retirer les valeurs n'ayant pas passé le filtre indépendant si resultat de DESeq2
+  deseqData$diffexpressed <- ifelse(
+    deseqData$log2FC <= - fc_cutoff & deseqData$padj <= padj_cutoff, "DOWN",
+    ifelse(deseqData$log2FC >= fc_cutoff & deseqData$padj <= padj_cutoff, "UP", "NO_DE")
+  )
+  deseqData$diffexpressed <- factor(deseqData$diffexpressed, levels = c("UP", "DOWN", "NO_DE"))
+  fig <- ggplot2::ggplot(data = deseqData,
                         ggplot2::aes(
-                          x = df[,"log2FC"],
-                          y = -log10(df[,"pval"]),
+                          x = log2FC,
+                          y = -log10(padj),
                           col = diffexpressed
                         )) +
-    ggplot2::scale_fill_manual(values = col) +
+    ggplot2::scale_color_manual(values = c('DOWN' = 'blue', 'UP' = 'red', 'NO_DE' = 'grey')) +
     ggplot2::geom_point() +
     ggplot2::labs(x = xlab, y = ylab) +
-    ggplot2::guides(col = ggplot2::guide_legend(title = "Différentiellement \n exprimés")) +
+    ggplot2::guides(col = ggplot2::guide_legend(title = "Differentially \n expressed genes \n (DE)")) +
     ggplot2::coord_cartesian(xlim = xlim, ylim = ylim, expand = FALSE) +
-    ggplot2::theme_bw() +
-    ggplot2::scale_color_manual(values = colors)
-  
+    ggplot2::theme_bw()
+
   if(lines == TRUE){
     fig = fig +
-      ggplot2::geom_hline(yintercept = -log10(alpha), col = "black") +
+      ggplot2::geom_hline(yintercept = -log10(padj_cutoff), col = "black") +
       ggplot2::geom_vline(xintercept = -fc_cutoff, col = "black") +
       ggplot2::geom_vline(xintercept = fc_cutoff, col = "black")
   }
@@ -82,5 +90,8 @@ draw_volcano = function(res,
   }
   
   
-  return(ggplotly(fig, tooltip = c("text"), dynamicTicks = TRUE))
+  fig <- ggplotly(fig)
+  
+  return(fig)
+
 }

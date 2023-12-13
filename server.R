@@ -50,23 +50,17 @@ function(input, output, session) {
   
   ### Management of the preview of the filtered data table [Whole data inspection] ###
   output$dataPreview <- DT::renderDT({
-    data <- reactiveDataExpDiff()
+    filtered_data <- filter_dt(reactiveDataExpDiff(),
+                      fc_cutoff = as.numeric(input$fc_cutoff),
+                      padj_cutoff = as.numeric(input$padj_cutoff)
+                      )
+    
     
     # Create Ensembl link for genes with an Ensembl ID
-    data$ID <- createEnsemblHTMLlink(input$selectOrganism, data$ID)
-    
-    # Filter data according to the sliders values
-    cutoff_logFC <- input$logFC
-    cutoff_padj <- input$pValueCutoff
-    
-    data$highlight <- ifelse(
-      data$log2FC <= -cutoff_logFC & data$padj <= cutoff_padj, 'Underexpressed',
-      ifelse(data$log2FC >= cutoff_logFC & data$padj <= cutoff_padj, 'Overexpressed', 'Not Highlighted')
-    )
-    filtered_data <- data[data$highlight != 'Not Highlighted', ]
+    filtered_data$ID <- createEnsemblHTMLlink(input$selectOrganism, filtered_data$ID)
     
     # Preview of the filtered data table ( "escape = FALSE" allows HTML formatting )
-    DT::datatable(filtered_data, options = list(scrollX = TRUE,pageLength = 25), escape = FALSE)
+    DT::datatable(filtered_data, options = list(scrollX = TRUE, pageLength = 25), escape = FALSE)
   })
   
   ### Management of the download of the filtered data table [Whole data inspection] ###
@@ -75,38 +69,34 @@ function(input, output, session) {
       paste("filtered-data-", Sys.Date(), ".csv", sep = "")
     },
     content = function(file) {
-      data <- reactiveDataExpDiff()
+      filtered_data <- filter_dt(reactiveDataExpDiff(),
+                        fc_cutoff = as.numeric(input$fc_cutoff),
+                        padj_cutoff = as.numeric(input$padj_cutoff)
+                        )
       
-      
-      # Filter data according to the sliders values
-      cutoff_logFC <- input$logFC
-      cutoff_padj <- input$pValueCutoff
-      
-      data$highlight <- ifelse(
-        data$log2FC <= -cutoff_logFC & data$padj <= cutoff_padj, 'Underexpressed',
-        ifelse(data$log2FC >= cutoff_logFC & data$padj <= cutoff_padj, 'Overexpressed', 'Not Highlighted')
-      )
-
       # Create Ensembl link for genes with an Ensembl ID
-      data$EnsemblLink <- createEnsemblLink(input$selectOrganism, data$ID)
+      filtered_data$EnsemblLink <- createEnsemblLink(input$selectOrganism, filtered_data$ID)
       
-      filtered_data <- data[data$highlight != 'Not Highlighted', ]
+      
       
       # Write the filtered data to the specified file
       write.csv(filtered_data, file, row.names = FALSE)
     }
   )
   
-  ranges_volca_plot = reactiveValues(x = NULL, y = NULL)
   
   ### Management of the volcano plot [Whole data inspection] ###
+  
+  ranges_volca_plot = reactiveValues(x = NULL, y = NULL)
+
   output$volcanoPlot <- renderPlotly({
     if(!is.null(reactiveDataExpDiff())){
       draw_volcano(reactiveDataExpDiff(),
-                   fc_cutoff = as.numeric(input$logFC),
-                   alpha = as.numeric(input$pValueCutoff),
+                   fc_cutoff = as.numeric(input$fc_cutoff),
+                   padj_cutoff = as.numeric(input$padj_cutoff),
                    xlim = ranges_volca_plot$x,
-                   ylim = ranges_volca_plot$y)
+                   ylim = ranges_volca_plot$y,
+                   lines = TRUE)
     }
     
   })
