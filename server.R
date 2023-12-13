@@ -94,7 +94,7 @@ function(input, output, session) {
     filtered_data <- data[data$highlight != 'Not Highlighted', ]
     
     # Preview of the filtered data table ( "escape = FALSE" allows HTML formatting )
-    DT::datatable(filtered_data, options = list(pageLength = 5), escape = FALSE)
+    DT::datatable(filtered_data, options = list(scrollX = TRUE,pageLength = 25), escape = FALSE)
   })
   
   ### Gestion du téléchargement du tableau filtré [Whole data inspection] ###
