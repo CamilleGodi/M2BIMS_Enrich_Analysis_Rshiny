@@ -51,9 +51,13 @@ function(input, output, session) {
     required_columns <- c('GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj')
     
     if (ext != "csv") {
-      showNotification("Error: The uploaded file doesn't have the extension (.csv)", type = "error", duration = NULL)
+      shinyalertWrapper(title = "Error: The uploaded file doesn't have the right extension (.csv)",
+                        message = "",
+                        type = "error")
     } else if (!all(required_columns %in% colnames(data))) {
-      showNotification("Error: The uploaded file does not contain the required columns or use the wrong separator (only ';' accepted)", type = "error", duration = NULL)
+      shinyalertWrapper(title = "Error: Incorrect columns in file",
+                        message = "Expected columns : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj'",
+                        type = "error")
     }
     
     shiny::validate(
