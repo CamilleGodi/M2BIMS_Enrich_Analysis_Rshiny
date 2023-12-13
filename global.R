@@ -1,36 +1,16 @@
-if(!require("shiny")){
-  install.packages("shiny")
+
+# Download libraries that aren't installed, load them. Source : https://stackoverflow.com/a/44660688
+loadLibs <-function(...) {
+  libs<-unlist(list(...))
+  req<-unlist(lapply(libs,require,character.only=TRUE))
+  need<-libs[req==FALSE]
+  if(length(need)>0){ 
+    install.packages(need)
+    lapply(need,require,character.only=TRUE)
+  }
 }
 
-if(!require("shinydashboard")){
-  install.packages("shinydashboard")
-}
-
-if(!require("shinyalert")){
-  install.packages("shinyalert")
-}
-
-if(!require("tidyverse")){
-  install.packages("tidyverse")
-}
-if(!require("DT")){
-  install.packages("DT")
-}
-if(!require("tidyverse")){
-  install.packages("tidyverse")
-}
-if(!require("plotly")){
-  install.packages("plotly")
-}
-
-library(shiny)
-library(shinydashboard)
-library(shinyalert)
-library(plotly)
-library(DT)
-library(tidyverse)
-library(plotly)
-
+loadLibs("shiny", "shinydashboard", "shinyalert", "plotly", "DT", "tidyverse")
 
 ################################################################################
 
