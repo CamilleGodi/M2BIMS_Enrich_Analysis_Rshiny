@@ -49,7 +49,7 @@ function(input, output, session) {
   })
   
   ### Management of the preview of the filtered data table [Whole data inspection] ###
-  output$dataPreview <- renderDT({
+  output$dataPreview <- DT::renderDT({
     data <- reactiveDataExpDiff()
     
     # Create Ensembl link for genes with an Ensembl ID
@@ -97,30 +97,18 @@ function(input, output, session) {
     }
   )
   
+  ranges_volca_plot = reactiveValues(x = NULL, y = NULL)
+  
   ### Management of the volcano plot [Whole data inspection] ###
   output$volcanoPlot <- renderPlotly({
-    data <- reactiveDataExpDiff()
+    if(!is.null(reactiveDataExpDiff())){
+      draw_volcano(reactiveDataExpDiff(),
+                   fc_cutoff = as.numeric(input$logFC),
+                   alpha = as.numeric(input$pValueCutoff),
+                   xlim = ranges_volca_plot$x,
+                   ylim = ranges_volca_plot$y)
+    }
     
-    # Get the cut-off values from the sliders
-    cutoff_logFC <- input$logFC
-    cutoff_padj <- input$pValueCutoff
-    
-    # Add a column on the data table, sorts the points in three categories
-    # depending on the chosen padj and log2FC cut-offs
-    data$highlight <- ifelse(
-      data$log2FC <= -cutoff_logFC & data$padj <= cutoff_padj, 'Underexpressed',
-      ifelse(data$log2FC >= cutoff_logFC & data$padj <= cutoff_padj, 'Overexpressed', 'Not Highlighted')
-    )
-    
-    # Create plot
-    p <- ggplot(data, aes(x = log2FC, y = -log10(padj), color = highlight)) +
-      geom_point(alpha = 0.8) +
-      scale_color_manual(values = c('Underexpressed' = 'blue', 'Overexpressed' = 'red', 'Not Highlighted' = 'grey')) +
-      labs(title = 'Volcano Plot', x = 'Log2 Fold Change', y = '-Log10 p-adjusted') +
-      theme_minimal()
-    
-    # Plot interactivity
-    ggplotly(p, tooltip = c("text"), dynamicTicks = TRUE)
   })
 }
 
