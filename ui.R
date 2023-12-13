@@ -12,7 +12,7 @@ source("global.R")
 ################################################################################
 ################################################################################
 
-dashboardPage( skin = "green",
+dashboardPage( skin = "purple",
   
   ### Header ###
   dashboardHeader(title = "VictoRshiny"),
@@ -93,12 +93,12 @@ dashboardPage( skin = "green",
       tabItem(
         tabName = "WholeData",
         h2("Whole data inspection", style = "text-align: center"),
-        # Ligne 1
+        # Line 1
         fluidRow(
           # Plot
           box(
             title = "Volcano Plot",
-            status = "warning", # Seulement a but esthétique
+            status = "warning", # Cosmetic purpose only
             solidHeader = TRUE, 
             collapsible = FALSE,
             plotlyOutput("volcanoPlot", height = "400px"),
@@ -107,7 +107,7 @@ dashboardPage( skin = "green",
           # Sliders
           box(
             title = "Options",
-            status = "warning", # Seulement a but esthétique
+            status = "warning", # Cosmetic purpose only
             solidHeader = TRUE, 
             collapsible = FALSE,
             sliderInput("pValueCutoff", "P-Value cutoff", min = 0, max = 1, value = 0.05),
@@ -116,12 +116,12 @@ dashboardPage( skin = "green",
             width = 4
           )
         ),
-        # Ligne 2
+        # Line 2
         fluidRow(
           # Aperçu tableau
           box(
             title = "Filtered table preview",
-            status = "warning", # Seulement a but esthétique
+            status = "warning", # Cosmetic purpose only 
             DTOutput("dataPreview"),
             width = 12,
             solidHeader = TRUE 
