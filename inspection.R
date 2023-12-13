@@ -46,7 +46,7 @@ filter_dt <- function(deseqData,
 
 ### VOLCANO PLOT
 
-draw_volcano = function(deseqData,
+draw_volcano <- function(deseqData,
                         title = "Volcanoplot",
                         xlab = "Log2(FoldChange)",
                         ylab = "-Log10(p-value adjusted)",
@@ -55,7 +55,7 @@ draw_volcano = function(deseqData,
                         fc_cutoff = 1,
                         padj_cutoff = 0.05,
                         lines = FALSE) {
-  deseqData = deseqData[!is.na(deseqData$padj),]       # retirer les valeurs n'ayant pas passé le filtre indépendant si resultat de DESeq2
+  deseqData <- deseqData[!is.na(deseqData$padj),]       # retirer les valeurs n'ayant pas passé le filtre indépendant si resultat de DESeq2
   deseqData$diffexpressed <- ifelse(
     deseqData$log2FC <= - fc_cutoff & deseqData$padj <= padj_cutoff, "DOWN",
     ifelse(deseqData$log2FC >= fc_cutoff & deseqData$padj <= padj_cutoff, "UP", "NO_DE")
@@ -68,7 +68,7 @@ draw_volcano = function(deseqData,
                           col = diffexpressed
                         )) +
     ggplot2::scale_color_manual(values = c('DOWN' = 'blue', 'UP' = 'red', 'NO_DE' = 'grey')) +
-    ggplot2::geom_point() +
+    ggplot2::geom_point(size = 0.5) +
     ggplot2::labs(x = xlab, y = ylab) +
     ggplot2::guides(col = ggplot2::guide_legend(title = "Differentially \n expressed genes \n (DE)")) +
     ggplot2::coord_cartesian(xlim = xlim, ylim = ylim, expand = FALSE) +

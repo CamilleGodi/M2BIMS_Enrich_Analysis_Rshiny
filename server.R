@@ -87,7 +87,7 @@ function(input, output, session) {
   
   ### Management of the volcano plot [Whole data inspection] ###
   
-  ranges_volca_plot = reactiveValues(x = NULL, y = NULL)
+  ranges_volca_plot <- reactiveValues(x = NULL, y = NULL)
 
   output$volcanoPlot <- renderPlotly({
     if(!is.null(reactiveDataExpDiff())){
