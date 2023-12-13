@@ -18,7 +18,7 @@ library(plotly)
 ################################################################################
 ################################################################################
 
-dashboardPage( skin = "green",
+dashboardPage( skin = "purple",
   
   ### Header ###
   dashboardHeader(title = "VictoRshiny"),
