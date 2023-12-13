@@ -118,7 +118,7 @@ dashboardPage( skin = "purple",
         ),
         # Line 2
         fluidRow(
-          # Aperçu tableau
+          # Table preview
           box(
             title = "Filtered table preview",
             status = "warning", # Cosmetic purpose only 
