@@ -6,13 +6,7 @@
 
 # Contact me at: victor.bailleul@univ-rouen.fr
 
-library(shiny)
-library(shinyjs)
-library(shinydashboardPlus)
-library(shinydashboard)
-library(DT)      
-library(plotly)   
-
+source("global.R")
 
 ################################################################################
 ################################################################################

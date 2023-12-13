@@ -6,14 +6,7 @@
 
 # Contact me at: victor.bailleul@univ-rouen.fr
 
-library(shiny)
-library(shinyjs)
-library(shinydashboard)
-library(shinydashboardPlus)
-library(DT)       # For the data table visualisation
-library(ggplot2) 
-library(plotly)   # For interactive plot
-library(stringr)  # For regex
+source("global.R")
 
 ################################################################################
 ################################################################################
