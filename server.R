@@ -7,7 +7,7 @@
 # Contact me at: victor.bailleul@univ-rouen.fr
 
 source("global.R")
-source("inspection.R")
+source("./utils/inspection.R")
 
 ################################################################################
 ################################################################################
