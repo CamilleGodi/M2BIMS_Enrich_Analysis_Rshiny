@@ -124,7 +124,7 @@ load_gsea_GO_enrichment = function(gene_list = list(),
 #' @return vecteur trié dans l'ordre décroissant des gènes selon la métrique voulu
 #'
 #' @example load_gsea_kegg_enrichment(results(dds),"hsa")
-#'
+
 load_gsea_kegg_enrichment = function(gene_list = list(),
                                      organism_db = character(),
                                      key_type = c("ncbi-geneid", "kegg", "ncbi-proteinid", "uniprot"),
@@ -358,7 +358,7 @@ description_spacer = function(enrichGO) {
 #' @param y_text_size : taille du texte en ordonnée
 #' 
 #' @example draw_dotplot(ora.bp)
-#' 
+
 draw_dotplot = function(ora_df,
                         order = "p.adjust",
                         category = "GeneRatio",
