@@ -3,22 +3,22 @@
 ### To create Ensembl URL and clickable link (HTML) on the preview table
 
 # Checks the gene ID format corresponds to Ensembl
-isEnsemblID <- function( gene_id ) {
+is_Ensembl_ID <- function( gene_id ) {
   status <- ifelse ( str_detect( gene_id, "^ENS[:upper:]+[:digit:]{11}$"), TRUE, FALSE )
   return(status)
 }
 
-createEnsemblLink <- function(organism, gene_id) {
+create_Ensembl_link <- function(organism, gene_id) {
   organism <- sub(" ", "_", organism)
-  links <- ifelse( isEnsemblID( gene_id ),
+  links <- ifelse( is_Ensembl_ID( gene_id ),
                    sprintf("https://www.ensembl.org/%s/Gene/Summary?g=%s", organism, gene_id),
                    NA )
   return(links)
 }
 
-createEnsemblHTMLlink <- function(organism, gene_id) {
+create_Ensembl_html_link <- function(organism, gene_id) {
   organism <- sub(" ", "_", organism)
-  links <- ifelse( isEnsemblID( gene_id ),
+  links <- ifelse( is_Ensembl_ID( gene_id ),
                    sprintf('<a href="https://www.ensembl.org/%s/Gene/Summary?g=%s" target="_blank">%s</a>', organism, gene_id, gene_id),
                    gene_id )
   return(links)
@@ -29,15 +29,15 @@ createEnsemblHTMLlink <- function(organism, gene_id) {
 ### FILTER DATATABLE
 
 
-filter_dt <- function(deseqData,
+filter_dt <- function(deseq_data,
                       fc_cutoff = 1,
                       padj_cutoff = 0.05){
   
-  deseqData$diffexpressed <- ifelse(
-    deseqData$log2FC <= - fc_cutoff & deseqData$padj <= padj_cutoff, "DOWN",
-    ifelse(deseqData$log2FC >= fc_cutoff & deseqData$padj <= padj_cutoff, "UP", "NO_DE")
+  deseq_data$diff_expressed <- ifelse(
+    deseq_data$log2FC <= - fc_cutoff & deseq_data$padj <= padj_cutoff, "DOWN",
+    ifelse(deseq_data$log2FC >= fc_cutoff & deseq_data$padj <= padj_cutoff, "UP", "NO_DE")
   )
-  filtered_data <- deseqData[deseqData$diffexpressed != 'NO_DE', ]
+  filtered_data <- deseq_data[deseq_data$diff_expressed != 'NO_DE', ]
   return(filtered_data)
 }
 
@@ -46,7 +46,7 @@ filter_dt <- function(deseqData,
 
 ### VOLCANO PLOT
 
-draw_volcano <- function(deseqData,
+draw_volcano <- function(deseq_data,
                         title = "Volcanoplot",
                         xlab = "Log2(FoldChange)",
                         ylab = "-Log10(p-value adjusted)",
@@ -55,17 +55,17 @@ draw_volcano <- function(deseqData,
                         fc_cutoff = 1,
                         padj_cutoff = 0.05,
                         lines = FALSE) {
-  deseqData <- deseqData[!is.na(deseqData$padj),]       # retirer les valeurs n'ayant pas passé le filtre indépendant si resultat de DESeq2
-  deseqData$diffexpressed <- ifelse(
-    deseqData$log2FC <= - fc_cutoff & deseqData$padj <= padj_cutoff, "DOWN",
-    ifelse(deseqData$log2FC >= fc_cutoff & deseqData$padj <= padj_cutoff, "UP", "NO_DE")
+  deseq_data <- deseq_data[!is.na(deseq_data$padj),]       # retirer les valeurs n'ayant pas passé le filtre indépendant si resultat de DESeq2
+  deseq_data$diff_expressed <- ifelse(
+    deseq_data$log2FC <= - fc_cutoff & deseq_data$padj <= padj_cutoff, "DOWN",
+    ifelse(deseq_data$log2FC >= fc_cutoff & deseq_data$padj <= padj_cutoff, "UP", "NO_DE")
   )
-  deseqData$diffexpressed <- factor(deseqData$diffexpressed, levels = c("UP", "DOWN", "NO_DE"))
-  fig <- ggplot2::ggplot(data = deseqData,
+  deseq_data$diff_expressed <- factor(deseq_data$diff_expressed, levels = c("UP", "DOWN", "NO_DE"))
+  fig <- ggplot2::ggplot(data = deseq_data,
                         ggplot2::aes(
                           x = log2FC,
                           y = -log10(padj),
-                          col = diffexpressed
+                          col = diff_expressed
                         )) +
     ggplot2::scale_color_manual(values = c('DOWN' = 'blue', 'UP' = 'red', 'NO_DE' = 'grey')) +
     ggplot2::geom_point(size = 0.5) +
@@ -82,11 +82,11 @@ draw_volcano <- function(deseqData,
   }
   
   if(is.numeric(xlim)){
-    fig = fig + ggplot2::xlim(min(xlim),max(xlim))
+    fig = fig + ggplot2::xlim(min(xlim), max(xlim))
   }
   
   if(is.numeric(ylim)){
-    fig = fig + ggplot2::ylim(min(ylim),max(ylim))
+    fig = fig + ggplot2::ylim(min(ylim), max(ylim))
   }
   
   

@@ -20,10 +20,10 @@ dashboardPage( skin = "purple",
   ### Sidebar ###
   dashboardSidebar( 
     sidebarMenu(
-      menuItem("Home", tabName = "Home", icon = icon("home")),
+      menuItem("Home", tabName = "home_tab", icon = icon("home")),
       
       fileInput(
-        "inputFile", 
+        "input_file", 
         "Select a CSV file:", 
         multiple = FALSE, 
         accept = c(".csv"),
@@ -31,7 +31,7 @@ dashboardPage( skin = "purple",
       ),
       
       selectInput(
-        "selectOrganism",
+        "select_organism",
         "Select organism name:",
         c("Arabidopsis thaliana", "Caenorhabditis elegans","Danio rerio", "Drosophila melanogaster","Homo sapiens", "Mus musculus", "Saccharomyces cervisiae", "Xenopus laevis"),
         selected = NULL,
@@ -42,14 +42,14 @@ dashboardPage( skin = "purple",
       ),
       
       sidebarMenu(
-        menuItem("Whole Data Inspection", tabName = "WholeData", icon = icon("table")),
-        menuItem("GO Term Enrichment", tabName = "GOTermEnrichment", icon = icon("sitemap"),
-                 menuSubItem("ORA", tabName = "GOTermORA"),
-                 menuSubItem("GSEA", tabName = "GOTermGSEA")),
-        menuItem("Pathway Enrichment", tabName = "PathwayEnrichment", icon = icon("project-diagram"),
-                 menuSubItem("ORA", tabName = "pathORA"),
-                 menuSubItem("GSEA", tabName = "pathGSEA")),
-        menuItem("About", tabName = "About", icon = icon("info-circle"))
+        menuItem("Whole Data Inspection", tabName = "whole_data_tab", icon = icon("table")),
+        menuItem("GO Term Enrichment", tabName = "GO_term_enrichment_tab", icon = icon("sitemap"),
+                 menuSubItem("ORA", tabName = "GO_term_ORA_subtab"),
+                 menuSubItem("GSEA", tabName = "GO_term_GSEA_subtab")),
+        menuItem("Pathway Enrichment", tabName = "pathway_enrichment_tab", icon = icon("project-diagram"),
+                 menuSubItem("ORA", tabName = "pathway_ORA_subtab"),
+                 menuSubItem("GSEA", tabName = "pathway_GSEA_subtab")),
+        menuItem("About", tabName = "about_tab", icon = icon("info-circle"))
       )
     )
   ),
@@ -82,7 +82,7 @@ dashboardPage( skin = "purple",
       
       ### Home ###
       tabItem(
-        tabName = "Home",
+        tabName = "home_tab",
         h2("Home", style = "text-align: center")
       ),
       
@@ -91,7 +91,7 @@ dashboardPage( skin = "purple",
       
       ### Whole Data Inspection ###
       tabItem(
-        tabName = "WholeData",
+        tabName = "whole_data_tab",
         h2("Whole data inspection", style = "text-align: center"),
         # Line 1
         fluidRow(
@@ -101,7 +101,7 @@ dashboardPage( skin = "purple",
             status = "warning", # Cosmetic purpose only
             solidHeader = TRUE, 
             collapsible = FALSE,
-            plotlyOutput("volcanoPlot", height = "400px"),
+            plotlyOutput("volcano_plot", height = "400px"),
             width = 8
           ),
           # Sliders
@@ -112,7 +112,7 @@ dashboardPage( skin = "purple",
             collapsible = FALSE,
             sliderInput("padj_cutoff", "P-Value cutoff", min = 0, max = 1, value = 0.05),
             sliderInput("fc_cutoff", "log2 FoldChange cutoff", min = 0, max = 10, value = 1),
-            downloadButton("downloadFilteredTable", label = "Download filtered data table", icon = shiny::icon("download")),
+            downloadButton("download_filtered_table", label = "Download filtered data table", icon = shiny::icon("download")),
             width = 4
           )
         ),
@@ -122,7 +122,7 @@ dashboardPage( skin = "purple",
           box(
             title = "Filtered table preview",
             status = "warning", # Cosmetic purpose only 
-            DTOutput("dataPreview"),
+            DTOutput("data_preview_table"),
             width = 12,
             solidHeader = TRUE 
             
@@ -134,7 +134,7 @@ dashboardPage( skin = "purple",
       
       ### GO Term Enrichment : ORA ###
       tabItem(
-        tabName = "GOTermORA",
+        tabName = "GO_term_ORA_subtab",
         h2("GO Term Enrichment : ORA", style = "text-align: center")
       ),
       
@@ -142,7 +142,7 @@ dashboardPage( skin = "purple",
       
       ### GO Term Enrichment : GSEA ###
       tabItem(
-        tabName = "GOTermGSEA",
+        tabName = "GO_term_GSEA_subtab",
         h2("GO Term Enrichment : GSEA", style = "text-align: center")
       ),
       
@@ -150,7 +150,7 @@ dashboardPage( skin = "purple",
       
       ### Pathway Enrichment : ORA ###
       tabItem(
-        tabName = "pathORA",
+        tabName = "pathway_ORA_subtab",
         h2("Pathway Enrichment : ORA", style = "text-align: center")
       ),
       
@@ -158,7 +158,7 @@ dashboardPage( skin = "purple",
       
       ### Pathway Enrichment : GSEA ###
       tabItem(
-        tabName = "pathGSEA",
+        tabName = "pathway_GSEA_subtab",
         h2("Pathway Enrichment : GSEA", style = "text-align: center")
       )
       

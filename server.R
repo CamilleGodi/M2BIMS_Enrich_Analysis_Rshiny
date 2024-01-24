@@ -16,21 +16,21 @@ source("./utils/inspection.R")
 function(input, output, session) {
   
   ### Storage of the .csv input file date in a "reactive" object (if the .csv is valid) ###
-  reactiveDataExpDiff <- reactive({
-    req(input$inputFile)
-    inFile <- input$inputFile
-    ext <- tools::file_ext(inFile$datapath) # Récupération de l'extension
-    data <- data.table::fread(inFile$datapath, header = TRUE) # csv reading
+  reactive_data_expr_diff <- reactive({
+    req(input$input_file)
+    input_file <- input$input_file
+    ext <- tools::file_ext(input_file$datapath) # Récupération de l'extension
+    data <- data.table::fread(input_file$datapath, header = TRUE) # csv reading
     
     # Check the input file extension and the column names
     required_columns <- c('GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj')
     
     if (ext != "csv") {
-      shinyalertWrapper(title = "Error: The uploaded file doesn't have the right extension (.csv)",
+      shinyalert_wrapper(title = "Error: The uploaded file doesn't have the right extension (.csv)",
                         message = "",
                         type = "error")
     } else if (!all(required_columns %in% colnames(data))) {
-      shinyalertWrapper(title = "Error: Incorrect columns in file",
+      shinyalert_wrapper(title = "Error: Incorrect columns in file",
                         message = "Expected columns : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj'",
                         type = "error")
     }
@@ -44,38 +44,38 @@ function(input, output, session) {
   })
   
   ### Check the input file extension (.csv) as soon as the file is uploaded ###
-  observeEvent(input$inputFile, {
-    reactiveDataExpDiff()
+  observeEvent(input$input_file, {
+    reactive_data_expr_diff()
   })
   
   ### Management of the preview of the filtered data table [Whole data inspection] ###
-  output$dataPreview <- DT::renderDT({
-    filtered_data <- filter_dt(reactiveDataExpDiff(),
+  output$data_preview_table <- DT::renderDT({
+    filtered_data <- filter_dt(reactive_data_expr_diff(),
                       fc_cutoff = as.numeric(input$fc_cutoff),
                       padj_cutoff = as.numeric(input$padj_cutoff)
                       )
     
     
     # Create Ensembl link for genes with an Ensembl ID
-    filtered_data$ID <- createEnsemblHTMLlink(input$selectOrganism, filtered_data$ID)
+    filtered_data$ID <- createEnsemblHTMLlink(input$select_organism, filtered_data$ID)
     
     # Preview of the filtered data table ( "escape = FALSE" allows HTML formatting )
     DT::datatable(filtered_data, options = list(scrollX = TRUE, pageLength = 25), escape = FALSE)
   })
   
   ### Management of the download of the filtered data table [Whole data inspection] ###
-  output$downloadFilteredTable <- downloadHandler(
+  output$download_filtered_table <- downloadHandler(
     filename = function() {
       paste("filtered-data-", Sys.Date(), ".csv", sep = "")
     },
     content = function(file) {
-      filtered_data <- filter_dt(reactiveDataExpDiff(),
+      filtered_data <- filter_dt(reactive_data_expr_diff(),
                         fc_cutoff = as.numeric(input$fc_cutoff),
                         padj_cutoff = as.numeric(input$padj_cutoff)
                         )
       
       # Create Ensembl link for genes with an Ensembl ID
-      filtered_data$EnsemblLink <- createEnsemblLink(input$selectOrganism, filtered_data$ID)
+      filtered_data$EnsemblLink <- createEnsemblLink(input$select_organism, filtered_data$ID)
       
       
       
@@ -89,9 +89,9 @@ function(input, output, session) {
   
   ranges_volca_plot <- reactiveValues(x = NULL, y = NULL)
 
-  output$volcanoPlot <- renderPlotly({
-    if(!is.null(reactiveDataExpDiff())){
-      draw_volcano(reactiveDataExpDiff(),
+  output$volcano_plot <- renderPlotly( {
+    if(!is.null(reactive_data_expr_diff())){
+      draw_volcano(reactive_data_expr_diff(),
                    fc_cutoff = as.numeric(input$fc_cutoff),
                    padj_cutoff = as.numeric(input$padj_cutoff),
                    xlim = ranges_volca_plot$x,
