@@ -16,17 +16,19 @@ library(tidyverse)
 #' @example load_gsea_GO_enrichment(results(dds),organism_db = "org.Hs.eg.db")
 #'
 prepare_enrichment = function(results,
-                               metric,
-                               abs,
-                               convert = FALSE,
-                               from,
-                               to = "ENTREZID",
-                               organism_db) {
+                              metric = "stat",
+                              abs = TRUE,
+                              convert = FALSE,
+                              from,
+                              to = "ENTREZID",
+                              organism_db,
+                              universe = FALSE) {
+  results = results %>% data.frame()      # transformation en data.frame() au cas où il s'agisse d'un objet tibble ou S3
   # retrait de toutes les valeurs n'ayant pas passé l'independent filtering et la distance de Cook
-  if ("padj" %in% colnames(results)) {
+  if ("padj" %in% colnames(results) & !universe) {
     results = results[!is.na(results[, "padj"]),]
   }
-  # Convert from an ID to another is convert is true
+  # Si besoin, conversion d'un id vers un autre 
   if (convert) {
     ids = clusterProfiler::bitr(
       rownames(results),
@@ -34,20 +36,27 @@ prepare_enrichment = function(results,
       toType = to,
       OrgDb = organism_db
     )
-    # Sometimes, multiple gene symbol or ensembl id refer to the same entrezid, it also increase the weight of this gene, so only the 1st is take
-    ids = ids[!duplicated(ids[c(from)]),]
-    results = results[rownames(results) %in% ids[, from],]
-    rownames(results) = ids[, to]
+    # on retire les doublons, lors de la conversion, certains id peuvent mener à un id unique et inversement
+    ids = ids[!duplicated(ids[c(to)]),]
+    results[,"ID"] = "None"
+    results[,"ID"] = ids[match(rownames(results),ids[, from]),to]
   }
-  # in some paper, the best metric available to perform GSEA is the absolute value of the Wald's test
+  # on passe en valeur absolu ou non, intérêt pour GSEA
   if (abs) {
-    output = setNames(abs(results[, metric]), rownames(results))
+    output = setNames(abs(results[, metric]), results[,"ID"])
   } else {
-    output = setNames(results[, metric], rownames(results))
+    output = setNames(results[, metric], results[,"ID"])
   }
-  # return a sorted list in decreasing order, names are the entrez-id of genes and values are the associated metrics
+  # on retire les valeurs manquantes (qui n'ont pas de conversion)
+  output = output[!is.na(names(output))]
+  if(universe){
+    # Sert à préparer l'univers pour ORA en récupérant que les noms après conversion
+    return(names(output))
+  }
+  # retourne une liste de gene trié avec les id et la valeur métrique associées
   return(sort(na.omit(output), decreasing = T))
 }
+
 
 #' @description
 #' Launch enrichment analysis on GO terms with GSEA
@@ -227,6 +236,60 @@ load_go_over_representation = function(gene_list = list(),
   return(output)
 }
 
+#' Analyse la sur-représentation des GO terms dans le jeu de gènes différentiellement exprimés
+#' @param gene_list : vecteur trié dans l'ordre décroissant des gènes selon la métrique voulu
+#' @param universe : liste des gènes initiaux avant analyse DE (soit ça, soit OrgDb)
+#' @param organism_db : base de donnée KEGG utilisée (exemple : "hsa") (soit ça, soit universe)
+#' @param key_type : type d'identifiant utilisé
+#' @param min_GS_size : taille minimal du gene set pris pour l'analyse
+#' @param max_GS_size : taille maximal du gene set pris pour l'analyse
+#' @param pvalue_cutoff : valeur de seuil maximale de la p value
+#' @param qvalue_cutoff : valeur de seuil maximale de la q value
+#' @param p_adjust_method : méthode d'ajustement de la p-value
+#' @return vecteur trié dans l'ordre décroissant des gènes selon la métrique voulu
+#'
+#' @example loag_kegg_over_representation(gene_list,"org.Hs.eg.db")
+#'
+loag_kegg_over_representation = function(gene_list = list(),
+                                         organism_db = character(),
+                                         key_type = c("ncbi-geneid", "kegg", "ncbi-proteinid", "uniprot"),
+                                         pvalue_cutoff = 0.05,
+                                         p_adjust_method = "BH",
+                                         universe = NA,
+                                         min_GS_size = 10,
+                                         max_GS_size = 500,
+                                         qvalue_cutoff = 0.2) {
+  if(length(gene_list) > 0){
+    if (length(key_type) > 1) {
+      key_type = key_type[1]
+    }
+    output = clusterProfiler::enrichKEGG(
+      gene = gene_list,
+      organism = organism_db,
+      keyType = key_type,
+      pvalueCutoff = pvalue_cutoff,
+      pAdjustMethod = p_adjust_method,
+      universe = universe,
+      minGSSize = min_GS_size,
+      maxGSSize = max_GS_size,
+      qvalueCutoff = qvalue_cutoff,
+      use_internal_data = use_internal_data
+    )
+    if(!is.null(output)){
+      slot(output, "method") = "ORA"
+      output = clusterProfiler::mutate(output, Subset = as.numeric(sub("/\\d+", "", BgRatio)))
+      output = clusterProfiler::mutate(output, RichFactor = Count / Subset)
+    }
+    else {
+      setClass("data1", representation(method = "character",result = "data.frame"))
+      output =new("data1", method = "ORA",result = data.frame(matrix(nrow = 0, ncol = 3)))
+    }
+  } else {
+    setClass("data1", representation(method = "character",result = "data.frame"))
+    output =new("data1", method = "ORA",result = data.frame(matrix(nrow = 0, ncol = 3)))
+  }
+  return(output)
+}
 
 #' @description
 #' Convertir un vecteur de gènes d'une base de données dans une autre
@@ -250,53 +313,10 @@ id_convert = function(gene_list,
   return(ids[, to])
 }
 
-#' Analyse la sur-représentation des GO terms dans le jeu de gènes différentiellement exprimés
-#' @param genes_DE : vecteur trié dans l'ordre décroissant des gènes selon la métrique voulu
-#' @param universe : liste des gènes initiaux avant analyse DE (soit ça, soit OrgDb)
-#' @param organism_db : base de donnée KEGG utilisée (exemple : "hsa") (soit ça, soit universe)
-#' @param key_type : type d'identifiant utilisé
-#' @param min_GS_size : taille minimal du gene set pris pour l'analyse
-#' @param max_GS_size : taille maximal du gene set pris pour l'analyse
-#' @param pvalue_cutoff : valeur de seuil maximale de la p value
-#' @param qvalue_cutoff : valeur de seuil maximale de la q value
-#' @param p_adjust_method : méthode d'ajustement de la p-value
-#' @return vecteur trié dans l'ordre décroissant des gènes selon la métrique voulu
-#'
-#' @example load_go_over_representation(genes_DE,"org.Hs.eg.db")
-#'
-loag_kegg_over_representation = function(genes_DE,
-                                         organism_db = character(),
-                                         key_type = c("ncbi-geneid", "kegg", "ncbi-proteinid", "uniprot"),
-                                         pvalue_cutoff = 0.05,
-                                         p_adjust_method = "BH",
-                                         universe = NA,
-                                         min_GS_size = 10,
-                                         max_GS_size = 500,
-                                         qvalue_cutoff = 0.2,
-                                         use_internal_data = FALSE) {
-  if (length(key_type) > 1) {
-    key_type = key_type[1]
-  }
-  output = clusterProfiler::enrichKEGG(
-    gene = genes_DE,
-    organism = organism,
-    keyType = key_type,
-    pvalueCutoff = pvalue_cutoff,
-    pAdjustMethod = p_adjust_method,
-    universe = universe,
-    minGSSize = min_GS_size,
-    maxGSSize = max_GS_size,
-    qvalueCutoff = qvalue_cutoff,
-    use_internal_data = use_internal_data
-  )
-  slot(output, "method") = "ORA"
-  return(output)
-}
-
 #' @description
 #' permet l'affichage du tableau de données résultant de "get_enrich" ou d'une fonction ORA/GSEA de manière plus lisible en rmd
 #' @param get_enrich l'objet clusterprofiler résultante d'une des fonctions au dessus permettant de faire du ORA ou du GSEA
-#'
+#' @param get_columns les noms des colonnes montrées après enrichissement
 #' @example get_enrich(ora.bp,0.05) || get_enrich(ora.bp, ora.bp@pvalueCutoff)
 enrich_pagination = function(get_enrich,
                              get_columns = c("ID",
@@ -319,28 +339,6 @@ enrich_pagination = function(get_enrich,
     res = slot(get_enrich, "result")[, c("ID", "Description", "setSize", "enrichmentScore")]
   }
   return(res)
-}
-
-
-#' @description
-#' mets des retours à la ligne dans les noms des descriptions trop longues (supérieur à 4 mots)
-#' @param enrichGO : objet enrich issus de clusterprofiler
-#' @note modifier pour rendre ajustable le nombre de mots par lignes voulus
-#'
-#' @example description_spacer(ora.bp)
-#'
-description_spacer = function(enrichGO) {
-  list_desc = list_desc_iter = slot(enrichGO,"result")[, "Description"]
-  for (i in 1:length(list_desc_iter)) {
-    aux <- str_locate_all(list_desc_iter[[i]], " ")[[1]]
-    if (str_count(list_desc_iter[[i]], " ") > 4) {
-      pos <-
-        aux[which(diff(aux[, 1] %/% ((aux[nrow(aux), 1] %/% 2) + 1)) == 1) + 1, 1]
-      substr(list_desc[[i]], pos[1], pos[1]) <- "\n"
-    }
-  }
-  slot(enrichGO,"result")[, "Description"] = list_desc
-  return(enrichGO)
 }
 
 
@@ -392,7 +390,6 @@ draw_dotplot = function(ora_df,
     }
     ora_df$category = ora_df[,category]
     ggplot2::ggplot(ora_df, aes(x = category,y = fct_reorder(Description,category))) +
-      #ggplot2::geom_bar(stat = "identity", aes(fill = p.adjust)) +
       ggplot2::geom_point(aes(color = p.adjust, size = RichFactor)) +
       ggplot2::scale_y_discrete(label = function(y) stringr::str_trunc(y, 40))+
       ggplot2::scale_color_gradientn (
