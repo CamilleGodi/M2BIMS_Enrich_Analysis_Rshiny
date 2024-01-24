@@ -73,9 +73,9 @@ filter_dt <- function(deseq_data, fc_cutoff = 1, padj_cutoff = 0.05) {
 
 ### VOLCANO PLOT
 #' @description
-#' Draws a ggplot2 based volcano plot of given differential expression data, pr
+#' Draws a ggplot2-based volcano plot of given differential expression data table, with adjusted p-value and Fold Change cut-offs
 #' @param deseq_data  : (data table) differential expression data table
-#' @param title       : (string) volcano plot title (defauklt : "Volcano plot")
+#' @param title       : (string) volcano plot title (default : "Volcano plot")
 #' @param xlab        : (string) label of the x axis (default : "Log2(FoldChange)")
 #' @param ylab        : (string) label of the x axis (default : "-Log10(p-value adjusted)")
 #' @param xlim        : (vector c(float,float) ) limits of the x axis (default : NA)

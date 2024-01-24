@@ -57,7 +57,7 @@ function(input, output, session) {
     
     
     # Create Ensembl link for genes with an Ensembl ID
-    filtered_data$ID <- createEnsemblHTMLlink(input$select_organism, filtered_data$ID)
+    filtered_data$ID <- create_Ensembl_html_link(input$select_organism, filtered_data$ID)
     
     # Preview of the filtered data table ( "escape = FALSE" allows HTML formatting )
     DT::datatable(filtered_data, options = list(scrollX = TRUE, pageLength = 25), escape = FALSE)
@@ -75,7 +75,7 @@ function(input, output, session) {
                         )
       
       # Create Ensembl link for genes with an Ensembl ID
-      filtered_data$EnsemblLink <- createEnsemblLink(input$select_organism, filtered_data$ID)
+      filtered_data$Ensembl_link <- create_Ensembl_link(input$select_organism, filtered_data$ID)
       
       
       
