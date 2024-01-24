@@ -86,7 +86,6 @@ function(input, output, session) {
   
   
   ### Management of the volcano plot [Whole data inspection] ###
-  
   ranges_volca_plot <- reactiveValues(x = NULL, y = NULL)
 
   output$volcano_plot <- renderPlotly( {
@@ -98,7 +97,6 @@ function(input, output, session) {
                    ylim = ranges_volca_plot$y,
                    lines = TRUE)
     }
-    
   })
 }
 

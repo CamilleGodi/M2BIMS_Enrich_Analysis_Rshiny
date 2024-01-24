@@ -29,10 +29,7 @@ create_Ensembl_html_link <- function(organism, gene_id) {
 ### FILTER DATATABLE
 
 
-filter_dt <- function(deseq_data,
-                      fc_cutoff = 1,
-                      padj_cutoff = 0.05){
-  
+filter_dt <- function(deseq_data, fc_cutoff = 1, padj_cutoff = 0.05) {
   deseq_data$diff_expressed <- ifelse(
     deseq_data$log2FC <= - fc_cutoff & deseq_data$padj <= padj_cutoff, "DOWN",
     ifelse(deseq_data$log2FC >= fc_cutoff & deseq_data$padj <= padj_cutoff, "UP", "NO_DE")
@@ -55,9 +52,9 @@ draw_volcano <- function(deseq_data,
                         fc_cutoff = 1,
                         padj_cutoff = 0.05,
                         lines = FALSE) {
-  deseq_data <- deseq_data[!is.na(deseq_data$padj),]       # retirer les valeurs n'ayant pas passé le filtre indépendant si resultat de DESeq2
+  deseq_data <- deseq_data[!is.na(deseq_data$padj), ]       # retirer les valeurs n'ayant pas passé le filtre indépendant si resultat de DESeq2
   deseq_data$diff_expressed <- ifelse(
-    deseq_data$log2FC <= - fc_cutoff & deseq_data$padj <= padj_cutoff, "DOWN",
+    deseq_data$log2FC <= -fc_cutoff & deseq_data$padj <= padj_cutoff, "DOWN",
     ifelse(deseq_data$log2FC >= fc_cutoff & deseq_data$padj <= padj_cutoff, "UP", "NO_DE")
   )
   deseq_data$diff_expressed <- factor(deseq_data$diff_expressed, levels = c("UP", "DOWN", "NO_DE"))
@@ -65,8 +62,8 @@ draw_volcano <- function(deseq_data,
                         ggplot2::aes(
                           x = log2FC,
                           y = -log10(padj),
-                          col = diff_expressed
-                        )) +
+                          col = diff_expressed )
+                        ) +
     ggplot2::scale_color_manual(values = c('DOWN' = 'blue', 'UP' = 'red', 'NO_DE' = 'grey')) +
     ggplot2::geom_point(size = 0.5) +
     ggplot2::labs(x = xlab, y = ylab) +

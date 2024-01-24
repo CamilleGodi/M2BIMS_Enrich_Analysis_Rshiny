@@ -43,11 +43,11 @@ dashboardPage( skin = "purple",
       
       sidebarMenu(
         menuItem("Whole Data Inspection", tabName = "whole_data_tab", icon = icon("table")),
-        menuItem("GO Term Enrichment", tabName = "GO_term_enrichment_tab", icon = icon("sitemap"),
-                 menuSubItem("ORA", tabName = "GO_term_ORA_subtab"),
+        menuItem("GO Term Enrichment",    tabName = "GO_term_enrichment_tab", icon = icon("sitemap"),
+                 menuSubItem("ORA",  tabName = "GO_term_ORA_subtab"),
                  menuSubItem("GSEA", tabName = "GO_term_GSEA_subtab")),
         menuItem("Pathway Enrichment", tabName = "pathway_enrichment_tab", icon = icon("project-diagram"),
-                 menuSubItem("ORA", tabName = "pathway_ORA_subtab"),
+                 menuSubItem("ORA",  tabName = "pathway_ORA_subtab"),
                  menuSubItem("GSEA", tabName = "pathway_GSEA_subtab")),
         menuItem("About", tabName = "about_tab", icon = icon("info-circle"))
       )
@@ -85,7 +85,6 @@ dashboardPage( skin = "purple",
         tabName = "home_tab",
         h2("Home", style = "text-align: center")
       ),
-      
       
       ##########################################################################
       
