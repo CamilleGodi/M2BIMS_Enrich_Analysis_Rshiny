@@ -20,17 +20,17 @@ dashboardPage(
   ### Sidebar ###
   dashboardSidebar( 
     sidebarMenu(
-      menuItem("Home", tabName = "Home", icon = icon("home")),
+      menuItem("Home", tabName = "home_tab", icon = icon("home")),
       
       fileInput(
-        "inputFile", 
+        "input_file", 
         "Select a CSV file:", 
         multiple = FALSE, 
         accept = c(".csv"),
         width = '100%'),
       
       selectInput(
-        "selectOrganism",
+        "select_organism",
         "Select organism name:",
         c("Arabidopsis thaliana", "Caenorhabditis elegans","Danio rerio", "Drosophila melanogaster","Homo sapiens", "Mus musculus", "Saccharomyces cervisiae", "Xenopus laevis"),
         selected = NULL,
@@ -40,14 +40,20 @@ dashboardPage(
         size = NULL),
       
       sidebarMenu(
-        menuItem("Whole Data Inspection", tabName = "WholeData", icon = icon("table")),
-        menuItem("GO Term Enrichment", tabName = "GOTermEnrichment", icon = icon("sitemap"),
-                 menuSubItem("ORA", tabName = "GOTermORA"),
-                 menuSubItem("GSEA", tabName = "GOTermGSEA")),
-        menuItem("Pathway Enrichment", tabName = "PathwayEnrichment", icon = icon("project-diagram"),
-                 menuSubItem("ORA", tabName = "pathORA"),
-                 menuSubItem("GSEA", tabName = "pathGSEA")),
-        menuItem("About", tabName = "About", icon = icon("info-circle"))))),
+        menuItem("Whole Data Inspection", tabName = "whole_data_tab", icon = icon("table")),
+        menuItem("GO Term Enrichment",    tabName = "GO_term_enrichment_tab", icon = icon("sitemap"),
+                 menuSubItem("ORA",  tabName = "GO_term_ORA_subtab"),
+                 menuSubItem("GSEA", tabName = "GO_term_GSEA_subtab")),
+        menuItem("Pathway Enrichment", tabName = "pathway_enrichment_tab", icon = icon("project-diagram"),
+                 menuSubItem("ORA",  tabName = "pathway_ORA_subtab"),
+                 menuSubItem("GSEA", tabName = "pathway_GSEA_subtab")),
+        menuItem("About", tabName = "about_tab", icon = icon("info-circle"))
+      )
+    )
+  ),
+  
+  ##############################################################################
+  ##############################################################################
   
   ### Body ###
   dashboardBody(
@@ -71,12 +77,15 @@ dashboardPage(
       
       ### Home ###
       tabItem(
-        tabName = "Home",
-        h2("Home", style = "text-align: center")),
+        tabName = "home_tab",
+        h2("Home", style = "text-align: center")
+      ),
+      
+      ##########################################################################
       
       ### Whole Data Inspection ###
       tabItem(
-        tabName = "WholeData",
+        tabName = "whole_data_tab",
         h2("Whole data inspection", style = "text-align: center"),
         fluidRow(
           box(
@@ -84,28 +93,30 @@ dashboardPage(
             status = "warning", # Cosmetic purpose only
             solidHeader = TRUE, 
             collapsible = FALSE,
-            plotlyOutput("volcanoPlot", height = "400px"),
-            width = 6),
+            plotlyOutput("volcano_plot", height = "400px"),
+            width = 8
+          ),
+          # Sliders
           box(
             title = "Options",
             status = "warning", # Cosmetic purpose only
             solidHeader = TRUE, 
             collapsible = FALSE,
-            sliderInput("pValueCutoff", "P-Value cutoff", min = 0, max = 1, value = 0.05),
-            sliderInput("logFC", "log2 FoldChange cutoff", min = 0, max = 10, value = 1),
-            downloadButton("downloadFilteredTable", label = "Download filtered data table", icon = shiny::icon("download")),
+            sliderInput("padj_cutoff", "P-Value cutoff", min = 0, max = 1, value = 0.05),
+            sliderInput("fc_cutoff", "log2 FoldChange cutoff", min = 0, max = 10, value = 1),
+            downloadButton("download_filtered_table", label = "Download filtered data table", icon = shiny::icon("download")),
             width = 6)),
         fluidRow(
           box(
             title = "Filtered table preview",
             status = "warning", # Cosmetic purpose only 
-            DTOutput("dataPreview"),
+            DTOutput("data_preview_table"),
             width = 12,
             solidHeader = TRUE))),
       
       ### GO Term Enrichment : ORA ###
       tabItem(
-        tabName = "GOTermORA",
+        tabName = "GO_term_ORA_subtab",
         h2("GO Term Enrichment : ORA", style = "text-align: center"),
         
         fluidRow(
@@ -180,7 +191,7 @@ dashboardPage(
                   sliderInput("adjustedPValueCutoffORA", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05))))))),
       ### GO Term Enrichment : GSEA ###
       tabItem(
-        tabName = "GOTermGSEA",
+        tabName = "GO_term_GSEA_subtab",
         h2("GO Term Enrichment : GSEA", style = "text-align: center"),
         
         fluidRow(
@@ -242,7 +253,7 @@ dashboardPage(
       
       ### Pathway Enrichment : ORA ###
       tabItem(
-        tabName = "pathORA",
+        tabName = "pathway_ORA_subtab",
         h2("Pathway Enrichment : ORA", style = "text-align: center"),
         
         fluidRow(
@@ -287,7 +298,7 @@ dashboardPage(
       
       ### Pathway Enrichment : GSEA ###
       tabItem(
-        tabName = "pathGSEA",
+        tabName = "pathway_GSEA_subtab",
         h2("Pathway Enrichment : GSEA", style = "text-align: center"),
         
         fluidRow(

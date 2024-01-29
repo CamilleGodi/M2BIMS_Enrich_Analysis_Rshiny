@@ -7,55 +7,30 @@
 # Contact me at: victor.bailleul@univ-rouen.fr
 
 source("global.R")
+source("./utils/inspection.R")
 
 ################################################################################
 ################################################################################
 ################################################################################
-
-isEnsemblID <- function( gene_id ) {
-  status <- ifelse ( str_detect( gene_id, "^ENS[:upper:]+[:digit:]{11}$"), TRUE, FALSE )
-  return(status)
-}
-
-createEnsemblLink <- function(organism, gene_id) {
-  organism <- sub(" ", "_", organism)
-  links <- ifelse( isEnsemblID( gene_id ),
-         sprintf("https://www.ensembl.org/%s/Gene/Summary?g=%s", organism, gene_id),
-         NA )
-  return(links)
-}
-
-createEnsemblHTMLlink <- function(organism, gene_id) {
-  organism <- sub(" ", "_", organism)
-  links <- ifelse( isEnsemblID( gene_id ),
-                  sprintf('<a href="https://www.ensembl.org/%s/Gene/Summary?g=%s" target="_blank">%s</a>', organism, gene_id, gene_id),
-                  gene_id )
-  return(links)
-}
-
-################################################################################
-################################################################################
-################################################################################
-
 
 function(input, output, session) {
   
   ### Storage of the .csv input file date in a "reactive" object (if the .csv is valid) ###
-  reactiveDataExpDiff <- reactive({
-    req(input$inputFile)
-    inFile <- input$inputFile
-    ext <- tools::file_ext(inFile$datapath) # Récupération de l'extension
-    data <- data.table::fread(inFile$datapath, header = TRUE) # csv reading
+  reactive_data_expr_diff <- reactive({
+    req(input$input_file)
+    input_file <- input$input_file
+    ext <- tools::file_ext(input_file$datapath) # Récupération de l'extension
+    data <- data.table::fread(input_file$datapath, header = TRUE) # csv reading
     
     # Check the input file extension and the column names
     required_columns <- c('GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj')
     
     if (ext != "csv") {
-      shinyalertWrapper(title = "Error: The uploaded file doesn't have the right extension (.csv)",
+      shinyalert_wrapper(title = "Error: The uploaded file doesn't have the right extension (.csv)",
                         message = "",
                         type = "error")
     } else if (!all(required_columns %in% colnames(data))) {
-      shinyalertWrapper(title = "Error: Incorrect columns in file",
+      shinyalert_wrapper(title = "Error: Incorrect columns in file",
                         message = "Expected columns : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj'",
                         type = "error")
     }
@@ -69,83 +44,59 @@ function(input, output, session) {
   })
   
   ### Check the input file extension (.csv) as soon as the file is uploaded ###
-  observeEvent(input$inputFile, {
-    reactiveDataExpDiff()
+  observeEvent(input$input_file, {
+    reactive_data_expr_diff()
   })
   
   ### Management of the preview of the filtered data table [Whole data inspection] ###
-  output$dataPreview <- renderDT({
-    data <- reactiveDataExpDiff()
+  output$data_preview_table <- DT::renderDT({
+    filtered_data <- filter_dt(reactive_data_expr_diff(),
+                      fc_cutoff = as.numeric(input$fc_cutoff),
+                      padj_cutoff = as.numeric(input$padj_cutoff)
+                      )
+    
     
     # Create Ensembl link for genes with an Ensembl ID
-    data$ID <- createEnsemblHTMLlink(input$selectOrganism, data$ID)
-    
-    # Filter data according to the sliders values
-    cutoff_logFC <- input$logFC
-    cutoff_padj <- input$pValueCutoff
-    
-    data$highlight <- ifelse(
-      data$log2FC <= -cutoff_logFC & data$padj <= cutoff_padj, 'Underexpressed',
-      ifelse(data$log2FC >= cutoff_logFC & data$padj <= cutoff_padj, 'Overexpressed', 'Not Highlighted')
-    )
-    filtered_data <- data[data$highlight != 'Not Highlighted', ]
+    filtered_data$ID <- create_Ensembl_html_link(input$select_organism, filtered_data$ID)
     
     # Preview of the filtered data table ( "escape = FALSE" allows HTML formatting )
-    DT::datatable(filtered_data, options = list(scrollX = TRUE,pageLength = 25), escape = FALSE)
+    DT::datatable(filtered_data, options = list(scrollX = TRUE, pageLength = 25), escape = FALSE)
   })
   
   ### Management of the download of the filtered data table [Whole data inspection] ###
-  output$downloadFilteredTable <- downloadHandler(
+  output$download_filtered_table <- downloadHandler(
     filename = function() {
       paste("filtered-data-", Sys.Date(), ".csv", sep = "")
     },
     content = function(file) {
-      data <- reactiveDataExpDiff()
+      filtered_data <- filter_dt(reactive_data_expr_diff(),
+                        fc_cutoff = as.numeric(input$fc_cutoff),
+                        padj_cutoff = as.numeric(input$padj_cutoff)
+                        )
       
-      
-      # Filter data according to the sliders values
-      cutoff_logFC <- input$logFC
-      cutoff_padj <- input$pValueCutoff
-      
-      data$highlight <- ifelse(
-        data$log2FC <= -cutoff_logFC & data$padj <= cutoff_padj, 'Underexpressed',
-        ifelse(data$log2FC >= cutoff_logFC & data$padj <= cutoff_padj, 'Overexpressed', 'Not Highlighted')
-      )
-
       # Create Ensembl link for genes with an Ensembl ID
-      data$EnsemblLink <- createEnsemblLink(input$selectOrganism, data$ID)
+      filtered_data$Ensembl_link <- create_Ensembl_link(input$select_organism, filtered_data$ID)
       
-      filtered_data <- data[data$highlight != 'Not Highlighted', ]
+      
       
       # Write the filtered data to the specified file
       write.csv(filtered_data, file, row.names = FALSE)
     }
   )
   
+  
   ### Management of the volcano plot [Whole data inspection] ###
-  output$volcanoPlot <- renderPlotly({
-    data <- reactiveDataExpDiff()
-    
-    # Get the cut-off values from the sliders
-    cutoff_logFC <- input$logFC
-    cutoff_padj <- input$pValueCutoff
-    
-    # Add a column on the data table, sorts the points in three categories
-    # depending on the chosen padj and log2FC cut-offs
-    data$highlight <- ifelse(
-      data$log2FC <= -cutoff_logFC & data$padj <= cutoff_padj, 'Underexpressed',
-      ifelse(data$log2FC >= cutoff_logFC & data$padj <= cutoff_padj, 'Overexpressed', 'Not Highlighted')
-    )
-    
-    # Create plot
-    p <- ggplot(data, aes(x = log2FC, y = -log10(padj), color = highlight)) +
-      geom_point(alpha = 0.8) +
-      scale_color_manual(values = c('Underexpressed' = 'blue', 'Overexpressed' = 'red', 'Not Highlighted' = 'grey')) +
-      labs(title = 'Volcano Plot', x = 'Log2 Fold Change', y = '-Log10 p-adjusted') +
-      theme_minimal()
-    
-    # Plot interactivity
-    ggplotly(p, tooltip = c("text"), dynamicTicks = TRUE)
+  ranges_volca_plot <- reactiveValues(x = NULL, y = NULL)
+
+  output$volcano_plot <- renderPlotly( {
+    if(!is.null(reactive_data_expr_diff())){
+      draw_volcano(reactive_data_expr_diff(),
+                   fc_cutoff = as.numeric(input$fc_cutoff),
+                   padj_cutoff = as.numeric(input$padj_cutoff),
+                   xlim = ranges_volca_plot$x,
+                   ylim = ranges_volca_plot$y,
+                   lines = TRUE)
+    }
   })
 }
 
