@@ -94,7 +94,7 @@ dashboardPage(
             solidHeader = TRUE, 
             collapsible = FALSE,
             plotlyOutput("volcano_plot", height = "400px"),
-            width = 8
+            width = 6
           ),
           # Sliders
           box(
