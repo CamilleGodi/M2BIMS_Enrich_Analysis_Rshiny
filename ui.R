@@ -15,7 +15,7 @@ dashboardPage(
   skin = "purple",
   
   ### Header ###
-  dashboardHeader(title = "VictoRshiny"),
+  dashboardHeader(title = "Rshiny"),
   
   ### Sidebar ###
   dashboardSidebar( 
