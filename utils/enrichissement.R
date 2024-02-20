@@ -2,6 +2,47 @@ library(tidyverse)
 
 #' @docType https://yulab-smu.top/biomedical-knowledge-mining-book/enrichment-overview.html
 #' 
+#' 
+
+independent_filtering = function(results){
+  results = results %>% data.frame()   # on s'assure du type data.frame
+  if ("padj" %in% colnames(results)) {
+    results = results[!is.na(results[, "padj"]),] #on retire les données "NA" qui poseront problème par la suite
+  }
+  return(results)
+}
+
+conversion_table = function(results,
+                      from,
+                      to,
+                      organism_db,
+                      convert = T){
+    if (convert) {
+      ids = clusterProfiler::bitr(
+        rownames(results),
+        fromType = from,
+        toType = to,
+        OrgDb = organism_db
+      )
+    }
+  return(ids)
+}
+
+convert_results_ids = function(results,
+                               ids,
+                               convert = TRUE){
+  # on retire les doublons, lors de la conversion, certains id peuvent mener à un id unique et inversement
+  if(convert){
+  from = colnames(ids)[1]
+  to = colnames(ids)[2]
+  ids = ids[!duplicated(ids[c(to)]),]
+  results[,"ID"] = ids[match(rownames(results),ids[, from]),to]
+  } else {
+    results[,"ID"] = rownames(results)
+  }
+  return(results)
+}
+  
 #' @description
 #' converti les ID d'une base de donnée dans une autre
 #' @param results : objet results de DESeq pour les conditions voulant être testées
@@ -25,17 +66,9 @@ prepare_enrichment = function(results,
                               universe = FALSE) {
   results = results %>% data.frame()      # transformation en data.frame() au cas où il s'agisse d'un objet tibble ou S3
   # retrait de toutes les valeurs n'ayant pas passé l'independent filtering et la distance de Cook
-  if ("padj" %in% colnames(results) & !universe) {
-    results = results[!is.na(results[, "padj"]),]
-  }
+
   # Si besoin, conversion d'un id vers un autre 
-  if (convert) {
-    ids = clusterProfiler::bitr(
-      rownames(results),
-      fromType = from,
-      toType = to,
-      OrgDb = organism_db
-    )
+
     # on retire les doublons, lors de la conversion, certains id peuvent mener à un id unique et inversement
     ids = ids[!duplicated(ids[c(to)]),]
     results[,"ID"] = "None"
