@@ -1,10 +1,12 @@
-# Rshiny application produced by Victor BAILLEUL (Université de Rouen Normandie)
-# Last updated: 24/11/2023
+# Rshiny application created by 
+# Victor BAILLEUL 
+# Camille GODI
+# Benjamin MARSAC
+# Komlan Dieu-Donné TOTO
+# Affiliation : Université de Rouen Normandie
 
 # This application aimed to facilitate functional enrichment analysis from
 # differential expression results
-
-# Contact me at: victor.bailleul@univ-rouen.fr
 
 source("global.R")
 source("./utils/inspection.R")
