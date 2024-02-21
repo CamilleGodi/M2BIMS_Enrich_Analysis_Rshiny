@@ -80,7 +80,16 @@ dashboardPage(
       ### Home ###
       tabItem(
         tabName = "home_tab",
-        h2("Home", style = "text-align: center")
+        h2("Home", style = "text-align: center"),
+        box(
+          title = "Tutorial",
+          status = "warning", # Cosmetic purpose only : orange box
+          solidHeader = TRUE, 
+          width = 12,
+          h4("1/ Select a CSV (or CSV2) file. It must at least have the following columns : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj'."),
+          h4("2/ Select the organism from which the data originates."),
+          h4("3/ Explore your data through the 'Whole data inspection' tab, and/or perform desired analysis.")
+        )
       ),
       
       tabItem(
