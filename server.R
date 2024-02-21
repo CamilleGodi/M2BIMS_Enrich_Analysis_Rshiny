@@ -5,7 +5,7 @@
 # Komlan Dieu-Donné TOTO
 # Affiliation : Université de Rouen Normandie
 
-# This application aimed to facilitate functional enrichment analysis from
+# This application facilitates functional enrichment analysis from
 # differential expression results
 
 source("global.R")

@@ -5,7 +5,7 @@
 # Komlan Dieu-Donné TOTO
 # Affiliation : Université de Rouen Normandie
 
-# This application aimed to facilitate functional enrichment analysis from
+# This application facilitates functional enrichment analysis from
 # differential expression results
 
 source("global.R")
@@ -81,6 +81,24 @@ dashboardPage(
       tabItem(
         tabName = "home_tab",
         h2("Home", style = "text-align: center")
+      ),
+      
+      tabItem(
+        tabName = "about_tab",
+        h2("About the project", style = "text-align: center"),
+        box(
+          width = 12,
+          strong("Goal :"),
+          p("The goal of this application is to facilitates functional enrichment analysis from differential expression results, and allow for quick and interactive visualization."),
+          br(),
+          strong("Authors :"),
+          p("Victor BAILLEUL ( victor.bailleul@univ-rouen.fr )"),
+          p("Camille GODI ( camille.godi@univ-rouen.fr )"),
+          p("Benjamin MARSAC ( benjamin.marsac@univ-rouen.fr )"),
+          p("Komlan Dieu-Donné TOTO ( komlan-dieu-donne.toto@univ-rouen.fr )"),
+          br(),
+          p("This app is the result of a group work in second year of Bioinformatics Master's Degree, 'BIMS', year 2023-2024s, Université de Rouen Normandie ( URN ).")
+        )
       ),
       
       ##########################################################################
