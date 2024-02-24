@@ -10,12 +10,12 @@ load_libs <-function(...) {
 }
 
 load_libs("shiny", "shinydashboard", "shinyalert", "plotly", "DT", "tidyverse")
+load_libs("httr", "jsonlite", "xml2") # for Ensembl REST API
 
 ################################################################################
 
 
 ### NOTIFICATIONS
-
 shinyalert_wrapper <- function(title, message = "", type) {
   shinyalert(
     title = title,
@@ -29,6 +29,26 @@ shinyalert_wrapper <- function(title, message = "", type) {
     cancelButtonText = "Cancel",
     animation = TRUE
   )
+}
+
+
+### Ensembl REST API
+get_ensembl_organisms_list <- function() {
+  server <- "https://rest.ensembl.org"
+  ext <- "/info/species?"
+  
+  r <- GET(paste(server, ext, sep = ""), content_type("application/json"))
+  stop_for_status(r)
+  res <- content(r)$species
+  
+  ensembl_organisms <- c()
+  for ( element in res ) {
+    ensembl_organisms = c(ensembl_organisms, element$name)
+  }
+  ensembl_organisms <- sort(ensembl_organisms)
+  ensembl_organisms <- sub("_", " ", ensembl_organisms)
+  
+  return(ensembl_organisms)
 }
 
 ################################################################################
