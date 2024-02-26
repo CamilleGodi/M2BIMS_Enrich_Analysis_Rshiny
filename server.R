@@ -48,15 +48,15 @@ function(input, output, session) {
   ### Check the input file extension (.csv) as soon as the file is uploaded ###
   observeEvent(input$input_file, {
     reactive_data_expr_diff()
+    print(reactive_data_expr_diff())
   })
-  
+  filtered_data <- reactive({filter_dt(reactive_data_expr_diff(),
+                             fc_cutoff = as.numeric(input$fc_cutoff),
+                             padj_cutoff = as.numeric(input$padj_cutoff)
+  )})
   ### Management of the preview of the filtered data table [Whole data inspection] ###
   output$data_preview_table <- DT::renderDT({
-    filtered_data <- filter_dt(reactive_data_expr_diff(),
-                      fc_cutoff = as.numeric(input$fc_cutoff),
-                      padj_cutoff = as.numeric(input$padj_cutoff)
-                      )
-    
+    filtered_data <- show_filtered_df(filtered_data())
     
     # Create Ensembl link for genes with an Ensembl ID
     filtered_data$ID <- create_Ensembl_html_link(input$select_organism, filtered_data$ID)
@@ -92,7 +92,7 @@ function(input, output, session) {
 
   output$volcano_plot <- renderPlotly( {
     if(!is.null(reactive_data_expr_diff())){
-      draw_volcano(reactive_data_expr_diff(),
+      draw_volcano(filtered_data(),
                    fc_cutoff = as.numeric(input$fc_cutoff),
                    padj_cutoff = as.numeric(input$padj_cutoff),
                    xlim = ranges_volca_plot$x,

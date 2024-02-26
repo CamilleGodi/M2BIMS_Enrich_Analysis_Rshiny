@@ -64,11 +64,13 @@ filter_dt <- function(deseq_data, fc_cutoff = 1, padj_cutoff = 0.05) {
     deseq_data$log2FC <= - fc_cutoff & deseq_data$padj <= padj_cutoff, "DOWN",
     ifelse(deseq_data$log2FC >= fc_cutoff & deseq_data$padj <= padj_cutoff, "UP", "NO_DE")
   )
+  return(deseq_data)
+}
+
+show_filtered_df = function(deseq_data){
   filtered_data <- deseq_data[deseq_data$diff_expressed != 'NO_DE', ]
   return(filtered_data)
 }
-
-
 
 
 ### VOLCANO PLOT
@@ -97,11 +99,6 @@ draw_volcano <- function(deseq_data,
                         padj_cutoff = 0.05,
                         lines = FALSE) {
   
-  deseq_data <- deseq_data[!is.na(deseq_data$padj), ]       # retirer les valeurs n'ayant pas passé le filtre indépendant si resultat de DESeq2
-  deseq_data$diff_expressed <- ifelse(
-    deseq_data$log2FC <= -fc_cutoff & deseq_data$padj <= padj_cutoff, "DOWN",
-    ifelse(deseq_data$log2FC >= fc_cutoff & deseq_data$padj <= padj_cutoff, "UP", "NO_DE")
-  )
   deseq_data$diff_expressed <- factor(deseq_data$diff_expressed, levels = c("UP", "DOWN", "NO_DE"))
   fig <- ggplot2::ggplot(data = deseq_data,
                         ggplot2::aes(
