@@ -48,7 +48,6 @@ function(input, output, session) {
   ### Check the input file extension (.csv) as soon as the file is uploaded ###
   observeEvent(input$input_file, {
     reactive_data_expr_diff()
-    print(reactive_data_expr_diff())
   })
   filtered_data <- reactive({filter_dt(reactive_data_expr_diff(),
                              fc_cutoff = as.numeric(input$fc_cutoff),
