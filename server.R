@@ -70,18 +70,8 @@ function(input, output, session) {
       paste("filtered-data-", Sys.Date(), ".csv", sep = "")
     },
     content = function(file) {
-      filtered_data <- filter_dt(reactive_data_expr_diff(),
-                        fc_cutoff = as.numeric(input$fc_cutoff),
-                        padj_cutoff = as.numeric(input$padj_cutoff)
-                        )
-      
-      # Create Ensembl link for genes with an Ensembl ID
-      filtered_data$Ensembl_link <- create_Ensembl_link(input$select_organism, filtered_data$ID)
-      
-      
-      
       # Write the filtered data to the specified file
-      write.csv(filtered_data, file, row.names = FALSE)
+      write.csv(show_filtered_df(filtered_data()), file, row.names = FALSE)
     }
   )
   
