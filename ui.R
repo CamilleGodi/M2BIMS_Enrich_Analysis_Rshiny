@@ -1,10 +1,12 @@
-# Rshiny application produced by Victor BAILLEUL (Université de Rouen Normandie)
-# Last updated: 24/11/2023
+# Rshiny application created by 
+# Victor BAILLEUL 
+# Camille GODI
+# Benjamin MARSAC
+# Komlan Dieu-Donné TOTO
+# Affiliation : Université de Rouen Normandie
 
-# This application aimed to facilitate functional enrichment analysis from
+# This application facilitates functional enrichment analysis from
 # differential expression results
-
-# Contact me at: victor.bailleul@univ-rouen.fr
 
 source("global.R")
 ################################################################################
@@ -31,7 +33,7 @@ dashboardPage(
       selectInput(
         "select_organism",
         "Select organism name:",
-        c("Arabidopsis thaliana", "Caenorhabditis elegans","Danio rerio", "Drosophila melanogaster","Homo sapiens", "Mus musculus", "Saccharomyces cervisiae", "Xenopus laevis"),
+        c("Arabidopsis thaliana", "Escherichia coli (K12)", "Homo sapiens", "Mus musculus", "Saccharomyces cerevisiae"),
         selected = NULL,
         multiple = FALSE,
         selectize = TRUE,
@@ -83,8 +85,8 @@ dashboardPage(
           status = "warning", # Cosmetic purpose only : orange box
           solidHeader = TRUE, 
           width = 12,
-          h4("1/ Select a CSV (or CSV2) file. It must at least have the following columns : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj'."),
-          h4("2/ Select the organism from which the data originates."),
+          h4("1/ Select a CSV (or CSV2) file. It must have the following columns and no others : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj'."),
+          h4("2/ Select the scientific name of the organism from which the data originates. Tip : you can type to search in the box."),
           h4("3/ Explore your data through the 'Whole data inspection' tab, and/or perform desired analysis.")
         )
       ),
@@ -103,7 +105,10 @@ dashboardPage(
           p("Benjamin MARSAC ( benjamin.marsac@univ-rouen.fr )"),
           p("Komlan Dieu-Donné TOTO ( komlan-dieu-donne.toto@univ-rouen.fr )"),
           br(),
-          p("This app is the result of a group work in second year of Bioinformatics Master's Degree, 'BIMS', year 2023-2024s, Université de Rouen Normandie ( URN ).")
+          p("This app is the result of a group work in second year of Bioinformatics Master's Degree, 'BIMS', year 2023-2024s, Université de Rouen Normandie ( URN )."),
+          br(),
+          strong("Acknowledgments :"),
+          p("We thank Solène Pety and Hélène Dauchel for their guidance and advices.")
         )
       ),
       

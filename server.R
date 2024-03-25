@@ -1,10 +1,12 @@
-# Rshiny application produced by Victor BAILLEUL (Université de Rouen Normandie)
-# Last updated: 24/11/2023
+# Rshiny application created by 
+# Victor BAILLEUL 
+# Camille GODI
+# Benjamin MARSAC
+# Komlan Dieu-Donné TOTO
+# Affiliation : Université de Rouen Normandie
 
-# This application aimed to facilitate functional enrichment analysis from
+# This application facilitates functional enrichment analysis from
 # differential expression results
-
-# Contact me at: victor.bailleul@univ-rouen.fr
 
 source("global.R")
 source("./utils/inspection.R")
@@ -29,15 +31,15 @@ function(input, output, session) {
       shinyalert_wrapper(title = "Error: The uploaded file doesn't have the right extension (.csv)",
                         message = "",
                         type = "error")
-    } else if (!all(required_columns %in% colnames(data))) {
+    } else if (!all(required_columns %in% colnames(data)) | length(colnames(data)) > 6) {
       shinyalert_wrapper(title = "Error: Incorrect columns in file",
-                        message = "Expected columns : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj'",
+                        message = "Expected columns : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj' (and no other ones)",
                         type = "error")
     }
     
     shiny::validate(
       need(ext == "csv", "Incorrect file type"),
-      need(sum(!colnames(data) %in% required_columns) == 0, "Incorrect columns in file")
+      need(sum(!colnames(data) %in% required_columns) == 0, "Incorrect columns in file. Expected columns : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj'  (and no other ones)")
     )
     
     return(data)
@@ -47,14 +49,13 @@ function(input, output, session) {
   observeEvent(input$input_file, {
     reactive_data_expr_diff()
   })
-  
+  filtered_data <- reactive({filter_dt(reactive_data_expr_diff(),
+                             fc_cutoff = as.numeric(input$fc_cutoff),
+                             padj_cutoff = as.numeric(input$padj_cutoff)
+  )})
   ### Management of the preview of the filtered data table [Whole data inspection] ###
   output$data_preview_table <- DT::renderDT({
-    filtered_data <- filter_dt(reactive_data_expr_diff(),
-                      fc_cutoff = as.numeric(input$fc_cutoff),
-                      padj_cutoff = as.numeric(input$padj_cutoff)
-                      )
-    
+    filtered_data <- show_filtered_df(filtered_data())
     
     # Create Ensembl link for genes with an Ensembl ID
     filtered_data$ID <- create_Ensembl_html_link(input$select_organism, filtered_data$ID)
@@ -69,18 +70,8 @@ function(input, output, session) {
       paste("filtered-data-", Sys.Date(), ".csv", sep = "")
     },
     content = function(file) {
-      filtered_data <- filter_dt(reactive_data_expr_diff(),
-                        fc_cutoff = as.numeric(input$fc_cutoff),
-                        padj_cutoff = as.numeric(input$padj_cutoff)
-                        )
-      
-      # Create Ensembl link for genes with an Ensembl ID
-      filtered_data$Ensembl_link <- create_Ensembl_link(input$select_organism, filtered_data$ID)
-      
-      
-      
       # Write the filtered data to the specified file
-      write.csv(filtered_data, file, row.names = FALSE)
+      write.csv(show_filtered_df(filtered_data()), file, row.names = FALSE)
     }
   )
   
@@ -90,7 +81,7 @@ function(input, output, session) {
 
   output$volcano_plot <- renderPlotly( {
     if(!is.null(reactive_data_expr_diff())){
-      draw_volcano(reactive_data_expr_diff(),
+      draw_volcano(filtered_data(),
                    fc_cutoff = as.numeric(input$fc_cutoff),
                    padj_cutoff = as.numeric(input$padj_cutoff),
                    xlim = ranges_volca_plot$x,

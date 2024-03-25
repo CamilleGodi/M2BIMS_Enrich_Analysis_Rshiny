@@ -2,61 +2,66 @@ library(tidyverse)
 
 #' @docType https://yulab-smu.top/biomedical-knowledge-mining-book/enrichment-overview.html
 #' 
-#' @description
-#' converti les ID d'une base de donnée dans une autre
-#' @param results : objet results de DESeq pour les conditions voulant être testées
-#' @param metric : métrique à utiliser pour l'analyse, par défaut : valeur absolu de la statistique de test
-#' @param abs : booléan, donne si TRUE : valeur absolu, si FALSE : valeur réel
-#' @param convert : booléen, faut il convertir les ID dans les ID d'une autre base, par défaut : FALSE
-#' @param from : le nom du type d'ID de départ ("SYMBOL","ENSEMBL","ENTREZID", "UNIPROT"...)
-#' @param to : le nom du type d'ID de fin ("SYMBOL","ENSEMBL","ENTREZID", "UNIPROT"...)
-#' @param organism_db : nom de la base de donnée utilisée pour faire les échanges d'ID
-#' @return vecteur trié dans l'ordre décroissant des gènes selon la métrique voulu
-#'
-#' @example load_gsea_GO_enrichment(results(dds),organism_db = "org.Hs.eg.db")
-#'
-prepare_enrichment = function(results,
-                              metric = "stat",
-                              abs = TRUE,
-                              convert = FALSE,
-                              from,
-                              to = "ENTREZID",
-                              organism_db,
-                              universe = FALSE) {
-  results = results %>% data.frame()      # transformation en data.frame() au cas où il s'agisse d'un objet tibble ou S3
-  # retrait de toutes les valeurs n'ayant pas passé l'independent filtering et la distance de Cook
-  if ("padj" %in% colnames(results) & !universe) {
-    results = results[!is.na(results[, "padj"]),]
+#' 
+
+independent_filtering = function(results){
+  results = results %>% data.frame()   # on s'assure du type data.frame
+  if ("padj" %in% colnames(results)) {
+    results = results[!is.na(results[, "padj"]),] #on retire les données "NA" qui poseront problème par la suite
   }
-  # Si besoin, conversion d'un id vers un autre 
-  if (convert) {
-    ids = clusterProfiler::bitr(
-      rownames(results),
-      fromType = from,
-      toType = to,
-      OrgDb = organism_db
-    )
-    # on retire les doublons, lors de la conversion, certains id peuvent mener à un id unique et inversement
-    ids = ids[!duplicated(ids[c(to)]),]
-    results[,"ID"] = "None"
-    results[,"ID"] = ids[match(rownames(results),ids[, from]),to]
-  }
-  # on passe en valeur absolu ou non, intérêt pour GSEA
-  if (abs) {
-    output = setNames(abs(results[, metric]), results[,"ID"])
-  } else {
-    output = setNames(results[, metric], results[,"ID"])
-  }
-  # on retire les valeurs manquantes (qui n'ont pas de conversion)
-  output = output[!is.na(names(output))]
-  if(universe){
-    # Sert à préparer l'univers pour ORA en récupérant que les noms après conversion
-    return(names(output))
-  }
-  # retourne une liste de gene trié avec les id et la valeur métrique associées
-  return(sort(na.omit(output), decreasing = T))
+  return(results)
 }
 
+conversion_table = function(results,
+                      from,
+                      to,
+                      organism_db,
+                      convert = T){
+    if (convert) {
+      ids = clusterProfiler::bitr(
+        results[,"ID"],
+        fromType = from,
+        toType = to,
+        OrgDb = organism_db
+      )
+    }
+  return(ids)
+}
+
+
+convert_results_ids = function(results,
+                               ids,
+                               convert = TRUE){
+  # on retire les doublons, lors de la conversion, certains id peuvent mener à un id unique et inversement
+  if(convert){
+  from = colnames(ids)[1]
+  to = colnames(ids)[2]
+  ids = ids[!duplicated(ids[c(to)]),]
+  results[,"new_ID"] = ids[match(results[,"ID"],ids[, from]),to]
+  } else {
+    results[,"new_ID"] = results[,"ID"]
+  }
+  results[!is.na(results[,"new_ID"]),]  %>% return()
+}
+  
+#### définir que diff_expressed n'existe pas
+prepare_ora = function(results){
+  results[results[,"diff_expressed"] != "NO_DE","new_ID"] %>% return()
+}
+
+prepare_gsea = function(results,
+                        metric = "log2FC",
+                        abs = FALSE){
+  if(abs){
+    setNames(abs(results[,metric]),results[,"new_ID"]) %>% sort(decreasing = TRUE) %>% return()
+  } else {
+    setNames(results[,metric],results[,"new_ID"]) %>% sort(decreasing = TRUE) %>% return() 
+    }
+}
+
+prepare_universe = function(results){
+  results[,"new_ID"] %>% return()
+}
 
 #' @description
 #' Launch enrichment analysis on GO terms with GSEA
@@ -100,7 +105,7 @@ load_gsea_GO_enrichment = function(gene_list = list(),
       keyType = key_type,
       minGSSize = min_GS_size,
       maxGSSize = max_GS_size,
-      pvalueCutoff = pvalue_cutoff,
+      pvalueCutoff = 1,
       verbose = verbose,
       OrgDb = organism_db,
       nPermSimple = n_perm_simple,
@@ -117,7 +122,7 @@ load_gsea_GO_enrichment = function(gene_list = list(),
     setClass("data1", representation(method = "character",result = "data.frame"))
     output =new("data1", method = "GSEA",result = data.frame(matrix(nrow = 0, ncol = 3)))
   }
-  return(output)
+  output %>% return()
 }
 
 #' @description
@@ -151,9 +156,9 @@ load_gsea_kegg_enrichment = function(gene_list = list(),
     output <- clusterProfiler::gseKEGG(
       geneList = gene_list,
       organism = organism_db,
-      minGSSize = minGS_size,
-      maxGSSize = maxGS_size,
-      pvalueCutoff = pvalue_cutoff,
+      minGSSize = min_GS_size,
+      maxGSSize = max_GS_size,
+      pvalueCutoff = 1,
       pAdjustMethod = p_adjust_method,
       keyType = key_type
     )
@@ -169,6 +174,7 @@ load_gsea_kegg_enrichment = function(gene_list = list(),
     setClass("data1", representation(method = "character",result = "data.frame"))
     output =new("data1", method = "GSEA",result = data.frame(matrix(nrow = 0, ncol = 3)))
   }
+  output %>% return()
 }
 
 #'
@@ -189,17 +195,14 @@ load_gsea_kegg_enrichment = function(gene_list = list(),
 #'
 #' @example load_go_over_representation(genes_DE,"org.Hs.eg.db")
 
-load_go_over_representation = function(gene_list = list(),
+load_ora_go = function(gene_list = list(),
                                        universe = NA,
                                        organism_db = NA,
                                        key_type = c("ENTREZID", "ENSEMBL", "SYMBOL"),
-                                       readable = FALSE,
                                        ont = c("MF", "CC", "BP"),
                                        p_adjust_method = "BH",
                                        min_GS_size = 10,
-                                       max_GS_size = 500,
-                                       pvalue_cutoff = 0.05,
-                                       qvalue_cutoff = 0.10) {
+                                       max_GS_size = 500) {
   if(length(gene_list) > 0){
     if (length(key_type) > 1) {
       key_type = key_type[1]
@@ -212,13 +215,12 @@ load_go_over_representation = function(gene_list = list(),
       universe = universe,
       OrgDb = organism_db,
       keyType = key_type,
-      readable = readable,
       ont = ont,
       minGSSize = min_GS_size,
       maxGSSize = max_GS_size,
       pAdjustMethod = p_adjust_method,
-      pvalueCutoff = pvalue_cutoff,
-      qvalueCutoff = qvalue_cutoff
+      pvalueCutoff = 1,
+      qvalueCutoff = 1
     )
     if(!is.null(output)){
       slot(output, "method") = "ORA"
@@ -233,7 +235,7 @@ load_go_over_representation = function(gene_list = list(),
     setClass("data1", representation(method = "character",result = "data.frame"))
     output =new("data1", method = "ORA",result = data.frame(matrix(nrow = 0, ncol = 3)))
   }
-  return(output)
+  output %>% return()
 }
 
 #' Analyse la sur-représentation des GO terms dans le jeu de gènes différentiellement exprimés
@@ -250,15 +252,13 @@ load_go_over_representation = function(gene_list = list(),
 #'
 #' @example loag_kegg_over_representation(gene_list,"org.Hs.eg.db")
 #'
-loag_kegg_over_representation = function(gene_list = list(),
+load_ora_kegg = function(gene_list = list(),
                                          organism_db = character(),
                                          key_type = c("ncbi-geneid", "kegg", "ncbi-proteinid", "uniprot"),
-                                         pvalue_cutoff = 0.05,
                                          p_adjust_method = "BH",
                                          universe = NA,
                                          min_GS_size = 10,
-                                         max_GS_size = 500,
-                                         qvalue_cutoff = 0.2) {
+                                         max_GS_size = 500) {
   if(length(gene_list) > 0){
     if (length(key_type) > 1) {
       key_type = key_type[1]
@@ -267,13 +267,12 @@ loag_kegg_over_representation = function(gene_list = list(),
       gene = gene_list,
       organism = organism_db,
       keyType = key_type,
-      pvalueCutoff = pvalue_cutoff,
+      pvalueCutoff = 1,
       pAdjustMethod = p_adjust_method,
       universe = universe,
       minGSSize = min_GS_size,
       maxGSSize = max_GS_size,
-      qvalueCutoff = qvalue_cutoff,
-      use_internal_data = use_internal_data
+      qvalueCutoff = 1
     )
     if(!is.null(output)){
       slot(output, "method") = "ORA"
@@ -288,8 +287,18 @@ loag_kegg_over_representation = function(gene_list = list(),
     setClass("data1", representation(method = "character",result = "data.frame"))
     output =new("data1", method = "ORA",result = data.frame(matrix(nrow = 0, ncol = 3)))
   }
-  return(output)
+  output %>% return()
 }
+
+filter_table_enrich_results = function(enrich_results,
+                                p_value_cutoff = 0.05,
+                                p_adj_cutoff = 0.05,
+                                q_value_cutoff = 0.05){
+  new_results = slot(enrich_results,"result")
+  slot(enrich_results,"result") = new_results[(new_results[,"pvalue"] < p_value_cutoff) & (new_results[,"p.adjust"] < p_adj_cutoff) & (new_results[,"qvalue"] < q_value_cutoff), ]
+  enrich_results %>% return()
+}
+
 
 #' @description
 #' Convertir un vecteur de gènes d'une base de données dans une autre
@@ -338,7 +347,7 @@ enrich_pagination = function(get_enrich,
   } else if (slot(get_enrich, "method") == "GSEA") {
     res = slot(get_enrich, "result")[, c("ID", "Description", "setSize", "enrichmentScore")]
   }
-  return(res)
+  res %>% return()
 }
 
 
@@ -370,8 +379,8 @@ draw_dotplot = function(ora_df,
   if (slot(ora_df, "method") != "ORA") {
     return("error")
   } else {
-    #slot(ora_df,"result") = name_cleaver(slot(ora_df,"result"),"Description",limit_of_letter = 60)
-    ora_df = slot(ora_df,"result")[slot(ora_df,"result")[,"p.adjust"] < 0.05,]
+    ora_df = slot(ora_df,"result")
+    print(ora_df)
     
     if(order %in% c("p.adjust","pvalue","qvalue")){
       ora_df = ora_df[order(ora_df[,order] ),]
@@ -424,7 +433,7 @@ draw_emapplot = function(enrich,
     cex.params = list(category_label = category_label)
   ) +
     ggplot2::ggtitle(title)
-  return(fig)
+  fig %>% return()
 }
 
 #' Permet de désiner un arbre en calculant les distances de cluster entre les différents groupes de fonctionnalités, selon le nombre de gène en commun
@@ -471,7 +480,7 @@ draw_treeplot = function(enrich,
                                   low = gradient_col[1],
                                   high = gradient_col[2]) +
     ggplot2::ggtitle(title)
-  return(fig)
+  fig %>% return()
 }
 
 #' @param enrich resultats d'enrichissement (gsea ou enrichment) de GO ou KEGG
@@ -507,7 +516,6 @@ draw_cnetplot = function(enrich,
   } else {
     foldChange = NULL
   }
-  slot(enrich,"result") = name_cleaver(slot(enrich,"result"),"Description",limit_of_letter = 40)
   fig = enrichplot::cnetplot(
     enrich,
     showCategory = showCategory,
@@ -527,7 +535,7 @@ draw_cnetplot = function(enrich,
                                      low = "darkgreen",
                                      high = "darkred")
   }
-  return(fig)
+  fig %>% return()
 }
 
 draw_ridgeplot = function(gse,
@@ -545,5 +553,9 @@ draw_ridgeplot = function(gse,
  
 error_message = function(name,
                          alpha_enrichissement){
-  return(paste("\n\nAucune ",name, " enrichie n'a été trouvé de façon significative au seuil alpha", alpha_enrichissement, "pour permettre l'affichage de ce graphique\n\n"))
+  paste("\n\nAucune ",
+        name,
+        "enrichie n'a été trouvé de façon significative au seuil alpha",
+        alpha_enrichissement,
+        "pour permettre l'affichage de ce graphique\n\n") %>% return()
 }
