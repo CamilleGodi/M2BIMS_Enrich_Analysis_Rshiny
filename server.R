@@ -31,7 +31,7 @@ function(input, output, session) {
       shinyalert_wrapper(title = "Error: The uploaded file doesn't have the right extension (.csv)",
                         message = "",
                         type = "error")
-    } else if (!all(required_columns %in% colnames(data))) {
+    } else if (!all(required_columns %in% colnames(data)) | length(colnames(data)) > 6) {
       shinyalert_wrapper(title = "Error: Incorrect columns in file",
                         message = "Expected columns : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj'",
                         type = "error")
@@ -39,7 +39,7 @@ function(input, output, session) {
     
     shiny::validate(
       need(ext == "csv", "Incorrect file type"),
-      need(sum(!colnames(data) %in% required_columns) == 0, "Incorrect columns in file")
+      need(sum(!colnames(data) %in% required_columns) == 0, "Incorrect columns in file. Expected columns : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj'")
     )
     
     return(data)
