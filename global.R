@@ -3,7 +3,7 @@ load_libs <- function(...) {
   libs <- unlist(list(...))
   req  <- unlist(lapply(libs, require, character.only = TRUE))
   need <- libs[req == FALSE]
-  if(length(need)>0){ 
+  if(length(need)>0) { 
     install.packages(need)
     lapply(need, require, character.only = TRUE)
   }
@@ -14,17 +14,19 @@ load_libs("BiocManager", "DT", "shiny", "shinydashboard", "shinyalert", "plotly"
 
 ################################################################################
 
+
 # Download organisms BioCondutoR annotation databases that aren't installed yet. Adapted from source : https://stackoverflow.com/a/44660688
 load_libs_biocmanager <- function(...) {
   libs <- unlist(list(...))
   req  <- unlist(lapply(libs, require, character.only = TRUE))
   need <- libs[req == FALSE]
-  if(length(need)>0){ 
+  if(length(need)>0) { 
     BiocManager::install(need)
     lapply(need, require, character.only = TRUE)
   }
 }
 load_libs_biocmanager("clusterProfiler", "org.At.tair.db", "org.EcK12.eg.db", "org.Hs.eg.db", "org.Mm.eg.db", "org.Sc.sgd.db")
+
 
 ################################################################################
 
@@ -44,6 +46,37 @@ shinyalert_wrapper <- function(title, message = "", type) {
     animation = TRUE
   )
 }
+
+
+################################################################################
+
+
+### Organism names/codes conversion table
+## Examples for Mus musculus :
+# Get kegg name     : organism_conversion_table["Mus musculus", "kegg_name"]
+# Get annotation db : organism_conversion_table["Mus musculus", "annotation_db"]
+
+add_organism_in_conversion_table <- function(conversion_table, species_name, annotation_db, kegg_name) {
+  conversion_table <- rbind(conversion_table, c(annotation_db, kegg_name))
+  rownames(conversion_table)[nrow(conversion_table)] <- species_name       # Updates last row's name
+
+  return(conversion_table)
+}
+
+
+# Init conversion table with human
+organism_conversion_table <- data.frame(annotation_db = "org.Hs.eg.db", kegg_name = "hsa")
+rownames(organism_conversion_table) <- "Homo sapiens"
+
+# Add organisms
+organism_conversion_table <- add_organism_in_conversion_table(organism_conversion_table, "Arabidopsis thaliana", "org.At.tair.db", "ath")
+organism_conversion_table <- add_organism_in_conversion_table(organism_conversion_table, "Escherichia coli (K12)", "org.EcK12.eg.db", "ecoc")
+organism_conversion_table <- add_organism_in_conversion_table(organism_conversion_table, "Mus musculus", "org.Mm.eg.db", "mmu")
+organism_conversion_table <- add_organism_in_conversion_table(organism_conversion_table, "Saccharomyces cerevisiae", "org.Sc.sgd.db", "sce")
+
+
+
+################################################################################
 
 
 ### SCRAPPED : Ensembl REST API
@@ -67,5 +100,6 @@ get_ensembl_organisms_list <- function() {
   
   return(ensembl_organisms)
 }
+
 
 ################################################################################
