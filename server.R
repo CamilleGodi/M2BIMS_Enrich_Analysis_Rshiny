@@ -33,13 +33,13 @@ function(input, output, session) {
                         type = "error")
     } else if (!all(required_columns %in% colnames(data)) | length(colnames(data)) > 6) {
       shinyalert_wrapper(title = "Error: Incorrect columns in file",
-                        message = "Expected columns : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj'",
+                        message = "Expected columns : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj' (and no other ones)",
                         type = "error")
     }
     
     shiny::validate(
       need(ext == "csv", "Incorrect file type"),
-      need(sum(!colnames(data) %in% required_columns) == 0, "Incorrect columns in file. Expected columns : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj'")
+      need(sum(!colnames(data) %in% required_columns) == 0, "Incorrect columns in file. Expected columns : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj'  (and no other ones)")
     )
     
     return(data)

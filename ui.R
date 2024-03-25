@@ -106,7 +106,10 @@ dashboardPage(
           p("Benjamin MARSAC ( benjamin.marsac@univ-rouen.fr )"),
           p("Komlan Dieu-Donné TOTO ( komlan-dieu-donne.toto@univ-rouen.fr )"),
           br(),
-          p("This app is the result of a group work in second year of Bioinformatics Master's Degree, 'BIMS', year 2023-2024s, Université de Rouen Normandie ( URN ).")
+          p("This app is the result of a group work in second year of Bioinformatics Master's Degree, 'BIMS', year 2023-2024s, Université de Rouen Normandie ( URN )."),
+          br(),
+          strong("Acknowledgments :"),
+          p("We thank Solène Pety and Hélène Dauchel for their guidance and advices.")
         )
       ),
       
