@@ -1,7 +1,7 @@
 # Download libraries that aren't installed, load them. Source : https://stackoverflow.com/a/44660688
-load_libs <-function(...) {
+load_libs <- function(...) {
   libs <- unlist(list(...))
-  req  <- unlist(lapply(libs,require, character.only = TRUE))
+  req  <- unlist(lapply(libs, require, character.only = TRUE))
   need <- libs[req == FALSE]
   if(length(need)>0){ 
     install.packages(need)
@@ -9,8 +9,22 @@ load_libs <-function(...) {
   }
 }
 
-load_libs("shiny", "shinydashboard", "shinyalert", "plotly", "DT", "tidyverse")
-load_libs("httr", "jsonlite", "xml2") # for Ensembl REST API
+load_libs("BiocManager", "DT", "shiny", "shinydashboard", "shinyalert", "plotly", "tidyverse")
+
+
+################################################################################
+
+# Download organisms BioCondutoR annotation databases that aren't installed yet. Adapted from source : https://stackoverflow.com/a/44660688
+load_libs_biocmanager <- function(...) {
+  libs <- unlist(list(...))
+  req  <- unlist(lapply(libs, require, character.only = TRUE))
+  need <- libs[req == FALSE]
+  if(length(need)>0){ 
+    BiocManager::install(need)
+    lapply(need, require, character.only = TRUE)
+  }
+}
+load_libs_biocmanager("clusterProfiler", "org.At.tair.db", "org.EcK12.eg.db", "org.Hs.eg.db", "org.Mm.eg.db", "org.Sc.sgd.db")
 
 ################################################################################
 
@@ -32,7 +46,10 @@ shinyalert_wrapper <- function(title, message = "", type) {
 }
 
 
-### Ensembl REST API
+### SCRAPPED : Ensembl REST API
+
+# load_libs("httr", "jsonlite", "xml2") # for Ensembl REST API
+
 get_ensembl_organisms_list <- function() {
   server <- "https://rest.ensembl.org"
   ext <- "/info/species?"

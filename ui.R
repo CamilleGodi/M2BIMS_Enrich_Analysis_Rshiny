@@ -34,7 +34,7 @@ dashboardPage(
       selectInput(
         "select_organism",
         "Select organism name:",
-        get_ensembl_organisms_list(),
+        c("Arabidopsis thaliana", "Escherichia coli (K12)", "Homo sapiens", "Mus musculus", "Saccharomyces cerevisiae"),
         selected = NULL,
         multiple = FALSE,
         selectize = TRUE,
