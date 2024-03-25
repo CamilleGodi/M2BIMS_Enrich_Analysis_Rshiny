@@ -7,7 +7,6 @@
 # Contact me at: victor.bailleul@univ-rouen.fr
 
 source("global.R")
-
 ################################################################################
 ################################################################################
 ################################################################################
@@ -15,7 +14,7 @@ dashboardPage(
   skin = "purple",
   
   ### Header ###
-  dashboardHeader(title = "VictoRshiny"),
+  dashboardHeader(title = "Rshiny"),
   
   ### Sidebar ###
   dashboardSidebar( 
@@ -78,7 +77,34 @@ dashboardPage(
       ### Home ###
       tabItem(
         tabName = "home_tab",
-        h2("Home", style = "text-align: center")
+        h2("Home", style = "text-align: center"),
+        box(
+          title = "Tutorial",
+          status = "warning", # Cosmetic purpose only : orange box
+          solidHeader = TRUE, 
+          width = 12,
+          h4("1/ Select a CSV (or CSV2) file. It must at least have the following columns : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj'."),
+          h4("2/ Select the organism from which the data originates."),
+          h4("3/ Explore your data through the 'Whole data inspection' tab, and/or perform desired analysis.")
+        )
+      ),
+      
+      tabItem(
+        tabName = "about_tab",
+        h2("About the project", style = "text-align: center"),
+        box(
+          width = 12,
+          strong("Goal :"),
+          p("The goal of this application is to facilitates functional enrichment analysis from differential expression results, and allow for quick and interactive visualization."),
+          br(),
+          strong("Authors :"),
+          p("Victor BAILLEUL ( victor.bailleul@univ-rouen.fr )"),
+          p("Camille GODI ( camille.godi@univ-rouen.fr )"),
+          p("Benjamin MARSAC ( benjamin.marsac@univ-rouen.fr )"),
+          p("Komlan Dieu-Donné TOTO ( komlan-dieu-donne.toto@univ-rouen.fr )"),
+          br(),
+          p("This app is the result of a group work in second year of Bioinformatics Master's Degree, 'BIMS', year 2023-2024s, Université de Rouen Normandie ( URN ).")
+        )
       ),
       
       ##########################################################################
@@ -94,7 +120,7 @@ dashboardPage(
             solidHeader = TRUE, 
             collapsible = FALSE,
             plotlyOutput("volcano_plot", height = "400px"),
-            width = 8
+            width = 6
           ),
           # Sliders
           box(
@@ -167,28 +193,33 @@ dashboardPage(
           column(
             width = 8,
             box(
+              title = "DEG profile Selection",
               status = "primary",
               solidHeader = TRUE,
               width = 12,
               fluidRow(
                 column(
                   width = 12,
-                  radioButtons("DEGSelectionORA", "Select the correct DEG processing:", 
-                               choices = c("Over expressed DEG only" = "OverDEGORA", "Under expressed DEG only" = "UnderDEGORA", "Both" = "BothDEG"))))))),
+                  radioButtons("DEGSelection", "Select the correct DEG processing:", 
+                               choices = c("Over expressed DEG only" = "OverDEG", "Under expressed DEG only" = "UnderDEG", "Both" = "BothDEG"))))))),
         
-        # Adjusted P-Value Cutoff
+        # Parameters
         fluidRow(
           column(
             width = 8,
             box(
-              title = "Adjusted P-Value Cutoff",
+              title = "Parameters",
               status = "primary",
               solidHeader = TRUE,
               width = 12,
               fluidRow(
                 column(
                   width = 12,
-                  sliderInput("adjustedPValueCutoffORA", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05))))))),
+                    sliderInput("PValueORA", "Select a P-Value:", min = 0, max = 1, value = 0.05)),
+                column(
+                  width = 12,
+                    sliderInput("QValueORA", "Select a Q-Value:", min = 0, max = 1, value = 0.05))))))),
+      
       ### GO Term Enrichment : GSEA ###
       tabItem(
         tabName = "GO_term_GSEA_subtab",
@@ -238,18 +269,38 @@ dashboardPage(
                           width = 12,
                           sliderInput("levelSliderGSEA", "Select a GO level:", min = 1, max = 7, value = 1))))))))),
           
-          # Adjusted P-Value Cutoff
+          # DEG Selection
           column(
             width = 8,
             box(
-              title = "Adjusted P-Value Cutoff",
+              title = "DEG profile Selection",
               status = "primary",
               solidHeader = TRUE,
               width = 12,
               fluidRow(
                 column(
                   width = 12,
-                  sliderInput("adjustedPValueCutoffGSEA", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05))))))),
+                  radioButtons("DEGSelection", "Select the correct DEG processing:", 
+                               choices = c("Over expressed DEG only" = "OverDEG", "Under expressed DEG only" = "UnderDEG", "Both" = "BothDEG")))))),
+          
+        # Parameters
+          column(
+            width = 8,
+            box(
+              title = "Parameters",
+              status = "primary",
+              solidHeader = TRUE,
+              width = 12,
+              fluidRow(
+                column(
+                  width = 12,
+                  sliderInput("PValueCutoffGSEA", "Select a P-Value:", min = 0, max = 1, value = 0.05)),
+                column(
+                  width = 12,
+                  sliderInput("QValueGSEA", "Select a Q-Value:", min = 0, max = 1, value = 0.05)),
+                column(
+                  width = 12,
+                  checkboxInput("metricAbsoluteValGSEA", "Absolute value", value = TRUE))))))),
       
       ### Pathway Enrichment : ORA ###
       tabItem(
