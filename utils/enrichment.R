@@ -70,31 +70,33 @@ convert_results_ids = function(results,
   
   if (ncol(ids) > 1) {
     ids = remove_duplicate(ids)
-    results[, "new_ID"] = ids[match(results[, "ID"], ids[, 1]), "ENTREZID"]
+    results[, "ENTREZID"] = ids[match(results[, "ID"], ids[, 1]), "ENTREZID"]
   } else {
-    results[, "new_ID"] = results[, "ID"]
+    results[, "ENTREZID"] = results[, "ID"]
   }
-  results[!is.na(results[, "new_ID"]), ]  %>% return()
+  results[!is.na(results[, "ENTREZID"]), ]  %>% return()
 }
 
 #### définir que diff_expressed n'existe pas
 prepare_ora = function(results) {
-  results[results[, "diff_expressed"] != "NO_DE", "new_ID"] %>% return()
+  results[results[, "diff_expressed"] != "NO_DE", "ENTREZID"] %>% return()
 }
 
 prepare_gsea = function(results,
                         metric = "log2FC",
                         abs = FALSE) {
   if (abs) {
-    setNames(abs(results[, metric]), results[, "new_ID"]) %>% sort(decreasing = TRUE) %>% return()
+    setNames(abs(results[, metric]), results[, "ENTREZID"]) %>% sort(decreasing = TRUE) %>% return()
   } else {
-    setNames(results[, metric], results[, "new_ID"]) %>% sort(decreasing = TRUE) %>% return()
+    setNames(results[, metric], results[, "ENTREZID"]) %>% sort(decreasing = TRUE) %>% return()
   }
 }
 
-prepare_universe = function(initiale_data) {
+prepare_universe = function(initiale_data,
+                            organism_db,
+                            from) {
   initiale_data[, "ID"] %>%
-    conversion_table(from = "ENSEMBL", organism_db = "org.Mm.eg.db") %>%
+    conversion_table(from = from, organism_db = organism_db) %>%
     remove_duplicate() %>%
     dplyr::select(ENTREZID) %>%
     unlist() %>%
