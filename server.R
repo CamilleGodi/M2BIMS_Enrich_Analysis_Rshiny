@@ -97,6 +97,36 @@ function(input, output, session) {
                    lines = TRUE)
     }
   })
+  
+  ### ORA GO results ###
+  results_ora_go <- reactive({ 
+    if(!is.null(filtered_data())){
+      p_value_cutoff_tmp <- 0.01
+      p_adj_cutoff_tmp   <- 0.05
+      q_value_cutoff_tmp <- 0.05
+      ontology_tmp <- "MF"
+      
+      res_ora_go <- do_ora_go_terms(
+        filtered_data(),
+        organism_library_go(),
+        ontology_tmp,
+        p_value_cutoff_tmp,
+        p_adj_cutoff_tmp,
+        q_value_cutoff_tmp
+      )
+      res_tmp %>% enrich_pagination(alpha_cutoff = 0.05)
+      
+      return(res_ora_go)
+    }
+  })
+
+  output$results_ora_go_preview_table <- DT::renderDT({
+    preview_table <- results_ora_go() %>% enrich_pagination(alpha_cutoff = 0.05)
+    # Preview of the filtered data table ( "escape = FALSE" allows HTML formatting )
+    DT::datatable(preview_table, options = list(scrollX = TRUE, pageLength = 25), escape = FALSE)
+  })
+  
+  ### TBA : output all the plots !!
 }
 
 
