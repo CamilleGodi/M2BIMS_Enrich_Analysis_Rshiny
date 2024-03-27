@@ -228,7 +228,11 @@ dashboardPage(
                     sliderInput("QValueORA", "Select a Q-Value:", min = 0, max = 1, value = 0.05)),
                 column(
                   width = 12,
-                  sliderInput("adjustedPValueCutoffORA", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05))))))))),
+                  sliderInput("adjustedPValueCutoffORA", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05)))))))),
+    
+    fluidRow(print("TEMPORARY"),
+      DTOutput("results_ora_go_preview_table"))
+    ),
       
       ### GO Term Enrichment : GSEA ###
       tabItem(
