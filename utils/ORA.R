@@ -20,7 +20,7 @@ source("./utils/enrichment.R")
 do_ora_go_terms <- function(reactive_annotated_data, organism_db, ontology, p_value_cutoff, p_adj_cutoff, q_value_cutoff) {
   
   ora_ids <- prepare_ora(table_filtered_new_ids)
-  universe <- prepare_universe(reactive_annotated_data)
+  universe <- prepare_universe(reactive_annotated_data, organism_db, from = "ENSEMBL")
   
   ora_go <- load_ora_go(ora_ids, universe, organism_db)
   ora_go_after_filter <- filter_table_enrich_results(ora_go, 
