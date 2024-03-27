@@ -29,12 +29,12 @@ function(input, output, session) {
     
     if (ext != "csv") {
       shinyalert_wrapper(title = "Error: The uploaded file doesn't have the right extension (.csv)",
-                        message = "",
-                        type = "error")
+                         message = "",
+                         type = "error")
     } else if (!all(required_columns %in% colnames(data)) | length(colnames(data)) > 6) {
       shinyalert_wrapper(title = "Error: Incorrect columns in file",
-                        message = "Expected columns : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj' (and no other ones)",
-                        type = "error")
+                         message = "Expected columns : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj' (and no other ones)",
+                         type = "error")
     }
     
     shiny::validate(
@@ -51,11 +51,11 @@ function(input, output, session) {
   })
   
   organism_library_go <- reactive({organism_conversion_table[input$select_organism, "annotation_db"]})
-
+  
   reactive_data_new_ids <- reactive({prepare_pipe(reactive_data_expr_diff(),
                                                   organism_db = organism_library_go(),
                                                   from = "ENSEMBL")})
-
+  
   filtered_data <- reactive({filter_dt(reactive_data_new_ids(),
                                        fc_cutoff = as.numeric(input$fc_cutoff),
                                        padj_cutoff = as.numeric(input$padj_cutoff))
@@ -86,7 +86,7 @@ function(input, output, session) {
   
   ### Management of the volcano plot [Whole data inspection] ###
   ranges_volca_plot <- reactiveValues(x = NULL, y = NULL)
-
+  
   output$volcano_plot <- renderPlotly( {
     if(!is.null(reactive_data_expr_diff())){
       draw_volcano(filtered_data(),
@@ -101,6 +101,7 @@ function(input, output, session) {
   ### ORA GO results ###
   results_ora_go <- reactive({ 
     if(!is.null(filtered_data())){
+      #TODO: make variables reactive (from input)
       p_value_cutoff_tmp <- 0.01
       p_adj_cutoff_tmp   <- 0.05
       q_value_cutoff_tmp <- 0.05
@@ -114,19 +115,18 @@ function(input, output, session) {
         p_adj_cutoff_tmp,
         q_value_cutoff_tmp
       )
-      res_tmp %>% enrich_pagination(alpha_cutoff = 0.05)
       
       return(res_ora_go)
     }
   })
-
+  
   output$results_ora_go_preview_table <- DT::renderDT({
     preview_table <- results_ora_go() %>% enrich_pagination(alpha_cutoff = 0.05)
     # Preview of the filtered data table ( "escape = FALSE" allows HTML formatting )
     DT::datatable(preview_table, options = list(scrollX = TRUE, pageLength = 25), escape = FALSE)
   })
   
-  ### TBA : output all the plots !!
+  ####TODO:  output all the plots !!
 }
 
 
