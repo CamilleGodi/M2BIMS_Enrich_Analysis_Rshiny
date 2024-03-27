@@ -17,7 +17,6 @@ source("./utils/ORA.R")
 ################################################################################
 
 function(input, output, session) {
-  
   ### Storage of the .csv input file date in a "reactive" object (if the .csv is valid) ###
   reactive_data_expr_diff <- reactive({
     req(input$input_file)
