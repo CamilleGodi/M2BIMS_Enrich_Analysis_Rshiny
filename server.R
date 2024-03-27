@@ -52,11 +52,11 @@ function(input, output, session) {
   
   organism_library_go <- reactive({organism_conversion_table[input$select_organism, "annotation_db"]})
 
-  filtered_data_new_ids <- reactive({prepare_pipe(reactive_data_expr_diff(),
+  reactive_data_new_ids <- reactive({prepare_pipe(reactive_data_expr_diff(),
                                                   organism_db = organism_library_go(),
                                                   from = "ENSEMBL")})
 
-  filtered_data <- reactive({filter_dt(filtered_data_new_ids(),
+  filtered_data <- reactive({filter_dt(reactive_data_new_ids(),
                                        fc_cutoff = as.numeric(input$fc_cutoff),
                                        padj_cutoff = as.numeric(input$padj_cutoff))
   })
