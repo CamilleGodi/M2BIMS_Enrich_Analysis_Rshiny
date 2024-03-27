@@ -49,10 +49,16 @@ function(input, output, session) {
   observeEvent(input$input_file, {
     reactive_data_expr_diff()
   })
-  filtered_data <- reactive({filter_dt(reactive_data_expr_diff(),
-                             fc_cutoff = as.numeric(input$fc_cutoff),
-                             padj_cutoff = as.numeric(input$padj_cutoff)
-  )})
+  
+  organism_library_go <- organism_conversion_table[input$select_organism,, "annotation_db"]
+  
+  filtered_data <- reactive({prepare_pipe(filter_dt(reactive_data_expr_diff(),
+                                                   fc_cutoff = as.numeric(input$fc_cutoff),
+                                                   padj_cutoff = as.numeric(input$padj_cutoff)),
+                                         organism_db = organism_library_go,
+                                         "ENSEMBL"
+                                         )
+  })
   ### Management of the preview of the filtered data table [Whole data inspection] ###
   output$data_preview_table <- DT::renderDT({
     filtered_data <- show_filtered_df(filtered_data())
