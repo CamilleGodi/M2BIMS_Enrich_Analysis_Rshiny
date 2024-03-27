@@ -261,7 +261,7 @@ dashboardPage(
     solidHeader = TRUE,
     width = 12,  
       column(
-            width = 8,
+            width = 12,
               fluidRow(
                 column(
                   width = 12,

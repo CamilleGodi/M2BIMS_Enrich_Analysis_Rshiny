@@ -1,3 +1,4 @@
+source("./utils/global.R")
 source("./utils/enrichment.R")
 
 ################ ORA - GO-terms ################################################
@@ -40,7 +41,7 @@ table_filtered_tmp <-
   read.csv("./Example_files/filtered_data.csv", sep = ",")
 
 # TMP : ext variables -> replace with the reactive variables
-organism_library_tmp <- "org.Mm.eg.db"
+organism_library_go_tmp <- organism_conversion_table["Mus musculus", "annotation_db"]
 p_value_cutoff_tmp <- 0.01
 p_adj_cutoff_tmp   <- 0.05
 q_value_cutoff_tmp <- 0.05
@@ -48,7 +49,7 @@ ontology_tmp <- c("MF", "CC")
 
 res_tmp <- do_ora_go_terms(
     table_filtered_tmp,
-    organism_library_tmp,
+    organism_library_go_tmp,
     ontology_tmp,
     p_value_cutoff_tmp,
     p_adj_cutoff_tmp,
