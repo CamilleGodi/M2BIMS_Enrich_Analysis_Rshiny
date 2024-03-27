@@ -8,7 +8,7 @@
 # This application facilitates functional enrichment analysis from
 # differential expression results
 
-source("global.R")
+source("./utils/global.R")
 ################################################################################
 ################################################################################
 ################################################################################
