@@ -389,7 +389,7 @@ draw_emapplot = function(enrich,
                          category_label = 0.7) {
   fig = enrichplot::emapplot(
     enrichplot::pairwise_termsim(enrich),
-    showCategory = showCategory,
+    showCategory = show_category,
     cex.params = list(category_label = category_label)
   ) +
     ggplot2::ggtitle(title)
@@ -455,7 +455,7 @@ draw_treeplot = function(enrich,
 #' @param size le nom de la légende des points
 #' @param category_color couleurs des points des catégories
 #'
-#' @example > draw_cnetplot(gse_bp,category_label = 0.6,results = res_t114a_wt,gene_list = gene_list, category_color = "red", node_label = "none")
+#' @example > draw_cnetplot(gse_bp,category_label = 0.6,gene_list = gene_list, category_color = "red", node_label = "none")
 draw_cnetplot = function(enrich,
                          gene_list = NULL,
                          metrique = "stat",
