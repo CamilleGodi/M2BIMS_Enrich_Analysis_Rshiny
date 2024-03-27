@@ -19,20 +19,20 @@ independent_filtering = function(results_from_de_analysis) {
 #' @description
 #'
 #' @param results_without_na data.frame - results of differential analysis without NA
-#' @param from character - id known in the table to be converted, can be EMSEMBL | SYMBOL | ENTREZ_ID
-#' @param to character - type of id we want as output, can be EMSEMBL | SYMBOL | ENTREZ_ID
+#' @param from character - id known in the table to be converted, can be EMSEMBL | SYMBOL | ENTREZID
+#' @param to character - type of id we want as output, can be EMSEMBL | SYMBOL | ENTREZID
 #' @param organism_db character - organism in annotation_dbi, need for convertion, exemple : "Org.Mm.eg.db"
 #'
 conversion_table = function(vector_of_ids,
                             from,
                             organism_db) {
-  if (from == "ENTREZ_ID") {
+  if (from == "ENTREZID") {
     return(data.frame(vector_of_ids))
   } else{
     clusterProfiler::bitr(
       vector_of_ids,
       fromType = from,
-      toType = "ENTREZ_ID",
+      toType = "ENTREZID",
       OrgDb = organism_db
     ) %>% return()
   }
@@ -40,10 +40,10 @@ conversion_table = function(vector_of_ids,
 
 remove_duplicate = function(ids) {
   if (ncol(ids) > 1) {
-    ids = ids[!duplicated(ids["ENTREZ_ID"]), ]
+    ids = ids[!duplicated(ids["ENTREZID"]), ]
     return(ids)
   }
-  colnames(ids) = "ENTREZ_ID"
+  colnames(ids) = "ENTREZID"
   return(ids)
 }
 
@@ -51,7 +51,7 @@ remove_duplicate = function(ids) {
 #' 
 #' @param reactive_annotated_data data.frame - data.frame from Rshiny reactive filter
 #' @param organism_db character - character of annotationDbi available database
-#' @param from character - ID use as entry, might be ENTREZ_ID|ENSEMBL|SYMBOL
+#' @param from character - ID use as entry, might be ENTREZID|ENSEMBL|SYMBOL
 #' 
 prepare_pipe <- function(reactive_annotated_data,
                          organism_db,
@@ -70,25 +70,25 @@ convert_results_ids = function(results,
   
   if (ncol(ids) > 1) {
     ids = remove_duplicate(ids)
-    results[, "ENTREZ_ID"] = ids[match(results[, "ID"], ids[, 1]), "ENTREZ_ID"]
+    results[, "ENTREZID"] = ids[match(results[, "ID"], ids[, 1]), "ENTREZID"]
   } else {
-    results[, "ENTREZ_ID"] = results[, "ID"]
+    results[, "ENTREZID"] = results[, "ID"]
   }
-  results[!is.na(results[, "ENTREZ_ID"]), ]  %>% return()
+  results[!is.na(results[, "ENTREZID"]), ]  %>% return()
 }
 
 #### définir que diff_expressed n'existe pas
 prepare_ora = function(results) {
-  results[results[, "diff_expressed"] != "NO_DE", "ENTREZ_ID"] %>% return()
+  results[results[, "diff_expressed"] != "NO_DE", "ENTREZID"] %>% return()
 }
 
 prepare_gsea = function(results,
                         metric = "log2FC",
                         abs = FALSE) {
   if (abs) {
-    setNames(abs(results[, metric]), results[, "ENTREZ_ID"]) %>% sort(decreasing = TRUE) %>% return()
+    setNames(abs(results[, metric]), results[, "ENTREZID"]) %>% sort(decreasing = TRUE) %>% return()
   } else {
-    setNames(results[, metric], results[, "ENTREZ_ID"]) %>% sort(decreasing = TRUE) %>% return()
+    setNames(results[, metric], results[, "ENTREZID"]) %>% sort(decreasing = TRUE) %>% return()
   }
 }
 
@@ -98,7 +98,7 @@ prepare_universe = function(initiale_data,
   initiale_data[, "ID"] %>%
     conversion_table(from = from, organism_db = organism_db) %>%
     remove_duplicate() %>%
-    dplyr::select(ENTREZ_ID) %>%
+    dplyr::select(ENTREZID) %>%
     unlist() %>%
     unname() %>%
     return()
@@ -127,7 +127,7 @@ load_gsea_GO_enrichment = function(gene_list = list(),
   output <- clusterProfiler::gseGO(
     geneList = gene_list,
     ont = "ALL",
-    keyType = "ENTREZ_ID",
+    keyType = "ENTREZID",
     minGSSize = min_GS_size,
     maxGSSize = max_GS_size,
     pvalueCutoff = 1,
@@ -197,7 +197,7 @@ load_ora_go = function(gene_list = list(),
     gene = gene_list,
     universe = universe,
     OrgDb = organism_db,
-    keyType = "ENTREZ_ID",
+    keyType = "ENTREZID",
     ont = "ALL",
     minGSSize = min_GS_size,
     maxGSSize = max_GS_size,
