@@ -1,43 +1,60 @@
 library(tidyverse)
 
 #' @docType https://yulab-smu.top/biomedical-knowledge-mining-book/enrichment-overview.html
-#' 
-#' 
 
-independent_filtering = function(results){
-  results = results %>% data.frame()   # on s'assure du type data.frame
-  if ("padj" %in% colnames(results)) {
-    results = results[!is.na(results[, "padj"]),] #on retire les données "NA" qui poseront problème par la suite
+
+#' @description 
+#' 
+#' @param results_from_de_analysis dataframe from differential analysis
+#' @example independent_filtering(analysis_of_cd4_vs_cd8)
+#' 
+independent_filtering = function(results_from_de_analysis){
+  filtered_results_from_de_analysis = results_from_de_analysis %>% data.frame()   # on s'assure du type data.frame
+  if ("padj" %in% colnames(filtered_results_from_de_analysis)) {
+    filtered_results_from_de_analysis = filtered_results_from_de_analysis[!is.na(filtered_results_from_de_analysis[, "padj"]),] #on retire les données "NA" qui poseront problème par la suite
   }
-  return(results)
+  return(filtered_results_from_de_analysis)
 }
 
-conversion_table = function(results,
+#' @description 
+#' 
+#' @param results_without_na data.frame - results of differential analysis without NA
+#' @param from character - id known in the table to be converted, can be EMSEMBL | SYMBOL | ENTREZID
+#' @param to character - type of id we want as output, can be EMSEMBL | SYMBOL | ENTREZID
+#' @param organism_db character - organism in annotation_dbi, need for convertion, exemple : "Org.Mm.eg.db"
+#' 
+conversion_table = function(vector_of_ids,
                       from,
-                      to,
-                      organism_db,
-                      convert = T){
-    if (convert) {
-      ids = clusterProfiler::bitr(
-        results[,"ID"],
-        fromType = from,
-        toType = to,
-        OrgDb = organism_db
-      )
-    }
-  return(ids)
+                      organism_db){
+  if(from == "ENTREZID"){
+    return(data.frame(vector_of_ids))
+  } else{
+    clusterProfiler::bitr(
+      vector_of_ids,
+      fromType = from,
+      toType = "ENTREZID",
+      OrgDb = organism_db
+    ) %>% return()
+  }
+}
+
+remove_duplicate = function(ids){
+  if(ncol(ids) > 1){
+    ids = ids[!duplicated(ids["ENTREZID"]),]
+    return(ids)
+  } 
+  colnames(ids) = "ENTREZID"
+    return(ids)
 }
 
 
 convert_results_ids = function(results,
-                               ids,
-                               convert = TRUE){
+                               ids){
   # on retire les doublons, lors de la conversion, certains id peuvent mener à un id unique et inversement
-  if(convert){
-  from = colnames(ids)[1]
-  to = colnames(ids)[2]
-  ids = ids[!duplicated(ids[c(to)]),]
-  results[,"new_ID"] = ids[match(results[,"ID"],ids[, from]),to]
+
+  if(ncol(ids) > 1){
+    ids = remove_duplicate(ids)
+    results[,"new_ID"] = ids[match(results[,"ID"],ids[, 1]),"ENTREZID"]
   } else {
     results[,"new_ID"] = results[,"ID"]
   }
@@ -59,8 +76,13 @@ prepare_gsea = function(results,
     }
 }
 
-prepare_universe = function(results){
-  results[,"new_ID"] %>% return()
+prepare_universe = function(initiale_data){
+  initiale_data[,"ID"] %>%
+    conversion_table(from = "ENSEMBL",organism_db = "org.Mm.eg.db") %>%
+    remove_duplicate() %>%
+    dplyr::select(ENTREZID) %>%
+    unlist() %>%
+    return() 
 }
 
 #' @description
@@ -81,47 +103,21 @@ prepare_universe = function(results){
 #'
 load_gsea_GO_enrichment = function(gene_list = list(),
                                    organism_db = character(),
-                                   ont = c("MF", "CC", "BP"),
-                                   key_type = "ENTREZID",
                                    min_GS_size = 3,
-                                   max_GS_size = 500,
-                                   pvalue_cutoff = 0.05,
-                                   p_adjust_method = "BH",
-                                   verbose = FALSE,
-                                   n_perm_simple = 20000) {
-  if(is.list(gene_list) & !is.null(names(gene_list))){
-    gene_list = names(gene_list)
-  }
-  if(length(gene_list) > 0){
-    if (length(key_type) > 1) {
-      key_type = key_type[1]
-    }
-    if(length(ont) > 1){
-      ont = ont[1]
-    }
+                                   max_GS_size = 500) {
+
     output <- clusterProfiler::gseGO(
       geneList = gene_list,
-      ont = ont,
-      keyType = key_type,
+      ont = "ALL",
+      keyType = "ENTREZID",
       minGSSize = min_GS_size,
       maxGSSize = max_GS_size,
       pvalueCutoff = 1,
-      verbose = verbose,
+      verbose = FALSE,
       OrgDb = organism_db,
-      nPermSimple = n_perm_simple,
+      nPermSimple = 10000,
       eps = 0,
-      pAdjustMethod = p_adjust_method)
-    if(!is.null(output)){
-      slot(output, "method") = "GSEA"
-    }
-    else {
-      setClass("data1", representation(method = "character",result = "data.frame"))
-      output =new("data1", method = "GSEA",result = data.frame(matrix(nrow = 0, ncol = 3)))
-    }
-  } else {
-    setClass("data1", representation(method = "character",result = "data.frame"))
-    output =new("data1", method = "GSEA",result = data.frame(matrix(nrow = 0, ncol = 3)))
-  }
+      pAdjustMethod = "BH")
   output %>% return()
 }
 
@@ -141,39 +137,18 @@ load_gsea_GO_enrichment = function(gene_list = list(),
 
 load_gsea_kegg_enrichment = function(gene_list = list(),
                                      organism_db = character(),
-                                     key_type = c("ncbi-geneid", "kegg", "ncbi-proteinid", "uniprot"),
                                      min_GS_size = 3,
-                                     max_GS_size = 500,
-                                     pvalue_cutoff = 0.05,
-                                     p_adjust_method = "BH") {
-  if(is.list(gene_list) & !is.null(names(gene_list))){
-    gene_list = names(gene_list)
-  }
-  if(length(gene_list) > 0){
-    if (length(key_type) > 1) {
-      key_type = key_type[1]
-    }
+                                     max_GS_size = 500) {
+
     output <- clusterProfiler::gseKEGG(
       geneList = gene_list,
       organism = organism_db,
       minGSSize = min_GS_size,
       maxGSSize = max_GS_size,
       pvalueCutoff = 1,
-      pAdjustMethod = p_adjust_method,
-      keyType = key_type
+      pAdjustMethod = "BH",
+      keyType = "ncbi-geneid"
     )
-    if(!is.null(output)){
-
-      slot(output, "method") = "GSEA"
-    }
-    else {
-      setClass("data1", representation(method = "character",result = "data.frame"))
-      output =new("data1", method = "GSEA",result = data.frame(matrix(nrow = 0, ncol = 3)))
-    }
-  } else {
-    setClass("data1", representation(method = "character",result = "data.frame"))
-    output =new("data1", method = "GSEA",result = data.frame(matrix(nrow = 0, ncol = 3)))
-  }
   output %>% return()
 }
 
@@ -196,45 +171,25 @@ load_gsea_kegg_enrichment = function(gene_list = list(),
 #' @example load_go_over_representation(genes_DE,"org.Hs.eg.db")
 
 load_ora_go = function(gene_list = list(),
-                                       universe = NA,
-                                       organism_db = NA,
-                                       key_type = c("ENTREZID", "ENSEMBL", "SYMBOL"),
-                                       ont = c("MF", "CC", "BP"),
-                                       p_adjust_method = "BH",
-                                       min_GS_size = 10,
-                                       max_GS_size = 500) {
-  if(length(gene_list) > 0){
-    if (length(key_type) > 1) {
-      key_type = key_type[1]
-    }
-    if(length(ont) > 1){
-      ont = ont[1]
-    }
+                         universe = vector(),
+                         organism_db = character(),
+                         min_GS_size = 10,
+                         max_GS_size = 500) {
     output = clusterProfiler::enrichGO(
       gene = gene_list,
       universe = universe,
       OrgDb = organism_db,
-      keyType = key_type,
-      ont = ont,
+      keyType = "ENTREZID",
+      ont = "ALL",
       minGSSize = min_GS_size,
       maxGSSize = max_GS_size,
-      pAdjustMethod = p_adjust_method,
+      pAdjustMethod = "BH",
       pvalueCutoff = 1,
       qvalueCutoff = 1
     )
-    if(!is.null(output)){
-      slot(output, "method") = "ORA"
-      output = clusterProfiler::mutate(output, Subset = as.numeric(sub("/\\d+", "", BgRatio)))
-      output = clusterProfiler::mutate(output, RichFactor = Count / Subset)
-    }
-    else {
-      setClass("data1", representation(method = "character",result = "data.frame"))
-      output =new("data1", method = "ORA",result = data.frame(matrix(nrow = 0, ncol = 3)))
-    }
-  } else {
-    setClass("data1", representation(method = "character",result = "data.frame"))
-    output =new("data1", method = "ORA",result = data.frame(matrix(nrow = 0, ncol = 3)))
-  }
+    slot(output, "method") = "ORA"
+    output = clusterProfiler::mutate(output, Subset = as.numeric(sub("/\\d+", "", BgRatio)))
+    output = clusterProfiler::mutate(output, RichFactor = Count / Subset)
   output %>% return()
 }
 
@@ -253,40 +208,26 @@ load_ora_go = function(gene_list = list(),
 #' @example loag_kegg_over_representation(gene_list,"org.Hs.eg.db")
 #'
 load_ora_kegg = function(gene_list = list(),
-                                         organism_db = character(),
-                                         key_type = c("ncbi-geneid", "kegg", "ncbi-proteinid", "uniprot"),
-                                         p_adjust_method = "BH",
-                                         universe = NA,
-                                         min_GS_size = 10,
-                                         max_GS_size = 500) {
-  if(length(gene_list) > 0){
-    if (length(key_type) > 1) {
-      key_type = key_type[1]
-    }
+                           organism_db = character(),
+                           universe = vector(),
+                           min_GS_size = 10,
+                           max_GS_size = 500) {
+
     output = clusterProfiler::enrichKEGG(
       gene = gene_list,
       organism = organism_db,
-      keyType = key_type,
+      keyType = "ncbi-geneid",
       pvalueCutoff = 1,
-      pAdjustMethod = p_adjust_method,
+      pAdjustMethod = "BH",
       universe = universe,
       minGSSize = min_GS_size,
       maxGSSize = max_GS_size,
       qvalueCutoff = 1
     )
-    if(!is.null(output)){
       slot(output, "method") = "ORA"
       output = clusterProfiler::mutate(output, Subset = as.numeric(sub("/\\d+", "", BgRatio)))
       output = clusterProfiler::mutate(output, RichFactor = Count / Subset)
-    }
-    else {
-      setClass("data1", representation(method = "character",result = "data.frame"))
-      output =new("data1", method = "ORA",result = data.frame(matrix(nrow = 0, ncol = 3)))
-    }
-  } else {
-    setClass("data1", representation(method = "character",result = "data.frame"))
-    output =new("data1", method = "ORA",result = data.frame(matrix(nrow = 0, ncol = 3)))
-  }
+    
   output %>% return()
 }
 
@@ -295,31 +236,26 @@ filter_table_enrich_results = function(enrich_results,
                                 p_adj_cutoff = 0.05,
                                 q_value_cutoff = 0.05){
   new_results = slot(enrich_results,"result")
-  slot(enrich_results,"result") = new_results[(new_results[,"pvalue"] < p_value_cutoff) & (new_results[,"p.adjust"] < p_adj_cutoff) & (new_results[,"qvalue"] < q_value_cutoff), ]
+  slot(enrich_results,"result") = new_results[(new_results[,"pvalue"] < p_value_cutoff) & 
+                                                (new_results[,"p.adjust"] < p_adj_cutoff) & 
+                                                (new_results[,"qvalue"] < q_value_cutoff), ]
   enrich_results %>% return()
 }
 
+#' @description 
+#' 
+#' @param go_enrich_results_filtered clusterprofiler objectf - results from a GO analysis after filter of p-value, p-adjust and q-value
+#' @param ontology character - ontology to be used
 
-#' @description
-#' Convertir un vecteur de gènes d'une base de données dans une autre
-#' @param gene_list : vecteur de gènes différentielelment exprimés
-#' @param from : type d'identifiant de base de votre liste ("ENTREZID", "SYMBOL"...)
-#' @param to : type d'identifiant de sortie ("ENTREZID","SYMBOL"...)
-#' @param organism_db : base de donnée KEGG utilisée (exemple : "hsa") (soit ça, soit universe)
-#' @return vecteur avec les ID convertis
-#'
-#' @note peut être faire une fonction pour convertir à partir du fichier gtfs
-#' @example id_convert(genes_DE,from = "SYMBOL",to = "ENTREZID", organism_db = "org.Hs.eg.db")
-#'
-id_convert = function(gene_list,
-                      from,
-                      to = "ENTREZID",
-                      organism_db) {
-  ids = clusterProfiler::bitr(gene_list,
-                              fromType = from,
-                              toType = to,
-                              OrgDb = organism_db)
-  return(ids[, to])
+filter_go_enrich_results = function(go_enrich_results_filtered,
+                                    ontology = NULL){
+  # if no ontology was choose, show all ontology
+  if(is.null(ontology)){
+    ontology = c("MF","CC","BP")
+  }
+  new_results = slot(go_enrich_results_filtered,"result")
+  slot(go_enrich_results_filtered,"result") = new_results %>% dplyr::filter(ONTOLOGY %in% ontology)
+  return(go_enrich_results_filtered)
 }
 
 #' @description
@@ -380,7 +316,6 @@ draw_dotplot = function(ora_df,
     return("error")
   } else {
     ora_df = slot(ora_df,"result")
-    print(ora_df)
     
     if(order %in% c("p.adjust","pvalue","qvalue")){
       ora_df = ora_df[order(ora_df[,order] ),]
