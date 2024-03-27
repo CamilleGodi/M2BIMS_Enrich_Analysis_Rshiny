@@ -50,12 +50,12 @@ function(input, output, session) {
     reactive_data_expr_diff()
   })
   
-  organism_library_go <- organism_conversion_table[input$select_organism,, "annotation_db"]
-  
+  organism_library_go <- reactive({organism_conversion_table[input$select_organism, "annotation_db"]})
+
   filtered_data <- reactive({prepare_pipe(filter_dt(reactive_data_expr_diff(),
                                                    fc_cutoff = as.numeric(input$fc_cutoff),
                                                    padj_cutoff = as.numeric(input$padj_cutoff)),
-                                         organism_db = organism_library_go,
+                                         organism_db = organism_library_go(),
                                          "ENSEMBL"
                                          )
   })
