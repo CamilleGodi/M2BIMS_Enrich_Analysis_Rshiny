@@ -52,19 +52,19 @@ In `global.R` :
 
 -   Add the corresponding organism annotation library from [Bioconductor](https://bioconductor.org/packages/3.18/data/annotation/) in `load_libs_biocmanager`
 
--   Add the corresponding line to the conversion table : `organism_conversion_table <- add_organism_in_conversion_table(organism_conversion_table, "Organism name", "org.Xx.xxx.db", "kegg_code")`, with *kegg_code* the 3- or 4-letters KEGG organism code ([here](https://www.genome.jp/kegg/catalog/org_list.html)) and *org.Xx.xxx.db* the organism annotation library name
+-   Add the corresponding line to the conversion table : `organism_conversion_table <- add_organism_in_conversion_table(organism_conversion_table, "Organism name", "org.Xx.xxx.db", "kegg_code")`, with *kegg_code* the 3- or 4-letters KEGG organism code ( [here](https://www.genome.jp/kegg/catalog/org_list.html) ) and *org.Xx.xxx.db* the organism annotation library name
 
 ------------------------------------------------------------------------
 
 ## Authors
 
--   Victor BAILLEUL ( [victor.bailleul\@univ-rouen.fr](mailto:victor.bailleul@univ-rouen.fr){.email} )
+-   Victor BAILLEUL ( [victor.bailleul\@univ-rouen.fr](mailto:victor.bailleul@univ-rouen.fr) )
 
--   Camille GODI ( [camille.godi\@univ-rouen.fr](mailto:camille.godi@univ-rouen.fr){.email} )
+-   Camille GODI ( [camille.godi\@univ-rouen.fr](mailto:camille.godi@univ-rouen.fr) )
 
--   Benjamin MARSAC ( [benjamin.marsac\@univ-rouen.fr](mailto:benjamin.marsac@univ-rouen.fr){.email} )
+-   Benjamin MARSAC ( [benjamin.marsac\@univ-rouen.fr](mailto:benjamin.marsac@univ-rouen.fr) )
 
--   Komlan Dieu-Donné TOTO ( [komlan-dieu-donne.toto\@univ-rouen.fr](mailto:komlan-dieu-donne.toto@univ-rouen.fr){.email} )
+-   Komlan Dieu-Donné TOTO ( [komlan-dieu-donne.toto\@univ-rouen.fr](mailto:komlan-dieu-donne.toto@univ-rouen.fr) )
 
 This app is the result of a group work in second year of Bioinformatics Master's Degree, 'BIMS', year 2023-2024s, Université de Rouen Normandie ( URN ).
 
