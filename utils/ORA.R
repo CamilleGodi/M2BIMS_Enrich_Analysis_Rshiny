@@ -55,23 +55,28 @@ res_tmp <- do_ora_go_terms(
     q_value_cutoff_tmp
   )
 
-res_tmp %>% enrich_pagination
+res_tmp %>% enrich_pagination(alpha_cutoff = 0.05)
 
-res_tmp %>% draw_dotplot(show_category = 30)
+res_tmp %>% draw_dotplot(show_category = 30,
+                         title = "ORA - GO termes - Dot plot")
 
 res_tmp %>% draw_cnetplot(
   category_label = 0.6,
   gene_list = res_tmp@result$geneID,
   category_color = "red",
-  node_label = "category"
+  node_label = "category",
+  title = "ORA - GO termes - CNET plot"
 )
 
 res_tmp %>% draw_treeplot(
   gradient_col = c("green", "black"),
-  showCategory = 50,
+  show_category = 30,
   n_cluster = 10,
   label_words_n = 4,
-  h_clust_method = "ward.D2"
+  h_clust_method = "ward.D2",
+  title = "ORA - GO termes - Tree plot"
 )
 
-res_tmp %>% draw_emapplot()
+res_tmp %>% draw_emapplot(show_category = 10,
+                          category_label = 0.5,
+                          title = "ORA - GO termes - EMAP plot")

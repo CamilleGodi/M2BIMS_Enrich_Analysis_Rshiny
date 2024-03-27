@@ -398,7 +398,7 @@ draw_emapplot = function(enrich,
 
 #' Permet de désiner un arbre en calculant les distances de cluster entre les différents groupes de fonctionnalités, selon le nombre de gène en commun
 #' @param enrich resultats d'enrichissement (gsea ou enrichment) de GO ou KEGG
-#' @param showCategory nombre de catégories à montrer
+#' @param show_category nombre de catégories à montrer
 #' @param hilight Booléan, est-ce qu'il faut surligner les branches en fonction de la couleur des clusters
 #' @param n_cluster nombre de cluster que l'on souhaite représenter
 #' @param label_words_n nombre de mots dans les clusters à afficher
@@ -408,12 +408,12 @@ draw_emapplot = function(enrich,
 #' @param gradient_name nom de la légende du gradient
 #' @param title titre
 #'
-#' @example draw_treeplot(gse_bp,gradient_col = c("green","black"),showCategory = 50,n_cluster = 10,label_words_n = 4,h_clust_method = "ward.D2")
+#' @example draw_treeplot(gse_bp,gradient_col = c("green","black"), show_category = 50,n_cluster = 10,label_words_n = 4,h_clust_method = "ward.D2")
 #'
 draw_treeplot = function(enrich,
                          showCategory = 30,
                          hilight = FALSE,
-                         n_cluster = showCategory / 5,
+                         n_cluster = show_category / 5,
                          label_words_n = 5,
                          h_clust_method = "ward.D2",
                          gradient_col = c("red", "blue"),
@@ -428,7 +428,7 @@ draw_treeplot = function(enrich,
   }
   fig = enrichplot::treeplot(
     enrichplot::pairwise_termsim(enrich),
-    showCategory = showCategory,
+    showCategory = show_category,
     hilight.params = list(hilight = hilight),
     cluster.params = list(
       method = h_clust_method,
