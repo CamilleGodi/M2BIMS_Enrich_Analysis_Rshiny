@@ -150,110 +150,118 @@ dashboardPage(
         tabName = "GO_term_ORA_subtab",
         h2("GO Term Enrichment : ORA", style = "text-align: center"),
         
-        fluidRow(
-          # GENE ONTOLOGY SETTINGS
-          column(
-            width = 8,
-            box(
-              title = "GENE ONTOLOGY SETTINGS",
-              status = "primary",
-              solidHeader = TRUE,
-              width = 12,
+    fluidRow(
+      column(
+        width = 6,
+        box(
+          title = "GENE ONTOLOGY SETTINGS",
+          status = "primary",
+          solidHeader = TRUE,
+          width = 12,  
               fluidRow(
+                # GENE ONTOLOGY SETTINGS
                 column(
                   width = 12,
-                  selectInput("goAnnotationORA", "Select a GO Annotation:",
-                              choices = c("Biological Process", "Molecular Function", "Cellular Component"),
-                              selected = "Biological Process"))))),
-          
-          # GO Level Selection
-          column(
-            width = 8,
-            box(
-              title = "GO Level Selection",
-              status = "primary",
-              solidHeader = TRUE,
-              width = 12,
-              fluidRow(
-                column(
+                    fluidRow(
+                      column(
+                        width = 12,
+                        checkboxGroupInput("goAnnotationGSEA", "Select a GO Annotation:",
+                                           choices = c("Biological Process", "Molecular Function", "Cellular Component"),
+                                           selected = "Biological Process")))))),
+                
+                # GO Level Selection
+        box(
+          title = "GO Level Selection",
+          status = "primary",
+          solidHeader = TRUE,
+          width = 12,
+              column(
                   width = 12,
-                  radioButtons("levelSelectionORA", "Select a GO Level:", 
-                               choices = c("One-level GO ORA" = "OneLevelORA", "All-level GO ORA" = "AllLevelORA")))),
-              # Conditional Panel for OneLevelORA
-              conditionalPanel(
-                condition = "input.levelSelectionORA == 'OneLevelORA'",
-                fluidRow(
-                  column(
-                    width = 12,
-                    box(
-                      status = "primary",
-                      solidHeader = TRUE,
-                      width = 12,
+                    fluidRow(
+                      column(
+                        width = 12,
+                        radioButtons("levelSelectionORA", "Select a GO Level:", 
+                                     choices = c("One-level GO ORA" = "OneLevelORA", "All-level GO ORA" = "AllLevelORA"))),
+                    # Conditional Panel for OneLevelORA
+                    conditionalPanel(
+                      condition = "input.levelSelectionORA == 'OneLevelORA'",
                       fluidRow(
                         column(
                           width = 12,
-                          sliderInput("levelSliderORA", "Select a GO level:", min = 1, max = 7, value = 1))))))))),
-          
+                            fluidRow(
+                              column(
+                                width = 12,
+                                sliderInput("levelSliderORA", "Select a GO level:", min = 1, max = 7, value = 1)))))))))),
+                
           # DEG Selection
-          column(
-            width = 8,
-            box(
-              title = "DEG profile Selection",
-              status = "primary",
-              solidHeader = TRUE,
-              width = 12,
+      column(
+        width = 6,
+        box(
+          title = "DEG profile Selection",
+          status = "primary",
+          solidHeader = TRUE,
+          width = 12,
+        column(
+            width = 12,
               fluidRow(
                 column(
                   width = 12,
                   radioButtons("DEGSelection", "Select the correct DEG processing:", 
-                               choices = c("Over expressed DEG only" = "OverDEG", "Under expressed DEG only" = "UnderDEG", "Both" = "BothDEG"))))))),
+                               choices = c("Over expressed DEG only" = "OverDEG", "Under expressed DEG only" = "UnderDEG", "Both" = "BothDEG")))))),
         
         # Parameters
+    box(
+      title = "Parameters",
+      status = "primary",
+      solidHeader = TRUE,
+      width = 12, 
         fluidRow(
           column(
-            width = 8,
-            box(
-              title = "Parameters",
-              status = "primary",
-              solidHeader = TRUE,
-              width = 12,
+            width = 12,
               fluidRow(
                 column(
                   width = 12,
                     sliderInput("PValueORA", "Select a P-Value:", min = 0, max = 1, value = 0.05)),
                 column(
                   width = 12,
-                    sliderInput("QValueORA", "Select a Q-Value:", min = 0, max = 1, value = 0.05))))))),
+                    sliderInput("QValueORA", "Select a Q-Value:", min = 0, max = 1, value = 0.05)),
+                column(
+                  width = 12,
+                  sliderInput("adjustedPValueCutoffORA", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05))))))))),
       
       ### GO Term Enrichment : GSEA ###
       tabItem(
         tabName = "GO_term_GSEA_subtab",
         h2("GO Term Enrichment : GSEA", style = "text-align: center"),
         
+        
+  fluidRow(
+    column(
+      width = 6,
+      box(
+        title = "GENE ONTOLOGY SETTINGS",
+        status = "primary",
+        solidHeader = TRUE,
+        width = 12,    
         fluidRow(
           # GENE ONTOLOGY SETTINGS
           column(
             width = 8,
-            box(
-              title = "GENE ONTOLOGY SETTINGS",
-              status = "primary",
-              solidHeader = TRUE,
-              width = 12,
               fluidRow(
                 column(
                   width = 12,
-                  selectInput("goAnnotationGSEA", "Select a GO Annotation:",
-                              choices = c("Biological Process", "Molecular Function", "Cellular Component"),
-                              selected = "Biological Process"))))),
+                  checkboxGroupInput("goAnnotationGSEA", "Select a GO Annotation:",
+                                     choices = c("Biological Process", "Molecular Function", "Cellular Component"),
+                                     selected = "Biological Process")))))),
           
           # GO Level Selection
-          column(
+  box(
+    title = "GO Level Selection",
+    status = "primary",
+    solidHeader = TRUE,
+    width = 12,  
+      column(
             width = 8,
-            box(
-              title = "GO Level Selection",
-              status = "primary",
-              solidHeader = TRUE,
-              width = 12,
               fluidRow(
                 column(
                   width = 12,
@@ -265,23 +273,22 @@ dashboardPage(
                 fluidRow(
                   column(
                     width = 12,
-                    box(
-                      status = "primary",
-                      solidHeader = TRUE,
-                      width = 12,
                       fluidRow(
                         column(
                           width = 12,
                           sliderInput("levelSliderGSEA", "Select a GO level:", min = 1, max = 7, value = 1))))))))),
           
           # DEG Selection
+  
+  column(
+    width = 6,
+    box(
+      title = "DEG profile Selection",
+      status = "primary",
+      solidHeader = TRUE,
+      width = 12,
           column(
             width = 8,
-            box(
-              title = "DEG profile Selection",
-              status = "primary",
-              solidHeader = TRUE,
-              width = 12,
               fluidRow(
                 column(
                   width = 12,
@@ -289,8 +296,154 @@ dashboardPage(
                                choices = c("Over expressed DEG only" = "OverDEG", "Under expressed DEG only" = "UnderDEG", "Both" = "BothDEG")))))),
           
         # Parameters
+    
+    box(
+      title = "Parameters",
+      status = "primary",
+      solidHeader = TRUE,
+      width = 12, 
+        fluidRow(
+          column(
+            width = 12,
+              fluidRow(
+                column(
+                  width = 12,
+                  sliderInput("PValueCutoffGSEA", "Select a P-Value:", min = 0, max = 1, value = 0.05)),
+                column(
+                  width = 12,
+                  sliderInput("QValueGSEA", "Select a Q-Value:", min = 0, max = 1, value = 0.05)),
+                column(
+                  width = 12,
+                  sliderInput("adjustedPValueCutoffGSEA", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05)),
+                column(
+                  width = 12,
+                  checkboxInput("metricAbsoluteValGSEA", "Absolute value", value = TRUE))))))))),
+      
+      ### Pathway Enrichment : ORA ###
+      tabItem(
+        tabName = "pathway_ORA_subtab",
+        h2("Pathway Enrichment : ORA", style = "text-align: center"),
+        
+  fluidRow(
+    column(
+      width = 6,
+      box(
+        title = "Databases",
+        status = "primary",
+        solidHeader = TRUE,
+        width = 12,    
+        fluidRow(
           column(
             width = 8,
+              fluidRow(
+                column(
+                  width = 12,
+                  radioButtons("DBSelection", "Select a Database", 
+                               choices = c("KEGG" = "kegg", "REACTOME" = "reactome")))))))),
+          
+          # DEG Selection
+    column(
+      width = 6,
+      box(
+        title = "DEG profile Selection",
+        status = "primary",
+        solidHeader = TRUE,
+        width = 12,
+          column(
+            width = 12,
+              fluidRow(
+                column(
+                  width = 12,
+                  radioButtons("DEGSelectionORA", "Select the correct DEG processing:", 
+                               choices = c("Over expressed DEG only" = "OverDEGORA", "Under expressed DEG only" = "UnderDEGORA", "Both" = "BothDEG")))))))),
+          
+        #parameters
+  tags$head(
+    tags$style(HTML("
+    .center {
+      display: flex;
+      justify-content: center;
+    }
+  "))
+  ),
+  fluidRow(
+    class = "center",
+    fluidRow(
+      column(
+      width = 12,
+          fluidRow(
+            column(
+              width = 12,
+              box(
+                title = "Parameters",
+                status = "primary",
+                solidHeader = TRUE,
+                width = 12,
+                fluidRow(
+                  column(
+                    width = 12,
+                    sliderInput("PValueORA", "Select a P-Value:", min = 0, max = 1, value = 0.05)),
+                  column(
+                    width = 12,
+                    sliderInput("QValueORA", "Select a Q-Value:", min = 0, max = 1, value = 0.05)),
+                  column(
+                    width = 12,
+                    sliderInput("adjustedPValueCutoffORA", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05)))))))))),
+     
+       ### Pathway Enrichment : GSEA ###
+      tabItem(
+        tabName = "pathway_GSEA_subtab",
+        h2("Pathway Enrichment : GSEA", style = "text-align: center"),
+        
+  fluidRow(
+    column(
+      width = 6,
+      box(
+        title = "Databases",
+        status = "primary",
+        solidHeader = TRUE,
+        width = 12,    
+        fluidRow(
+          column(
+            width = 12,
+              fluidRow(
+                column(
+                  width = 12,
+                  radioButtons("DBSelection", "Select a Database", 
+                               choices = c("KEGG" = "kegg", "REACTOME" = "reactome")))))))),
+        
+         
+      column(
+        width = 6,
+        box(
+          title = "DEG profile Selection",
+          status = "primary",
+          solidHeader = TRUE,
+          width = 12,
+          column(
+            width = 12,
+              fluidRow(
+                column(
+                  width = 12,
+                  radioButtons("DEGSelectionGSEA", "Select the correct DEG processing:", 
+                               choices = c("Over expressed DEG only" = "OverDEGGSEA", "Under expressed DEG only" = "UnderDEGGSEA", "Both" = "BothDEG")))))))),
+    
+           # Parameters
+  tags$head(
+    tags$style(HTML("
+    .center {
+      display: flex;
+      justify-content: center;
+    }
+  "))
+  ),
+  fluidRow(
+    class = "center",
+    fluidRow(
+      column(
+        width = 12,
+          column(
+            width = 12,
             box(
               title = "Parameters",
               status = "primary",
@@ -305,84 +458,10 @@ dashboardPage(
                   sliderInput("QValueGSEA", "Select a Q-Value:", min = 0, max = 1, value = 0.05)),
                 column(
                   width = 12,
-                  checkboxInput("metricAbsoluteValGSEA", "Absolute value", value = TRUE))))))),
-      
-      ### Pathway Enrichment : ORA ###
-      tabItem(
-        tabName = "pathway_ORA_subtab",
-        h2("Pathway Enrichment : ORA", style = "text-align: center"),
-        
-        fluidRow(
-          # PATHWAY SETTINGS
-          column(
-            width = 8,
-            box(
-              status = "primary",
-              solidHeader = TRUE,
-              width = 12,
-              fluidRow(
+                  sliderInput("adjustedPValueCutoffGSEA", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05)),
                 column(
                   width = 12,
-                  radioButtons("DBSelection", "Select a Database", 
-                               choices = c("KEGG" = "kegg", "REACTOME" = "reactome")))))),
-          
-          # DEG Selection
-          column(
-            width = 8,
-            box(
-              status = "primary",
-              solidHeader = TRUE,
-              width = 12,
-              fluidRow(
-                column(
-                  width = 12,
-                  radioButtons("DEGSelectionORA", "Select the correct DEG processing:", 
-                               choices = c("Over expressed DEG only" = "OverDEGORA", "Under expressed DEG only" = "UnderDEGORA", "Both" = "BothDEG")))))),
-          
-          # Adjusted P-Value Cutoff
-          column(
-            width = 8,
-            box(
-              title = "Adjusted P-Value Cutoff",
-              status = "primary",
-              solidHeader = TRUE,
-              width = 12,
-              fluidRow(
-                column(
-                  width = 12,
-                  sliderInput("adjustedPValueCutoffORA", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05))))))),
-      
-      ### Pathway Enrichment : GSEA ###
-      tabItem(
-        tabName = "pathway_GSEA_subtab",
-        h2("Pathway Enrichment : GSEA", style = "text-align: center"),
-        
-        fluidRow(
-          column(
-            width = 8,
-            box(
-              status = "primary",
-              solidHeader = TRUE,
-              width = 12,
-              fluidRow(
-                column(
-                  width = 12,
-                  radioButtons("DBSelection", "Select a Database", 
-                               choices = c("KEGG" = "kegg", "REACTOME" = "reactome")))))),
-          
-          # Adjusted P-Value Cutoff
-          column(
-            width = 8,
-            box(
-              title = "Adjusted P-Value Cutoff",
-              status = "primary",
-              solidHeader = TRUE,
-              width = 12,
-              fluidRow(
-                column(
-                  width = 12,
-                  sliderInput("adjustedPValueCutoffGSEA", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05))))))))))
-
+                  checkboxInput("metricAbsoluteValGSEA", "Absolute value", value = TRUE))))))))))))
 
 
 ################################################################################
