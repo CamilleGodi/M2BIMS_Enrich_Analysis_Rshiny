@@ -411,7 +411,7 @@ draw_emapplot = function(enrich,
 #' @example draw_treeplot(gse_bp,gradient_col = c("green","black"), show_category = 50,n_cluster = 10,label_words_n = 4,h_clust_method = "ward.D2")
 #'
 draw_treeplot = function(enrich,
-                         showCategory = 30,
+                         show_category = 30,
                          hilight = FALSE,
                          n_cluster = show_category / 5,
                          label_words_n = 5,
