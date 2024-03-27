@@ -1,5 +1,5 @@
 library(org.Mm.eg.db)
-source("./utils/enrichissement.R")
+source("./utils/enrichment.R")
 #' Tableau d'entré (non filtré etc), réactive "filtered_data"
 tableau = read.csv("./Example_files/filtered_data.csv", sep = ",")
 tableau %>% head()
@@ -10,7 +10,7 @@ table_filtered <- tableau %>% independent_filtering()
 table_filtered_new_ids = prepare_pipe(table_filtered,organism_db = "org.Mm.eg.db","ENSEMBL")
 
 ora_ids = prepare_ora(table_filtered_new_ids)
-gsea_ids = prepare_gsea(table_filtered_new_ids, metric = "log2FC")
+gsea_ids = prepare_gsea(table_filtered_new_ids, metric = "log2FC",abs = TRUE)
 universe = prepare_universe(tableau)
 
 gsea_go = load_gsea_GO_enrichment(gsea_ids, organism_db = "org.Mm.eg.db")
@@ -34,3 +34,19 @@ ora_go_after_filter %>% draw_dotplot(show_category = 30)
 ora_kegg@result %>% head()
 gsea_kegg@result %>% head()
 gsea_kegg %>% enrichplot::dotplot()
+draw_ridgeplot = function(gse,
+                          xlab = "Distribution des enrichissements",
+                          ylab = "Nom des voies",
+                          title = "Distribution de l'expression selon les résultats de GSEA",
+                          y_text_size = 7,
+                          ...) {
+  enrichplot::ridgeplot(gse) +
+    ggplot2::labs(x = xlab,
+                  y = ylab,
+                  title = title) +
+    ggplot2::theme(axis.text.y = ggplot2::element_text(size = y_text_size))
+}
+enrichplot::gseaplot2(gsea_go,1:5,pvalue_table = TRUE)
+gsea_go@result %>% dplyr::select(NES) %>% unlist() %>% sort()
+clusterProfiler::dotplot(gsea_go)
+gsea_go@result[,1:6]
