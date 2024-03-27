@@ -1,5 +1,4 @@
 library(org.Mm.eg.db)
-library(clusterprofiler)
 source("./utils/enrichissement.R")
 tableau = read.csv("./Example_files/filtered_data.csv",sep = ",")
 tableau %>% head()
