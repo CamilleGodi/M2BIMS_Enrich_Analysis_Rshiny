@@ -1,6 +1,3 @@
-source("./utils/global.R")
-source("./utils/enrichment.R")
-
 ################ ORA - GO-terms ################################################
 
 ### ORA - GO-terms
