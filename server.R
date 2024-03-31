@@ -50,7 +50,10 @@ function(input, output, session) {
     reactive_data_expr_diff()
   })
   
-  organism_library_go <- reactive({organism_conversion_table[input$select_organism, "annotation_db"]})
+  organism_library_go <- reactive({ 
+    if ( input$select_organism != "" ) {
+      organism_conversion_table[input$select_organism, "annotation_db"]}
+    })
   
   reactive_data_new_ids <- reactive({prepare_pipe(reactive_data_expr_diff(),
                                                   organism_db = organism_library_go(),
@@ -110,10 +113,10 @@ function(input, output, session) {
       res_ora_go <- do_ora_go_terms(
         filtered_data(),
         organism_library_go(),
-        ontology_tmp,
-        p_value_cutoff_tmp,
-        p_adj_cutoff_tmp,
-        q_value_cutoff_tmp
+        input$goAnnotationORA,
+        input$PValueORA,
+        input$adjustedPValueCutoffORA,
+        input$QValueORA
       )
       
       return(res_ora_go)
@@ -121,9 +124,53 @@ function(input, output, session) {
   })
   
   output$results_ora_go_preview_table <- DT::renderDT({
-    preview_table <- results_ora_go() %>% enrich_pagination(alpha_cutoff = 0.05)
+    preview_table <- results_ora_go() %>% enrich_pagination(alpha_cutoff = input$adjustedPValueCutoffORA)
     # Preview of the filtered data table ( "escape = FALSE" allows HTML formatting )
     DT::datatable(preview_table, options = list(scrollX = TRUE, pageLength = 25), escape = FALSE)
+  })
+  
+  output$ORADotPlot <- renderPlot({
+    if(!is.null(results_ora_go())){
+      results_ora_go() %>% draw_dotplot(
+        show_category = 30, 
+        title = paste("ORA - GO termes -", paste(input$goAnnotationORA, collapse="&"), "- Dot plot")
+       )
+    }
+  })
+  
+  output$ORACNETPlot <- renderPlot({
+    if(!is.null(results_ora_go())){
+      results_ora_go() %>% draw_cnetplot(
+          category_label = 1,
+          gene_list = res_tmp@result$geneID,
+          category_color = "red",
+          node_label = "category",
+          title = paste("ORA - GO termes -", paste(input$goAnnotationORA, collapse="&"), "- CNET plot")
+        )
+    }
+  })
+  
+  output$ORATreePlot <- renderPlot({
+    if(!is.null(results_ora_go())){
+      results_ora_go() %>% draw_treeplot(
+        gradient_col = c("red", "blue"),
+        show_category = 30,
+        n_cluster = 10,
+        label_words_n = 4,
+        h_clust_method = "ward.D2",
+        title = paste("ORA - GO termes -", paste(input$goAnnotationORA, collapse="&"), "- Tree plot")
+      )
+    }
+  })
+  
+  output$ORAEmapPlot <- renderPlot({
+    if(!is.null(results_ora_go())){
+      results_ora_go() %>% draw_emapplot(
+        show_category = 10,
+        category_label = 1,
+        title = paste("ORA - GO termes -", paste(input$goAnnotationORA, collapse="&"), "- EMAP plot")
+      )
+    }
   })
   
   ####TODO:  output all the plots !!

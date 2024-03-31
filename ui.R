@@ -34,8 +34,8 @@ dashboardPage(
       selectInput(
         "select_organism",
         "Select organism name:",
-        c("Arabidopsis thaliana", "Escherichia coli (K12)", "Homo sapiens", "Mus musculus", "Saccharomyces cerevisiae"),
-        selected = NULL,
+        c("", "Arabidopsis thaliana", "Escherichia coli (K12)", "Homo sapiens", "Mus musculus", "Saccharomyces cerevisiae"),
+        selected = "",
         multiple = FALSE,
         selectize = TRUE,
         width = NULL,
@@ -88,7 +88,10 @@ dashboardPage(
           width = 12,
           h4("1/ Select a CSV (or CSV2) file. It must have the following columns and no others : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj'."),
           h4("2/ Select the scientific name of the organism from which the data originates. Tip : you can type to search in the box."),
-          h4("3/ Explore your data through the 'Whole data inspection' tab, and/or perform desired analysis.")
+          h4("3/ (Optionnal) Explore your data through the 'Whole data inspection' tab"),
+          h4("4/ Perform desired analysis through the appropriate tab."),
+          br(),
+          h4("Note : a plot can be downloaded by doing right-click > 'save image as'.")
         )
       ),
       
@@ -166,9 +169,9 @@ dashboardPage(
                   fluidRow(
                     column(
                       width = 12,
-                      checkboxGroupInput("goAnnotationGSEA", "Select a GO Annotation:",
-                                         choices = c("Biological Process", "Molecular Function", "Cellular Component"),
-                                         selected = "Biological Process")))))),
+                      checkboxGroupInput("goAnnotationORA", "Select a GO Annotation:",
+                                         choices = c("Biological Process" = "BP", "Molecular Function" = "MF", "Cellular Component" = "CC"),
+                                         selected = "BP")))))),
             
             # GO Level Selection
             box(
@@ -229,9 +232,26 @@ dashboardPage(
                     column(
                       width = 12,
                       sliderInput("adjustedPValueCutoffORA", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05)))))))),
-        
-        fluidRow(print("TEMPORARY"),
-                 DTOutput("results_ora_go_preview_table"))
+      
+        # ORA GO PLOTS
+        fluidRow(
+          box(width = 10,
+              plotOutput("ORADotPlot", height="600px"),
+             ),
+          box(width = 10,
+              plotOutput("ORACNETPlot", height="800px"),
+          ),
+          box(width = 10,
+              plotOutput("ORATreePlot", height="800px"),
+          ),
+          box(width = 10,
+              plotOutput("ORAEmapPlot", height="800px"),
+          ),
+          
+          box(width =12,
+              DTOutput("results_ora_go_preview_table", height = "1000px")
+          )
+        )
       ),
       
       ### GO Term Enrichment : GSEA ###
@@ -256,8 +276,8 @@ dashboardPage(
                     column(
                       width = 12,
                       checkboxGroupInput("goAnnotationGSEA", "Select a GO Annotation:",
-                                         choices = c("Biological Process", "Molecular Function", "Cellular Component"),
-                                         selected = "Biological Process")))))),
+                                         choices = c("Biological Process" = "BP", "Molecular Function" = "MF", "Cellular Component" = "CC"),
+                                         selected = "BP")))))),
             
             # GO Level Selection
             box(

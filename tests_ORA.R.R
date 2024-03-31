@@ -8,7 +8,7 @@ organism_library_go_tmp <- organism_conversion_table["Mus musculus", "annotation
 p_value_cutoff_tmp <- 0.01
 p_adj_cutoff_tmp   <- 0.05
 q_value_cutoff_tmp <- 0.05
-ontology_tmp <- "MF"
+ontology_tmp <- c("BP","MF")
 
 
 table_filtered_new_ids <- prepare_pipe(table_filtered_tmp, organism_db = organism_library_go_tmp, "ENSEMBL")
@@ -25,18 +25,14 @@ res_tmp <- do_ora_go_terms(
 res_tmp %>% enrich_pagination(alpha_cutoff = 0.05)
 
 res_tmp %>% draw_dotplot(show_category = 30,
-                         title = paste("ORA - GO termes -",
-                                       ontology_tmp,
-                                       "- Dot plot"))
+                         title = paste("ORA - GO termes -", paste(ontology_tmp, collapse="&"), "- Dot plot"))
 
 res_tmp %>% draw_cnetplot(
-  category_label = 0.6,
+  category_label = 1,
   gene_list = res_tmp@result$geneID,
   category_color = "red",
   node_label = "category",
-  title = paste("ORA - GO termes -",
-                ontology_tmp,
-                "- CNET plot")
+  title = paste("ORA - GO termes -", paste(ontology_tmp, collapse="&"), "- CNET plot")
 )
 
 res_tmp %>% draw_treeplot(
@@ -45,13 +41,8 @@ res_tmp %>% draw_treeplot(
   n_cluster = 10,
   label_words_n = 4,
   h_clust_method = "ward.D2",
-  title = paste("ORA - GO termes -",
-                ontology_tmp,
-                "- Tree plot")
+  title = paste("ORA - GO termes -", paste(ontology_tmp, collapse="&"), "- Tree plot")
 )
 
 res_tmp %>% draw_emapplot(show_category = 10,
-                          category_label = 0.5,
-                          title = paste("ORA - GO termes -",
-                                        ontology_tmp,
-                                        "- EMAP plot"))
+                          category_label = 0.5, paste(ontology_tmp, collapse="&", "- EMAP plot"))
