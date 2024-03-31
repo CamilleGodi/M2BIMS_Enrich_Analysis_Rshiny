@@ -55,6 +55,11 @@ function(input, output, session) {
       organism_conversion_table[input$select_organism, "annotation_db"]}
     })
   
+  organism_kegg_code <- reactive({ 
+    if ( input$select_organism != "" ) {
+      organism_conversion_table[input$select_organism, "kegg_name"]}
+  })
+  
   reactive_data_new_ids <- reactive({prepare_pipe(reactive_data_expr_diff(),
                                                   organism_db = organism_library_go(),
                                                   from = "ENSEMBL")})
@@ -104,12 +109,6 @@ function(input, output, session) {
   ### ORA GO results ###
   results_ora_go <- reactive({ 
     if(!is.null(filtered_data())){
-      #TODO: make variables reactive (from input)
-      p_value_cutoff_tmp <- 0.01
-      p_adj_cutoff_tmp   <- 0.05
-      q_value_cutoff_tmp <- 0.05
-      ontology_tmp <- "MF"
-      
       res_ora_go <- do_ora_go_terms(
         filtered_data(),
         organism_library_go(),
@@ -118,7 +117,6 @@ function(input, output, session) {
         input$adjustedPValueCutoffORA,
         input$QValueORA
       )
-      
       return(res_ora_go)
     }
   })
@@ -129,7 +127,7 @@ function(input, output, session) {
     DT::datatable(preview_table, options = list(scrollX = TRUE, pageLength = 25), escape = FALSE)
   })
   
-  output$ORADotPlot <- renderPlot({
+  output$ORAgoDotPlot <- renderPlot({
     if(!is.null(results_ora_go())){
       results_ora_go() %>% draw_dotplot(
         show_category = 30, 
@@ -138,11 +136,11 @@ function(input, output, session) {
     }
   })
   
-  output$ORACNETPlot <- renderPlot({
+  output$ORAgoCNETPlot <- renderPlot({
     if(!is.null(results_ora_go())){
       results_ora_go() %>% draw_cnetplot(
           category_label = 1,
-          gene_list = res_tmp@result$geneID,
+          gene_list = results_ora_go()@result$geneID,
           category_color = "red",
           node_label = "category",
           title = paste("ORA - GO termes -", paste(input$goAnnotationORA, collapse="&"), "- CNET plot")
@@ -150,7 +148,7 @@ function(input, output, session) {
     }
   })
   
-  output$ORATreePlot <- renderPlot({
+  output$ORAgoTreePlot <- renderPlot({
     if(!is.null(results_ora_go())){
       results_ora_go() %>% draw_treeplot(
         gradient_col = c("red", "blue"),
@@ -163,7 +161,7 @@ function(input, output, session) {
     }
   })
   
-  output$ORAEmapPlot <- renderPlot({
+  output$ORAgoEmapPlot <- renderPlot({
     if(!is.null(results_ora_go())){
       results_ora_go() %>% draw_emapplot(
         show_category = 10,
@@ -173,7 +171,72 @@ function(input, output, session) {
     }
   })
   
-  ####TODO:  output all the plots !!
+  ####TODO:  output more plots !!
+  
+  ### ORA KEGG results ###
+  results_ora_pathways <- reactive({ 
+    if(!is.null(filtered_data()) & input$DBSelectionORA == "kegg"){
+      res_ora_pathways <- do_ora_kegg(
+        filtered_data(),
+        organism_library_go(),
+        organism_kegg_code(),
+        input$PValueORAPathways,
+        input$adjustedPValueCutoffORAPathways,
+        input$QValueORAPathways
+      )
+      return(res_ora_pathways)
+    }
+  })
+  
+  output$results_ora_pathways_preview_table <- DT::renderDT({
+    preview_table <- results_ora_pathways() %>% enrich_pagination(alpha_cutoff = input$adjustedPValueCutoffORA)
+    # Preview of the filtered data table ( "escape = FALSE" allows HTML formatting )
+    DT::datatable(preview_table, options = list(scrollX = TRUE, pageLength = 25), escape = FALSE)
+  })
+  output$ORAPathwaysDotPlot <- renderPlot({
+    if(!is.null(results_ora_pathways())){
+      results_ora_pathways() %>% draw_dotplot(
+        show_category = 30, 
+        title = paste("ORA - KEGG pathways - Dot plot")
+      )
+    }
+  })
+  
+  output$ORAPathwaysCNETPlot <- renderPlot({
+    if(!is.null(results_ora_pathways())){
+      results_ora_pathways() %>% draw_cnetplot(
+        category_label = 1,
+        gene_list = results_ora_pathways()@result$geneID,
+        category_color = "red",
+        node_label = "category",
+        title = paste("ORA - KEGG pathways - CNET plot")
+      )
+    }
+  })
+  
+  output$ORAPathwaysTreePlot <- renderPlot({
+    if(!is.null(results_ora_go())){
+      results_ora_go() %>% draw_treeplot(
+        gradient_col = c("red", "blue"),
+        show_category = 30,
+        n_cluster = 10,
+        label_words_n = 4,
+        h_clust_method = "ward.D2",
+        title = paste("ORA - KEGG pathways - Tree plot")
+      )
+    }
+  })
+  
+  output$ORAPathwaysEmapPlot <- renderPlot({
+    if(!is.null(results_ora_pathways())){
+      results_ora_pathways() %>% draw_emapplot(
+        show_category = 10,
+        category_label = 1,
+        title = paste("ORA - KEGG pathways - EMAP plot")
+      )
+    }
+  })
+  
 }
 
 

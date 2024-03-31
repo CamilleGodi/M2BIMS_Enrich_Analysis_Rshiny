@@ -233,19 +233,19 @@ dashboardPage(
                       width = 12,
                       sliderInput("adjustedPValueCutoffORA", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05)))))))),
       
-        # ORA GO PLOTS
+        # ORA GO OUTPUTS
         fluidRow(
           box(width = 10,
-              plotOutput("ORADotPlot", height="600px"),
+              plotOutput("ORAgoDotPlot", height="600px"),
              ),
           box(width = 10,
-              plotOutput("ORACNETPlot", height="800px"),
+              plotOutput("ORAgoNETPlot", height="800px"),
           ),
           box(width = 10,
-              plotOutput("ORATreePlot", height="800px"),
+              plotOutput("ORAgoTreePlot", height="800px"),
           ),
           box(width = 10,
-              plotOutput("ORAEmapPlot", height="800px"),
+              plotOutput("ORAgoEmapPlot", height="800px"),
           ),
           
           box(width =12,
@@ -398,14 +398,35 @@ dashboardPage(
                     fluidRow(
                       column(
                         width = 12,
-                        sliderInput("PValueORA", "Select a P-Value:", min = 0, max = 1, value = 0.05)),
+                        sliderInput("PValueORAPathways", "Select a P-Value:", min = 0, max = 1, value = 0.05)),
                       column(
                         width = 12,
-                        sliderInput("QValueORA", "Select a Q-Value:", min = 0, max = 1, value = 0.05)),
+                        sliderInput("QValueORAPathways", "Select a Q-Value:", min = 0, max = 1, value = 0.05)),
                       column(
                         width = 12,
-                        sliderInput("adjustedPValueCutoffORA", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05)))))))))),
+                        sliderInput("adjustedPValueCutoffORAPathways", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05))))))))),
       
+      # ORA KEGG OUTPUTS
+      fluidRow(
+        box(width = 10,
+            plotOutput("ORAPathwaysDotPlot", height="600px"),
+        ),
+        box(width = 10,
+            plotOutput("ORAPathwaysCNETPlot", height="800px"),
+        ),
+        box(width = 10,
+            plotOutput("ORAPathwaysTreePlot", height="800px"),
+        ),
+        box(width = 10,
+            plotOutput("ORAPathwaysEmapPlot", height="800px"),
+        ),
+        
+        box(width =12,
+            DTOutput("results_ora_pathways_preview_table", height = "1000px")
+        )
+      )
+    ),
+    
       ### Pathway Enrichment : GSEA ###
       tabItem(
         tabName = "pathway_GSEA_subtab",
