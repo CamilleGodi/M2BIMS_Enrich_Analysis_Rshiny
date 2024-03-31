@@ -35,6 +35,18 @@ do_ora_go_terms <- function(reactive_annotated_data, organism_db, ontology, p_va
 #######################
 
 ### ORA - KEGG
+#' @description
+#' Perform whole enrichment analysis on GO terms with ORA
+#' @param reactive_annotated_data : data.frame - data.frame from Rshiny reactive filter
+#' @param organism_db : organism annotation db to yse (example : "org.Hs.eg.db")
+#' @param kegg_organism_code : organism 3- nor 4-letters code (example : "hsa")
+#' @param p_value_cutoff : p value cutoff
+#' @param p_adj_cutoff :  adjusted p value cutoff
+#' @param q_value_cutoff :  adjusted q value cutoff
+#' @return enrichResults - Ready to plot enrichment analysis results
+#'
+#' @example do_ora_kegg(filtered_data, "org.Hs.eg.db", "hsa", 0.01, 0.05, 0.05)
+#'
 do_ora_kegg <- function(reactive_annotated_data, organism_db, kegg_organism_code, p_value_cutoff, p_adj_cutoff, q_value_cutoff) {
   
   ora_ids <- prepare_ora(reactive_annotated_data)
