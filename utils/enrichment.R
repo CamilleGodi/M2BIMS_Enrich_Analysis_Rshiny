@@ -387,7 +387,7 @@ draw_dotplot = function(ora_df,
 #'
 draw_emapplot = function(enrich,
                          show_category = 10,
-                         title = "Carte d'enrichissement",
+                         title = "Enrichissemen map",
                          category_label = 0.7) {
   fig = enrichplot::emapplot(
     enrichplot::pairwise_termsim(enrich),
@@ -420,7 +420,7 @@ draw_treeplot = function(enrich,
                          h_clust_method = "ward.D2",
                          gradient_col = c("red", "blue"),
                          gradient_name = "adjusted p-value",
-                         title = "Carte d'enrichissement") {
+                         title = "Enrichment map") {
   if (length(gradient_col) == 2) {
     if (gradient_col[1] == gradient_col[2]) {
       gradient_col = c("red", "blue")
@@ -467,7 +467,7 @@ draw_cnetplot = function(enrich,
                          title = "Netplot of category",
                          category_label = 0.6,
                          category_node = 0.7,
-                         size_name = "number of edge",
+                         size_name = "number of edge(s)",
                          category_color = "black") {
   if (length(node_label) > 1) {
     node_label = node_label[1]
@@ -501,9 +501,9 @@ draw_cnetplot = function(enrich,
 }
 
 draw_ridgeplot = function(gse,
-                          xlab = "Distribution des enrichissements",
-                          ylab = "Nom des voies",
-                          title = "Distribution de l'expression selon les résultats de GSEA",
+                          xlab = "Enrichment distribution",
+                          ylab = "Pathway name",
+                          title = "Expression distribution depending on GSSEA results",
                           y_text_size = 7,
                           ...) {
   enrichplot::ridgeplot(gse) +
@@ -516,10 +516,10 @@ draw_ridgeplot = function(gse,
 error_message = function(name,
                          alpha_enrichissement) {
   paste(
-    "\n\nAucune ",
+    "\n\nNo enriched ",
     name,
-    "enrichie n'a été trouvé de façon significative au seuil alpha",
+    "was significantly found with alpha threshold ",
     alpha_enrichissement,
-    "pour permettre l'affichage de ce graphique\n\n"
+    "to allow this graph from being made\n\n"
   ) %>% return()
 }
