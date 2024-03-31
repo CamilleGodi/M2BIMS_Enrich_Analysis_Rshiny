@@ -189,10 +189,11 @@ function(input, output, session) {
   })
   
   output$results_ora_pathways_preview_table <- DT::renderDT({
-    preview_table <- results_ora_pathways() %>% enrich_pagination(alpha_cutoff = input$adjustedPValueCutoffORA)
+    preview_table <- results_ora_pathways() %>% enrich_pagination(alpha_cutoff = input$adjustedPValueCutoffORAPathways)
     # Preview of the filtered data table ( "escape = FALSE" allows HTML formatting )
     DT::datatable(preview_table, options = list(scrollX = TRUE, pageLength = 25), escape = FALSE)
   })
+  
   output$ORAPathwaysDotPlot <- renderPlot({
     if(!is.null(results_ora_pathways())){
       results_ora_pathways() %>% draw_dotplot(
