@@ -25,7 +25,7 @@ load_libs_biocmanager <- function(...) {
     lapply(need, require, character.only = TRUE)
   }
 }
-load_libs_biocmanager("clusterProfiler", "org.At.tair.db", "org.EcK12.eg.db", "org.Hs.eg.db", "org.Mm.eg.db", "org.Sc.sgd.db")
+load_libs_biocmanager("clusterProfiler", "ReactomePA", "org.At.tair.db", "org.EcK12.eg.db", "org.Hs.eg.db", "org.Mm.eg.db", "org.Sc.sgd.db")
 
 
 ################################################################################
