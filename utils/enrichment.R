@@ -419,7 +419,7 @@ draw_treeplot = function(enrich,
                          label_words_n = 5,
                          h_clust_method = "ward.D2",
                          gradient_col = c("red", "blue"),
-                         gradient_name = "p-value ajustée",
+                         gradient_name = "adjusted p-value",
                          title = "Carte d'enrichissement") {
   if (length(gradient_col) == 2) {
     if (gradient_col[1] == gradient_col[2]) {
