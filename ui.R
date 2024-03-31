@@ -239,7 +239,7 @@ dashboardPage(
               plotOutput("ORAgoDotPlot", height="600px"),
              ),
           box(width = 10,
-              plotOutput("ORAgoNETPlot", height="800px"),
+              plotOutput("ORAgoCNETPlot", height="800px"),
           ),
           box(width = 10,
               plotOutput("ORAgoTreePlot", height="800px"),

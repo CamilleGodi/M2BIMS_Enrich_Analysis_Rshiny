@@ -22,6 +22,8 @@ The goal of this application is to facilitates functional enrichment analysis fr
 
 -   plotly
 
+-   ReactomePA
+
 -   tidyverse
 
 If not already existing on the computer, R will try to install those libraries itself.
