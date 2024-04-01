@@ -170,6 +170,37 @@ load_gsea_kegg_enrichment = function(gene_list = list(),
   output %>% return()
 }
 
+#' @description
+#' Launch enrichment analysis on KEGG with GSEA
+#' @param gene_list : vecteur trié dans l'ordre décroissant des gènes selon la métrique voulu
+#' @param organism_db : base de donnée KEGG utilisée (exemple : "hsa")
+#' @param key_type : type d'identifiant utilisé
+#' @param min_GS_size : taille minimal du gene set pris pour l'analyse
+#' @param max_GS_size : taille maximal du gene set pris pour l'analyse
+#' @param pvalue_cutoff : valeur de seuil maximale de la p value
+#' @param p_adjust_method : méthode d'ajustement de la p-value
+#' @param n_perm nombre de permutation effectuée pour le random walk
+#' @return vecteur trié dans l'ordre décroissant des gènes selon la métrique voulu
+#'
+#' @example load_gsea_kegg_enrichment(results(dds),"hsa")
+
+load_gsea_reactome_enrichment = function(gene_list = list(),
+                                     organism_db = character(),
+                                     min_GS_size = 3,
+                                     max_GS_size = 500) {
+  output <- ReactomePA::gsePathway(
+    geneList = gene_list,
+    organism = organism_db,
+    minGSSize = min_GS_size,
+    maxGSSize = max_GS_size,
+    pvalueCutoff = 1,
+    pAdjustMethod = "BH"
+  )
+  output %>% return()
+}
+
+
+
 #'
 #' @description
 #' Launch enrichment analysis on GO terms with ORA
@@ -211,19 +242,16 @@ load_ora_go = function(gene_list = list(),
   output %>% return()
 }
 
-#' Analyse la sur-représentation des GO terms dans le jeu de gènes différentiellement exprimés
+#' @description
+#' Analyse la sur-représentation sur kegg dans le jeu de gènes différentiellement exprimés
 #' @param gene_list : vecteur trié dans l'ordre décroissant des gènes selon la métrique voulu
 #' @param universe : liste des gènes initiaux avant analyse DE (soit ça, soit OrgDb)
 #' @param organism_db : base de donnée KEGG utilisée (exemple : "hsa") (soit ça, soit universe)
-#' @param key_type : type d'identifiant utilisé
 #' @param min_GS_size : taille minimal du gene set pris pour l'analyse
 #' @param max_GS_size : taille maximal du gene set pris pour l'analyse
-#' @param pvalue_cutoff : valeur de seuil maximale de la p value
-#' @param qvalue_cutoff : valeur de seuil maximale de la q value
-#' @param p_adjust_method : méthode d'ajustement de la p-value
 #' @return vecteur trié dans l'ordre décroissant des gènes selon la métrique voulu
 #'
-#' @example loag_kegg_over_representation(gene_list,"org.Hs.eg.db")
+#' @example loag_kegg_over_representation(ora_ids,"mmu",universe)
 #'
 load_ora_kegg = function(gene_list = list(),
                          organism_db = character(),
@@ -234,6 +262,40 @@ load_ora_kegg = function(gene_list = list(),
     gene = gene_list,
     organism = organism_db,
     keyType = "ncbi-geneid",
+    pvalueCutoff = 1,
+    pAdjustMethod = "BH",
+    universe = universe,
+    minGSSize = min_GS_size,
+    maxGSSize = max_GS_size,
+    qvalueCutoff = 1
+  )
+  slot(output, "method") = "ORA"
+  output = clusterProfiler::mutate(output, Subset = as.numeric(sub("/\\d+", "", BgRatio)))
+  output = clusterProfiler::mutate(output, RichFactor = Count / Subset)
+  
+  output %>% return()
+}
+
+#' @description
+#' Analyse la sur-représentation sur reactome dans le jeu de gènes différentiellement exprimés
+#' @param gene_list : vecteur trié dans l'ordre décroissant des gènes selon la métrique voulu
+#' @param universe : liste des gènes initiaux avant analyse DE (soit ça, soit OrgDb)
+#' @param organism_db : base de donnée KEGG utilisée (exemple : "hsa") (soit ça, soit universe)
+#' @param min_GS_size : taille minimal du gene set pris pour l'analyse
+#' @param max_GS_size : taille maximal du gene set pris pour l'analyse
+#' @return vecteur trié dans l'ordre décroissant des gènes selon la métrique voulu
+#'
+#' @example load_ora_reactome(ora_ids,"human",universe)
+#'
+
+load_ora_reactome = function(gene_list = list(),
+                         organism_db = character(),
+                         universe = vector(),
+                         min_GS_size = 10,
+                         max_GS_size = 500) {
+  output = clusterProfiler::enrichKEGG(
+    gene = gene_list,
+    organism = organism_db,
     pvalueCutoff = 1,
     pAdjustMethod = "BH",
     universe = universe,
