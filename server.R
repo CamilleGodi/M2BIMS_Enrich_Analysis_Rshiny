@@ -68,7 +68,7 @@ function(input, output, session) {
                                        fc_cutoff = as.numeric(input$fc_cutoff),
                                        padj_cutoff = as.numeric(input$padj_cutoff))
   })
-  
+
   ### Management of the preview of the filtered data table [Whole data inspection] ###
   output$data_preview_table <- DT::renderDT({
     filtered_data <- show_filtered_df(filtered_data())
@@ -106,12 +106,22 @@ function(input, output, session) {
     }
   })
   
+  
+  ### Prepare "universe" for ORA/GSEA
+  organism_universe<- reactive({ 
+    if(!is.null(organism_library_go())){
+      prepare_universe(filtered_data(), organism_library_go(), "ENSEMBL")
+    }
+  })
+  
+  
   ### ORA GO results ###
   results_ora_go <- reactive({ 
     if(!is.null(filtered_data())){
       res_ora_go <- do_ora_go_terms(
         filtered_data(),
         organism_library_go(),
+        organism_universe(),
         input$goAnnotationORA,
         input$PValueORA,
         input$adjustedPValueCutoffORA,
@@ -179,6 +189,7 @@ function(input, output, session) {
       res_ora_pathways <- do_ora_kegg(
         filtered_data(),
         organism_library_go(),
+        organism_universe(),
         organism_kegg_code(),
         input$PValueORAPathways,
         input$adjustedPValueCutoffORAPathways,
