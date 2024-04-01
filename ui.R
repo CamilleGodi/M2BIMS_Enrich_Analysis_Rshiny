@@ -211,7 +211,7 @@ dashboardPage(
                 fluidRow(
                   column(
                     width = 12,
-                    radioButtons("DEGSelection", "Select the correct DEG processing:", 
+                    radioButtons("DEGSelectionORAGo", "Select the correct DEG processing:", 
                                  choices = c("Over expressed DEG only" = "OverDEG", "Under expressed DEG only" = "UnderDEG", "Both" = "BothDEG")))))),
             
             # Parameters
@@ -318,7 +318,7 @@ dashboardPage(
                 fluidRow(
                   column(
                     width = 12,
-                    radioButtons("DEGSelection", "Select the correct DEG processing:", 
+                    radioButtons("DEGSelectionORAPathways", "Select the correct DEG processing:", 
                                  choices = c("Over expressed DEG only" = "OverDEG", "Under expressed DEG only" = "UnderDEG", "Both" = "BothDEG")))))),
             
             # Parameters
@@ -463,7 +463,7 @@ dashboardPage(
                 fluidRow(
                   column(
                     width = 12,
-                    radioButtons("DEGSelectionGSEA", "Select the correct DEG processing:", 
+                    radioButtons("DEGSelectionGSEAPathways", "Select the correct DEG processing:", 
                                  choices = c("Over expressed DEG only" = "OverDEGGSEA", "Under expressed DEG only" = "UnderDEGGSEA", "Both" = "BothDEG")))))))),
         
         # Parameters
@@ -481,16 +481,16 @@ dashboardPage(
                   fluidRow(
                     column(
                       width = 12,
-                      sliderInput("PValueCutoffGSEA", "Select a P-Value:", min = 0, max = 1, value = 0.05)),
+                      sliderInput("PValueCutoffGSEAPathways", "Select a P-Value:", min = 0, max = 1, value = 0.05)),
                     column(
                       width = 12,
-                      sliderInput("QValueGSEA", "Select a Q-Value:", min = 0, max = 1, value = 0.05)),
+                      sliderInput("QValueGSEAPathways", "Select a Q-Value:", min = 0, max = 1, value = 0.05)),
                     column(
                       width = 12,
-                      sliderInput("adjustedPValueCutoffGSEA", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05)),
+                      sliderInput("adjustedPValueCutoffGSEAPathways", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05)),
                     column(
                       width = 12,
-                      checkboxInput("metricAbsoluteValGSEA", "Absolute value", value = TRUE))))))))))))
+                      checkboxInput("metricAbsoluteValGSEAPathways", "Absolute value", value = TRUE))))))))))))
 
 
 ################################################################################
