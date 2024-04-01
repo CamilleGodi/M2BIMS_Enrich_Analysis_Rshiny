@@ -9,7 +9,8 @@ load_libs <- function(...) {
   }
 }
 
-load_libs("BiocManager", "DT", "shiny", "shinydashboard", "shinyalert", "plotly", "tidyverse")
+load_libs( "Rcpp", "RcppEigen")
+load_libs("BiocManager", "DT", "ggplot2", "shiny", "shinydashboard", "shinyalert", "plotly", "tidyverse")
 
 
 ################################################################################
@@ -25,6 +26,7 @@ load_libs_biocmanager <- function(...) {
     lapply(need, require, character.only = TRUE)
   }
 }
+
 load_libs_biocmanager("clusterProfiler", "ReactomePA", "org.At.tair.db", "org.EcK12.eg.db", "org.Hs.eg.db", "org.Mm.eg.db", "org.Sc.sgd.db")
 
 
