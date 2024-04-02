@@ -14,14 +14,13 @@
 #'
 #' @example do_gsea_go_terms(filtered_data,"org.Hs.eg.db", "MF", 0.01, 0.05, 0.05)
 #'
-do_gsea_go_terms <- function(reactive_annotated_data, organism_db, universe, ontology, p_value_cutoff, p_adj_cutoff, q_value_cutoff, min_GS_size, max_GS_size) {
+do_gsea_go_terms <- function(reactive_annotated_data, organism_db, ontology, p_value_cutoff, p_adj_cutoff, q_value_cutoff, min_GS_size, max_GS_size) {
   
   gsea_ids <- prepare_gsea(reactive_annotated_data,
                            metric = "log2FC",
                           abs = TRUE)
   
-  gsea_go <- load_gsea_GO_enrichment(gsea_ids, 
-                                     universe = universe, 
+  gsea_go <- load_gsea_GO_enrichment(gsea_ids,
                                      organism_db = organism_db, 
                                      min_GS_size = 10, 
                                      max_GS_size = 50)
