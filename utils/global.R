@@ -57,9 +57,10 @@ shinyalert_wrapper <- function(title, message = "", type) {
 ## Examples for Mus musculus :
 # Get kegg name     : organism_conversion_table["Mus musculus", "kegg_name"]
 # Get annotation db : organism_conversion_table["Mus musculus", "annotation_db"]
+# Get reactome name : organism_conversion_table["Mus musculus", "reactome_name"]
 
-add_organism_in_conversion_table <- function(conversion_table, species_name, annotation_db, kegg_name) {
-  conversion_table <- rbind(conversion_table, c(annotation_db, kegg_name))
+add_organism_in_conversion_table <- function(conversion_table, species_name, annotation_db, kegg_name, reactome_name) {
+  conversion_table <- rbind(conversion_table, c(annotation_db, kegg_name, reactome_name))
   rownames(conversion_table)[nrow(conversion_table)] <- species_name       # Updates last row's name
 
   return(conversion_table)
@@ -67,15 +68,14 @@ add_organism_in_conversion_table <- function(conversion_table, species_name, ann
 
 
 # Init conversion table with human
-organism_conversion_table <- data.frame(annotation_db = "org.Hs.eg.db", kegg_name = "hsa")
+organism_conversion_table <- data.frame(annotation_db = "org.Hs.eg.db", kegg_name = "hsa", reactome_name = "human")
 rownames(organism_conversion_table) <- "Homo sapiens"
 
 # Add organisms
-organism_conversion_table <- add_organism_in_conversion_table(organism_conversion_table, "Arabidopsis thaliana", "org.At.tair.db", "ath")
-organism_conversion_table <- add_organism_in_conversion_table(organism_conversion_table, "Escherichia coli (K12)", "org.EcK12.eg.db", "ecoc")
-organism_conversion_table <- add_organism_in_conversion_table(organism_conversion_table, "Mus musculus", "org.Mm.eg.db", "mmu")
-organism_conversion_table <- add_organism_in_conversion_table(organism_conversion_table, "Saccharomyces cerevisiae", "org.Sc.sgd.db", "sce")
-
+organism_conversion_table <- add_organism_in_conversion_table(organism_conversion_table, "Arabidopsis thaliana", "org.At.tair.db", "ath", NA)
+organism_conversion_table <- add_organism_in_conversion_table(organism_conversion_table, "Escherichia coli (K12)", "org.EcK12.eg.db", "ecoc", NA)
+organism_conversion_table <- add_organism_in_conversion_table(organism_conversion_table, "Mus musculus", "org.Mm.eg.db", "mmu", "mouse")
+organism_conversion_table <- add_organism_in_conversion_table(organism_conversion_table, "Saccharomyces cerevisiae", "org.Sc.sgd.db", "sce", "yeast")
 
 
 ################################################################################

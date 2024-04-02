@@ -61,6 +61,11 @@ function(input, output, session) {
       organism_conversion_table[input$select_organism, "kegg_name"]}
   })
   
+  organism_reactome_name <- reactive({ 
+    if ( input$select_organism != "" ) {
+      organism_conversion_table[input$select_organism, "reactome_name"]}
+  })
+  
   reactive_data_new_ids <- reactive({prepare_pipe(reactive_data_expr_diff(),
                                                   organism_db = organism_library_go(),
                                                   from = "ENSEMBL")})
@@ -184,9 +189,9 @@ function(input, output, session) {
   
   ####TODO:  output more plots !!
   
-  ### ORA KEGG results ###
+  ### ORA KEGG/REACTOME results ###
   results_ora_pathways <- reactive({ 
-    if(!is.null(filtered_data()) & input$DBSelectionORA == "kegg"){
+    if (!is.null(filtered_data()) & input$DBSelectionORA == "kegg") {
       res_ora_pathways <- do_ora_kegg(
         filtered_data(),
         organism_library_go(),
@@ -196,6 +201,23 @@ function(input, output, session) {
         input$adjustedPValueCutoffORAPathways,
         input$QValueORAPathways
       )
+    } else if (!is.null(filtered_data()) & input$DBSelectionORA == "reactome") {
+      if (is.na(organism_reactome_name()) ) {
+        shinyalert_wrapper(title = "Error: organism doesn't have Reactome data available. Please use KEGG instead.",
+                           message = "",
+                           type = "error")
+      } else {
+        res_ora_pathways <- do_ora_reactome(
+          filtered_data(),
+          organism_reactome_name(),
+          organism_universe(),
+          input$PValueORAPathways,
+          input$adjustedPValueCutoffORAPathways,
+          input$QValueORAPathways
+        )
+        print(res_ora_pathways)
+      }
+      
       return(res_ora_pathways)
     }
   })
@@ -210,7 +232,7 @@ function(input, output, session) {
     if(!is.null(results_ora_pathways())){
       results_ora_pathways() %>% draw_dotplot(
         show_category = 30, 
-        title = paste("ORA - KEGG pathways - Dot plot")
+        title = paste("ORA -", input$DBSelectionORA, "pathways - Dot plot")
       )
     }
   })
@@ -222,20 +244,20 @@ function(input, output, session) {
         gene_list = results_ora_pathways()@result$geneID,
         category_color = "red",
         node_label = "category",
-        title = paste("ORA - KEGG pathways - CNET plot")
+        title = paste("ORA -", input$DBSelectionORA, "pathways - CNET plot")
       )
     }
   })
   
   output$ORAPathwaysTreePlot <- renderPlot({
     if(!is.null(results_ora_go())){
-      results_ora_go() %>% draw_treeplot(
+      results_ora_pathways() %>% draw_treeplot(
         gradient_col = c("red", "blue"),
         show_category = 30,
         n_cluster = 10,
         label_words_n = 4,
         h_clust_method = "ward.D2",
-        title = paste("ORA - KEGG pathways - Tree plot")
+        title = paste("ORA -", input$DBSelectionORA, "pathways - Tree plot")
       )
     }
   })
@@ -245,7 +267,7 @@ function(input, output, session) {
       results_ora_pathways() %>% draw_emapplot(
         show_category = 10,
         category_label = 1,
-        title = paste("ORA - KEGG pathways - EMAP plot")
+        title = paste("ORA -", input$DBSelectionORA, "pathways - EMAP plot")
       )
     }
   })

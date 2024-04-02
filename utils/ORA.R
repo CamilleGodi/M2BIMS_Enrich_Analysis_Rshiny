@@ -32,6 +32,7 @@ do_ora_go_terms <- function(reactive_annotated_data, organism_db, universe, onto
 #######################
 
 ### ORA - KEGG
+
 #' @description
 #' Perform whole enrichment analysis on GO terms with ORA
 #' @param reactive_annotated_data : data.frame - data.frame from Rshiny reactive filter
@@ -59,4 +60,36 @@ do_ora_kegg <- function(reactive_annotated_data, organism_db, universe, kegg_org
                                                        q_value_cutoff = q_value_cutoff)
   
   return(ora_kegg_after_filter)
+}
+
+#######################
+
+### ORA - Reactome
+
+#' @description
+#' Perform whole enrichment analysis on GO terms with ORA
+#' @param reactive_annotated_data : data.frame - data.frame from Rshiny reactive filter
+#' @param reactome_organism_name : organism name in reactome (example : "human")
+#' @param universe : organism "universe" prepared with prepare_universe(reactive_annotated_data, organism_db, "ENSEMBL") 
+#' @param p_value_cutoff : p value cutoff
+#' @param p_adj_cutoff :  adjusted p value cutoff
+#' @param q_value_cutoff :  adjusted q value cutoff
+#' @return enrichResults - Ready to plot enrichment analysis results
+#'
+#' @example do_ora_reactome(filtered_data, "human", 0.01, 0.05, 0.05)
+#'
+do_ora_reactome <- function(reactive_annotated_data, reactome_organism_name, universe, p_value_cutoff, p_adj_cutoff, q_value_cutoff) {
+  
+  ora_ids <- prepare_ora(reactive_annotated_data)
+  
+  ora_reactome <- load_ora_reactome(gene_list = ora_ids,
+                                    organism_db = reactome_organism_name,
+                                    universe = universe)
+  
+  ora_reactome_after_filter <- filter_table_enrich_results(ora_reactome, 
+                                                       p_value_cutoff = p_value_cutoff, 
+                                                       p_adj_cutoff   = p_adj_cutoff, 
+                                                       q_value_cutoff = q_value_cutoff)
+  print(ora_reactome_after_filter)
+  return(ora_reactome_after_filter)
 }

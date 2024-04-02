@@ -54,7 +54,7 @@ In `global.R` :
 
 -   Add the corresponding organism annotation library from [Bioconductor](https://bioconductor.org/packages/3.18/data/annotation/) in `load_libs_biocmanager`
 
--   Add the corresponding line to the conversion table : `organism_conversion_table <- add_organism_in_conversion_table(organism_conversion_table, "Organism name", "org.Xx.xxx.db", "kegg_code")`, with *kegg_code* the 3- or 4-letters KEGG organism code ( see [here](https://www.genome.jp/kegg/catalog/org_list.html) ) and *org.Xx.xxx.db* the organism annotation library name
+-   Add the corresponding line to the conversion table : `organism_conversion_table <- add_organism_in_conversion_table(organism_conversion_table, "Organism name", "org.Xx.xxx.db", "kegg_code", "reactome_name")`, with *kegg_code* the 3- or 4-letters KEGG organism code ( see [here](https://www.genome.jp/kegg/catalog/org_list.html) ), *org.Xx.xxx.db* the organism annotation library name, and *reactome_name* the name of the organism in the ReactomePA package (NA if not available. Available : 'celegans', 'fly', 'human', 'mouse', 'rat', 'yeast' and 'zebrafish').
 
 ------------------------------------------------------------------------
 
