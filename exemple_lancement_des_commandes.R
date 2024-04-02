@@ -52,3 +52,9 @@ enrichplot::gseaplot2(gsea_go,1:5,pvalue_table = TRUE)
 gsea_go@result %>% dplyr::select(NES) %>% unlist() %>% sort()
 clusterProfiler::dotplot(gsea_go)
 gsea_go@result[,1:6]
+
+
+res %>% draw_cnetplot()
+res %>% draw_dotplot()
+res %>% draw_emapplot()
+gsea_go_2 %>% draw_gsea_plot()
