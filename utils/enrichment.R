@@ -47,16 +47,17 @@ remove_duplicate = function(ids) {
   return(ids)
 }
 
-#' @description 
-#' 
+#' @description
+#'
 #' @param reactive_annotated_data data.frame - data.frame from Rshiny reactive filter
 #' @param organism_db character - character of annotationDbi available database
 #' @param from character - ID use as entry, might be ENTREZID|ENSEMBL|SYMBOL
-#' 
+#'
 prepare_pipe <- function(reactive_annotated_data,
                          organism_db,
                          from) {
-  filtered_table <- reactive_annotated_data %>% independent_filtering()
+  filtered_table <-
+    reactive_annotated_data %>% independent_filtering()
   ids <- conversion_table(filtered_table[, "ID"],
                           organism_db = organism_db,
                           from = from)
@@ -185,9 +186,9 @@ load_gsea_kegg_enrichment = function(gene_list = list(),
 #' @example load_gsea_kegg_enrichment(results(dds),"hsa")
 
 load_gsea_reactome_enrichment = function(gene_list = list(),
-                                     organism_db = character(),
-                                     min_GS_size = 3,
-                                     max_GS_size = 500) {
+                                         organism_db = character(),
+                                         min_GS_size = 3,
+                                         max_GS_size = 500) {
   output <- ReactomePA::gsePathway(
     geneList = gene_list,
     organism = organism_db,
@@ -289,10 +290,10 @@ load_ora_kegg = function(gene_list = list(),
 #'
 
 load_ora_reactome = function(gene_list = list(),
-                         organism_db = character(),
-                         universe = vector(),
-                         min_GS_size = 10,
-                         max_GS_size = 500) {
+                             organism_db = character(),
+                             universe = vector(),
+                             min_GS_size = 10,
+                             max_GS_size = 500) {
   output = clusterProfiler::enrichKEGG(
     gene = gene_list,
     organism = organism_db,
@@ -449,7 +450,7 @@ draw_dotplot = function(ora_df,
 #'
 draw_emapplot = function(enrich,
                          show_category = 10,
-                         title = "Enrichissemen map",
+                         title = "Carte d'enrichissement",
                          category_label = 0.7) {
   fig = enrichplot::emapplot(
     enrichplot::pairwise_termsim(enrich),
@@ -482,7 +483,7 @@ draw_treeplot = function(enrich,
                          h_clust_method = "ward.D2",
                          gradient_col = c("red", "blue"),
                          gradient_name = "adjusted p-value",
-                         title = "Enrichment map") {
+                         title = "Carte d'enrichissement") {
   if (length(gradient_col) == 2) {
     if (gradient_col[1] == gradient_col[2]) {
       gradient_col = c("red", "blue")
@@ -529,7 +530,7 @@ draw_cnetplot = function(enrich,
                          title = "Netplot of category",
                          category_label = 0.6,
                          category_node = 0.7,
-                         size_name = "number of edge(s)",
+                         size_name = "number of edge",
                          category_color = "black") {
   if (length(node_label) > 1) {
     node_label = node_label[1]
@@ -563,9 +564,9 @@ draw_cnetplot = function(enrich,
 }
 
 draw_ridgeplot = function(gse,
-                          xlab = "Enrichment distribution",
-                          ylab = "Pathway name",
-                          title = "Expression distribution depending on GSSEA results",
+                          xlab = "Distribution des enrichissements",
+                          ylab = "Nom des voies",
+                          title = "Distribution de l'expression selon les résultats de GSEA",
                           y_text_size = 7,
                           ...) {
   enrichplot::ridgeplot(gse) +
@@ -578,10 +579,27 @@ draw_ridgeplot = function(gse,
 error_message = function(name,
                          alpha_enrichissement) {
   paste(
-    "\n\nNo enriched ",
+    "\n\nAucune ",
     name,
-    "was significantly found with alpha threshold ",
+    "enrichie n'a été trouvé de façon significative au seuil alpha",
     alpha_enrichissement,
-    "to allow this graph from being made\n\n"
+    "pour permettre l'affichage de ce graphique\n\n"
   ) %>% return()
+}
+
+
+#' @description 
+#' 
+#' @param gsea_results - results of gsea analysis
+#' @param show_category - number of pathway to show
+#' @param title - title
+draw_gsea_plot = function(gsea_results,
+                          show_category = 5,
+                          title = "") {
+  enrichplot::gseaplot2(
+    gsea_results,
+    geneSetID = 1:show_category,
+    title = title,
+    pvalue_table = TRUE
+  )
 }
