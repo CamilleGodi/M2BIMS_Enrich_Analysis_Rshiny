@@ -294,7 +294,7 @@ load_ora_reactome = function(gene_list = list(),
                              universe = vector(),
                              min_GS_size = 10,
                              max_GS_size = 500) {
-  output = clusterProfiler::enrichKEGG(
+  output = ReactomePA::enrichPathway(
     gene = gene_list,
     organism = organism_db,
     pvalueCutoff = 1,
