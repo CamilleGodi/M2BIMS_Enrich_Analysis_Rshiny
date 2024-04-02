@@ -6,6 +6,7 @@
 #' Perform whole enrichment analysis on GO terms with ORA
 #' @param reactive_annotated_data : data.frame - data.frame from Rshiny reactive filter
 #' @param organism_db : organism annotation db to yse (example : "org.Hs.eg.db")
+#' @param universe : organism "universe" prepared with prepare_universe(reactive_annotated_data, organism_db, "ENSEMBL") 
 #' @param ontology : ontologies to consider for GO-term analysis. Should use "MF", "CC" and "BP" separately rather than using "ALL"
 #' @param p_value_cutoff : p value cutoff
 #' @param p_adj_cutoff :  adjusted p value cutoff
@@ -35,6 +36,7 @@ do_ora_go_terms <- function(reactive_annotated_data, organism_db, universe, onto
 #' Perform whole enrichment analysis on GO terms with ORA
 #' @param reactive_annotated_data : data.frame - data.frame from Rshiny reactive filter
 #' @param organism_db : organism annotation db to yse (example : "org.Hs.eg.db")
+#' @param universe : organism "universe" prepared with prepare_universe(reactive_annotated_data, organism_db, "ENSEMBL") 
 #' @param kegg_organism_code : organism 3- nor 4-letters code (example : "hsa")
 #' @param p_value_cutoff : p value cutoff
 #' @param p_adj_cutoff :  adjusted p value cutoff
