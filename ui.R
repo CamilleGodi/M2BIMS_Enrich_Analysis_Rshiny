@@ -32,15 +32,14 @@ dashboardPage(
         accept = c(".csv"),
         width = '100%'),
       
-      selectInput(
+      selectizeInput(
         "select_organism",
         "Select organism name:",
-        c("", "Arabidopsis thaliana", "Escherichia coli (K12)", "Homo sapiens", "Mus musculus", "Saccharomyces cerevisiae"),
-        selected = "",
-        multiple = FALSE,
-        selectize = TRUE,
-        width = NULL,
-        size = NULL),
+        choices = c("Arabidopsis thaliana", "Escherichia coli (K12)", "Homo sapiens", "Mus musculus", "Saccharomyces cerevisiae"),
+        selected = NULL,
+        multiple = TRUE,    
+        options = list(maxItems = 1) # Multiple choice but only 1 max item, to have empty default...
+        ),
       
       sidebarMenu(
         menuItem("Whole Data Inspection", tabName = "whole_data_tab", icon = icon("table")),

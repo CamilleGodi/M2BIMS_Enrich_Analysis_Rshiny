@@ -58,4 +58,3 @@ do_ora_reactome <- function(reactive_annotated_data, reactome_organism_name, uni
                                     universe = universe)
   return(ora_reactome)
 }
-
