@@ -127,25 +127,34 @@ function(input, output, session) {
       res_ora_go <- do_ora_go_terms(
         filtered_data(),
         organism_library_go(),
-        organism_universe(),
-        input$goAnnotationORA,
-        input$PValueORA,
-        input$adjustedPValueCutoffORA,
-        input$QValueORA
+        organism_universe()
       )
       return(res_ora_go)
     }
   })
   
+  results_ora_go_filtered <- reactive({ 
+    if(!is.null(results_ora_go())){
+      
+      ora_go_after_filter_ontologies <- filter_go_enrich_results(results_ora_go(), ontology = input$goAnnotationORA)
+
+      res_ora_go_filtered <- filter_table_enrich_results(ora_go_after_filter_ontologies, 
+                                  p_value_cutoff = input$PValueORA, 
+                                  p_adj_cutoff   = input$adjustedPValueCutoffORA, 
+                                  q_value_cutoff = input$QValueORA)
+      return(res_ora_go_filtered)
+    }
+  })
+  
   output$results_ora_go_preview_table <- DT::renderDT({
-    preview_table <- results_ora_go() %>% enrich_pagination(alpha_cutoff = input$adjustedPValueCutoffORA)
+    preview_table <- results_ora_go_filtered() %>% enrich_pagination(alpha_cutoff = input$adjustedPValueCutoffORA)
     # Preview of the filtered data table ( "escape = FALSE" allows HTML formatting )
     DT::datatable(preview_table, options = list(scrollX = TRUE, pageLength = 25), escape = FALSE)
   })
   
   output$ORAgoDotPlot <- renderPlot({
-    if(!is.null(results_ora_go())){
-      results_ora_go() %>% draw_dotplot(
+    if(!is.null(results_ora_go_filtered())){
+      results_ora_go_filtered() %>% draw_dotplot(
         show_category = 30, 
         title = paste("ORA - GO termes -", paste(input$goAnnotationORA, collapse="&"), "- Dot plot")
        )
@@ -153,8 +162,8 @@ function(input, output, session) {
   })
   
   output$ORAgoCNETPlot <- renderPlot({
-    if(!is.null(results_ora_go())){
-      results_ora_go() %>% draw_cnetplot(
+    if(!is.null(results_ora_go_filtered())){
+      results_ora_go_filtered() %>% draw_cnetplot(
           category_label = 1,
           gene_list = results_ora_go()@result$geneID,
           category_color = "red",
@@ -165,8 +174,8 @@ function(input, output, session) {
   })
   
   output$ORAgoTreePlot <- renderPlot({
-    if(!is.null(results_ora_go())){
-      results_ora_go() %>% draw_treeplot(
+    if(!is.null(results_ora_go_filtered())){
+      results_ora_go_filtered() %>% draw_treeplot(
         gradient_col = c("red", "blue"),
         show_category = 30,
         n_cluster = 10,
@@ -178,8 +187,8 @@ function(input, output, session) {
   })
   
   output$ORAgoEmapPlot <- renderPlot({
-    if(!is.null(results_ora_go())){
-      results_ora_go() %>% draw_emapplot(
+    if(!is.null(results_ora_go_filtered())){
+      results_ora_go_filtered() %>% draw_emapplot(
         show_category = 10,
         category_label = 1,
         title = paste("ORA - GO termes -", paste(input$goAnnotationORA, collapse="&"), "- EMAP plot")
@@ -196,10 +205,7 @@ function(input, output, session) {
         filtered_data(),
         organism_library_go(),
         organism_universe(),
-        organism_kegg_code(),
-        input$PValueORAPathways,
-        input$adjustedPValueCutoffORAPathways,
-        input$QValueORAPathways
+        organism_kegg_code()
       )
     } else if (!is.null(filtered_data()) & input$DBSelectionORA == "reactome") {
       if (is.na(organism_reactome_name()) ) {
@@ -210,10 +216,7 @@ function(input, output, session) {
         res_ora_pathways <- do_ora_reactome(
           filtered_data(),
           organism_reactome_name(),
-          organism_universe(),
-          input$PValueORAPathways,
-          input$adjustedPValueCutoffORAPathways,
-          input$QValueORAPathways
+          organism_universe()
         )
         print(res_ora_pathways)
       }
@@ -221,16 +224,28 @@ function(input, output, session) {
       return(res_ora_pathways)
     }
   })
+
+  
+  results_ora_pathway_filtered <- reactive({ 
+    if(!is.null(results_ora_pathways())){
+      res_ora_pathway_filtered <- filter_table_enrich_results(results_ora_pathways(), 
+                                                         p_value_cutoff = input$PValueORAPathways, 
+                                                         p_adj_cutoff   = input$adjustedPValueCutoffORAPathways, 
+                                                         q_value_cutoff = input$QValueORAPathways
+                                                         )
+      return(res_ora_pathway_filtered)
+    }
+  })
   
   output$results_ora_pathways_preview_table <- DT::renderDT({
-    preview_table <- results_ora_pathways() %>% enrich_pagination(alpha_cutoff = input$adjustedPValueCutoffORAPathways)
+    preview_table <- results_ora_pathway_filtered() %>% enrich_pagination(alpha_cutoff = input$adjustedPValueCutoffORAPathways)
     # Preview of the filtered data table ( "escape = FALSE" allows HTML formatting )
     DT::datatable(preview_table, options = list(scrollX = TRUE, pageLength = 25), escape = FALSE)
   })
   
   output$ORAPathwaysDotPlot <- renderPlot({
-    if(!is.null(results_ora_pathways())){
-      results_ora_pathways() %>% draw_dotplot(
+    if(!is.null(results_ora_pathway_filtered())){
+      results_ora_pathway_filtered() %>% draw_dotplot(
         show_category = 30, 
         title = paste("ORA -", input$DBSelectionORA, "pathways - Dot plot")
       )
@@ -238,10 +253,10 @@ function(input, output, session) {
   })
   
   output$ORAPathwaysCNETPlot <- renderPlot({
-    if(!is.null(results_ora_pathways())){
-      results_ora_pathways() %>% draw_cnetplot(
+    if(!is.null(results_ora_pathway_filtered())){
+      results_ora_pathway_filtered() %>% draw_cnetplot(
         category_label = 1,
-        gene_list = results_ora_pathways()@result$geneID,
+        gene_list = results_ora_pathway_filtered()@result$geneID,
         category_color = "red",
         node_label = "category",
         title = paste("ORA -", input$DBSelectionORA, "pathways - CNET plot")
@@ -250,8 +265,8 @@ function(input, output, session) {
   })
   
   output$ORAPathwaysTreePlot <- renderPlot({
-    if(!is.null(results_ora_go())){
-      results_ora_pathways() %>% draw_treeplot(
+    if(!is.null(results_ora_pathway_filtered())){
+      results_ora_pathway_filtered() %>% draw_treeplot(
         gradient_col = c("red", "blue"),
         show_category = 30,
         n_cluster = 10,
@@ -263,8 +278,8 @@ function(input, output, session) {
   })
   
   output$ORAPathwaysEmapPlot <- renderPlot({
-    if(!is.null(results_ora_pathways())){
-      results_ora_pathways() %>% draw_emapplot(
+    if(!is.null(results_ora_pathway_filtered())){
+      results_ora_pathway_filtered() %>% draw_emapplot(
         show_category = 10,
         category_label = 1,
         title = paste("ORA -", input$DBSelectionORA, "pathways - EMAP plot")

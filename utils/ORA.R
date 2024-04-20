@@ -7,26 +7,14 @@
 #' @param reactive_annotated_data : data.frame - data.frame from Rshiny reactive filter
 #' @param organism_db : organism annotation db to yse (example : "org.Hs.eg.db")
 #' @param universe : organism "universe" prepared with prepare_universe(reactive_annotated_data, organism_db, "ENSEMBL") 
-#' @param ontology : ontologies to consider for GO-term analysis. Should use "MF", "CC" and "BP" separately rather than using "ALL"
-#' @param p_value_cutoff : p value cutoff
-#' @param p_adj_cutoff :  adjusted p value cutoff
-#' @param q_value_cutoff :  adjusted q value cutoff
 #' @return enrichResults - Ready to plot enrichment analysis results
 #'
-#' @example do_ora_go_terms(filtered_data,"org.Hs.eg.db", "MF", 0.01, 0.05, 0.05)
+#' @example do_ora_go_terms(filtered_data,"org.Hs.eg.db")
 #'
-do_ora_go_terms <- function(reactive_annotated_data, organism_db, universe, ontology, p_value_cutoff, p_adj_cutoff, q_value_cutoff) {
-  
+do_ora_go_terms <- function(reactive_annotated_data, organism_db, universe) {
   ora_ids <- prepare_ora(reactive_annotated_data)
-  
   ora_go <- load_ora_go(ora_ids, universe, organism_db)
-  ora_go_after_filter <- filter_table_enrich_results(ora_go, 
-                                                     p_value_cutoff = p_value_cutoff, 
-                                                     p_adj_cutoff   = p_adj_cutoff, 
-                                                     q_value_cutoff = q_value_cutoff)
-  ora_go_after_filter_ontologies <- filter_go_enrich_results(ora_go_after_filter, ontology = ontology)
-  
-  return(ora_go_after_filter_ontologies)
+  return(ora_go)
 }
 
 #######################
@@ -38,28 +26,16 @@ do_ora_go_terms <- function(reactive_annotated_data, organism_db, universe, onto
 #' @param reactive_annotated_data : data.frame - data.frame from Rshiny reactive filter
 #' @param organism_db : organism annotation db to yse (example : "org.Hs.eg.db")
 #' @param universe : organism "universe" prepared with prepare_universe(reactive_annotated_data, organism_db, "ENSEMBL") 
-#' @param kegg_organism_code : organism 3- nor 4-letters code (example : "hsa")
-#' @param p_value_cutoff : p value cutoff
-#' @param p_adj_cutoff :  adjusted p value cutoff
-#' @param q_value_cutoff :  adjusted q value cutoff
-#' @return enrichResults - Ready to plot enrichment analysis results
+#' @param kegg_organism_code : organism 3- nor 4-letters code (example : "hsa")sis results
 #'
-#' @example do_ora_kegg(filtered_data, "org.Hs.eg.db", "hsa", 0.01, 0.05, 0.05)
+#' @example do_ora_kegg(filtered_data, "org.Hs.eg.db", "hsa")
 #'
-do_ora_kegg <- function(reactive_annotated_data, organism_db, universe, kegg_organism_code, p_value_cutoff, p_adj_cutoff, q_value_cutoff) {
-  
+do_ora_kegg <- function(reactive_annotated_data, organism_db, universe, kegg_organism_code) {
   ora_ids <- prepare_ora(reactive_annotated_data)
-  
   ora_kegg <- load_ora_kegg(gene_list = ora_ids,
                             organism_db = kegg_organism_code,
                             universe = universe)
-  
-  ora_kegg_after_filter <- filter_table_enrich_results(ora_kegg, 
-                                                       p_value_cutoff = p_value_cutoff, 
-                                                       p_adj_cutoff   = p_adj_cutoff, 
-                                                       q_value_cutoff = q_value_cutoff)
-  
-  return(ora_kegg_after_filter)
+  return(ora_kegg)
 }
 
 #######################
@@ -71,25 +47,15 @@ do_ora_kegg <- function(reactive_annotated_data, organism_db, universe, kegg_org
 #' @param reactive_annotated_data : data.frame - data.frame from Rshiny reactive filter
 #' @param reactome_organism_name : organism name in reactome (example : "human")
 #' @param universe : organism "universe" prepared with prepare_universe(reactive_annotated_data, organism_db, "ENSEMBL") 
-#' @param p_value_cutoff : p value cutoff
-#' @param p_adj_cutoff :  adjusted p value cutoff
-#' @param q_value_cutoff :  adjusted q value cutoff
 #' @return enrichResults - Ready to plot enrichment analysis results
 #'
-#' @example do_ora_reactome(filtered_data, "human", 0.01, 0.05, 0.05)
+#' @example do_ora_reactome(filtered_data, "human")
 #'
-do_ora_reactome <- function(reactive_annotated_data, reactome_organism_name, universe, p_value_cutoff, p_adj_cutoff, q_value_cutoff) {
-  
+do_ora_reactome <- function(reactive_annotated_data, reactome_organism_name, universe) {
   ora_ids <- prepare_ora(reactive_annotated_data)
-  
   ora_reactome <- load_ora_reactome(gene_list = ora_ids,
                                     organism_db = reactome_organism_name,
                                     universe = universe)
-  
-  ora_reactome_after_filter <- filter_table_enrich_results(ora_reactome, 
-                                                       p_value_cutoff = p_value_cutoff, 
-                                                       p_adj_cutoff   = p_adj_cutoff, 
-                                                       q_value_cutoff = q_value_cutoff)
-  print(ora_reactome_after_filter)
-  return(ora_reactome_after_filter)
+  return(ora_reactome)
 }
+
