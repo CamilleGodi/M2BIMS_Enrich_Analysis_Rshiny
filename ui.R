@@ -186,7 +186,7 @@ dashboardPage(
                   column(
                     width = 12,
                     radioButtons("levelSelectionORA", "Select a GO Level:", 
-                                 choices = c("One-level GO ORA" = "OneLevelORA", "All-level GO ORA" = "AllLevelORA"))),
+                                 choices = c("All-level GO ORA" = "AllLevelORA", "One-level GO ORA" = "OneLevelORA"))),
                   # Conditional Panel for OneLevelORA
                   conditionalPanel(
                     condition = "input.levelSelectionORA == 'OneLevelORA'",
@@ -295,7 +295,7 @@ dashboardPage(
                   column(
                     width = 12,
                     radioButtons("levelSelectionGSEA", "Select a GO Level:", 
-                                 choices = c("One-level GO GSEA" = "OneLevelGSEA", "All-level GO GSEA" = "AllLevelGSEA")))),
+                                 choices = c("All-level GO GSEA" = "AllLevelGSEA", "One-level GO GSEA" = "OneLevelGSEA")))),
                 # Conditional Panel for OneLevelGSEA
                 conditionalPanel(
                   condition = "input.levelSelectionGSEA == 'OneLevelGSEA'",
