@@ -34,14 +34,14 @@ load_libs_biocmanager("clusterProfiler", "ReactomePA", "org.At.tair.db", "org.Ec
 
 
 ### NOTIFICATIONS
-shinyalert_wrapper <- function(title, message = "", type) {
+shinyalert_wrapper <- function(title, message = "", type = "error") {
   shinyalert(
     title = title,
     text = message,
     size = "xs", 
     closeOnEsc = TRUE,
     closeOnClickOutside = TRUE,
-    type = "error",
+    type = type,
     showConfirmButton = FALSE,
     showCancelButton = TRUE,
     cancelButtonText = "Cancel",
