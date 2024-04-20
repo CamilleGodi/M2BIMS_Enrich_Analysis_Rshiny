@@ -52,23 +52,31 @@ function(input, output, session) {
   })
   
   organism_library_go <- reactive({ 
-    if ( input$select_organism != "" ) {
-      organism_conversion_table[input$select_organism, "annotation_db"]}
-    })
+    if (!is.null(input$select_organism)) {
+      organism_conversion_table[input$select_organism, "annotation_db"]
+    } else {
+      shinyalert_wrapper("Please choose the organism before attempting an analysis", type = "warning")
+      NULL
+    }})
   
   organism_kegg_code <- reactive({ 
-    if ( input$select_organism != "" ) {
+    if (!is.null(input$select_organism)) {
       organism_conversion_table[input$select_organism, "kegg_name"]}
   })
   
   organism_reactome_name <- reactive({ 
-    if ( input$select_organism != "" ) {
+    if (!is.null(input$select_organism)) {
       organism_conversion_table[input$select_organism, "reactome_name"]}
   })
   
-  reactive_data_new_ids <- reactive({prepare_pipe(reactive_data_expr_diff(),
-                                                  organism_db = organism_library_go(),
-                                                  from = "ENSEMBL")})
+  reactive_data_new_ids <- reactive({
+    if (!is.null(organism_library_go())) {
+      prepare_pipe(reactive_data_expr_diff(),
+                  organism_db = organism_library_go(),
+                  from = "ENSEMBL")
+      }
+    })
+        
   
   filtered_data <- reactive({filter_dt(reactive_data_new_ids(),
                                        fc_cutoff = as.numeric(input$fc_cutoff),

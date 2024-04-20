@@ -30,7 +30,8 @@ dashboardPage(
         "Select a CSV file:", 
         multiple = FALSE, 
         accept = c(".csv"),
-        width = '100%'),
+        width = '100%'
+        ),
       
       selectizeInput(
         "select_organism",
