@@ -204,7 +204,14 @@ function(input, output, session) {
     }
   })
   
-  ####TODO:  output more plots !!
+  output$ORAgoBarPlot <- renderPlot({
+    if(!is.null(results_ora_go_filtered())){
+      results_ora_go_filtered() %>% barplot(
+        title = paste("ORA - GO termes -", paste(input$goAnnotationORA, collapse="&"), "- Barplot")
+      )
+    }
+  })
+  
   
   ### ORA KEGG/REACTOME results ###
   results_ora_pathways <- reactive({ 
@@ -291,6 +298,14 @@ function(input, output, session) {
         show_category = 10,
         category_label = 1,
         title = paste("ORA -", input$DBSelectionORA, "pathways - EMAP plot")
+      )
+    }
+  })
+  
+  output$ORAPathwaysBarPlot <- renderPlot({
+    if(!is.null(results_ora_pathway_filtered())){
+      results_ora_pathway_filtered() %>% barplot(
+        title = paste("ORA -", input$DBSelectionORA, "pathways - Barplot")
       )
     }
   })

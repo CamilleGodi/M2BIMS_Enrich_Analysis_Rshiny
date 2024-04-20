@@ -248,6 +248,9 @@ dashboardPage(
           box(width = 10,
               plotOutput("ORAgoEmapPlot", height="800px"),
           ),
+          box(width = 10,
+              plotOutput("ORAgoBarPlot", height="800px"),
+          ),
           
           box(width =12,
               DTOutput("results_ora_go_preview_table", height = "1000px")
@@ -420,6 +423,9 @@ dashboardPage(
         ),
         box(width = 10,
             plotOutput("ORAPathwaysEmapPlot", height="800px"),
+        ),
+        box(width = 10,
+            plotOutput("ORAPathwaysBarPlot", height="800px"),
         ),
         
         box(width =12,
