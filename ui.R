@@ -92,7 +92,7 @@ dashboardPage(
           h4("3/ (Optionnal) Explore your data through the 'Whole data inspection' tab"),
           h4("4/ Perform desired analysis through the appropriate tab."),
           br(),
-          h4("Note : a plot can be downloaded by doing right-click > 'save image as'.")
+          h4("Note : any plot can be downloaded by doing right-click > 'save image as'.")
         )
       ),
       
@@ -253,6 +253,9 @@ dashboardPage(
           ),
           
           box(width =12,
+              title = "ORA GO-terms results table (filtered view)",
+              downloadButton("download_ora_go", label = "Download ORA results", icon = shiny::icon("download")),
+              downloadButton("download_ora_go_filtered", label = "Download ORA filtered results", icon = shiny::icon("download")),
               DTOutput("results_ora_go_preview_table", height = "1000px")
           )
         )
@@ -429,6 +432,9 @@ dashboardPage(
         ),
         
         box(width =12,
+            title = "ORA pathways results table (filtered view)",
+            downloadButton("download_ora_pathway", label = "Download ORA results", icon = shiny::icon("download")),
+            downloadButton("download_ora_pathway_filtered", label = "Download ORA filtered results", icon = shiny::icon("download")),
             DTOutput("results_ora_pathways_preview_table", height = "1000px")
         )
       )

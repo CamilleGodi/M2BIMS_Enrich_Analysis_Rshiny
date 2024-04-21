@@ -212,6 +212,27 @@ function(input, output, session) {
     }
   })
   
+  ### Management of the download of the filtered data table [ORA GO TERMS] ###
+  output$download_ora_go <- downloadHandler(
+    filename = function() {
+      paste("ora-go-", paste(input$goAnnotationORA, collapse="-"), "-", Sys.Date(), ".csv", sep = "")
+    },
+    content = function(file) {
+      # Write the filtered data to the specified file
+      write.csv(results_ora_go(), file, row.names = FALSE)
+    }
+  )
+  
+  output$download_ora_go_filtered <- downloadHandler(
+    filename = function() {
+      paste("ora-go-", paste(input$goAnnotationORA, collapse="-"), "-filtered-", Sys.Date(), ".csv", sep = "")
+    },
+    content = function(file) {
+      # Write the filtered data to the specified file
+      write.csv(results_ora_go_filtered(), file, row.names = FALSE)
+    }
+  )
+  
   
   ### ORA KEGG/REACTOME results ###
   results_ora_pathways <- reactive({ 
@@ -241,26 +262,26 @@ function(input, output, session) {
   })
 
   
-  results_ora_pathway_filtered <- reactive({ 
+  results_ora_pathways_filtered <- reactive({ 
     if(!is.null(results_ora_pathways())){
-      res_ora_pathway_filtered <- filter_table_enrich_results(results_ora_pathways(), 
+      res_ora_pathways_filtered <- filter_table_enrich_results(results_ora_pathways(), 
                                                          p_value_cutoff = input$PValueORAPathways, 
                                                          p_adj_cutoff   = input$adjustedPValueCutoffORAPathways, 
                                                          q_value_cutoff = input$QValueORAPathways
                                                          )
-      return(res_ora_pathway_filtered)
+      return(res_ora_pathways_filtered)
     }
   })
   
   output$results_ora_pathways_preview_table <- DT::renderDT({
-    preview_table <- results_ora_pathway_filtered() %>% enrich_pagination(alpha_cutoff = input$adjustedPValueCutoffORAPathways)
+    preview_table <- results_ora_pathways_filtered() %>% enrich_pagination(alpha_cutoff = input$adjustedPValueCutoffORAPathways)
     # Preview of the filtered data table ( "escape = FALSE" allows HTML formatting )
     DT::datatable(preview_table, options = list(scrollX = TRUE, pageLength = 25), escape = FALSE)
   })
   
   output$ORAPathwaysDotPlot <- renderPlot({
-    if(!is.null(results_ora_pathway_filtered())){
-      results_ora_pathway_filtered() %>% draw_dotplot(
+    if(!is.null(results_ora_pathways_filtered())){
+      results_ora_pathways_filtered() %>% draw_dotplot(
         show_category = 30, 
         title = paste("ORA -", input$DBSelectionORA, "pathways - Dot plot")
       )
@@ -268,10 +289,10 @@ function(input, output, session) {
   })
   
   output$ORAPathwaysCNETPlot <- renderPlot({
-    if(!is.null(results_ora_pathway_filtered())){
-      results_ora_pathway_filtered() %>% draw_cnetplot(
+    if(!is.null(results_ora_pathways_filtered())){
+      results_ora_pathways_filtered() %>% draw_cnetplot(
         category_label = 1,
-        gene_list = results_ora_pathway_filtered()@result$geneID,
+        gene_list = results_ora_pathways_filtered()@result$geneID,
         category_color = "red",
         node_label = "category",
         title = paste("ORA -", input$DBSelectionORA, "pathways - CNET plot")
@@ -280,8 +301,8 @@ function(input, output, session) {
   })
   
   output$ORAPathwaysTreePlot <- renderPlot({
-    if(!is.null(results_ora_pathway_filtered())){
-      results_ora_pathway_filtered() %>% draw_treeplot(
+    if(!is.null(results_ora_pathways_filtered())){
+      results_ora_pathways_filtered() %>% draw_treeplot(
         gradient_col = c("red", "blue"),
         show_category = 30,
         n_cluster = 10,
@@ -293,8 +314,8 @@ function(input, output, session) {
   })
   
   output$ORAPathwaysEmapPlot <- renderPlot({
-    if(!is.null(results_ora_pathway_filtered())){
-      results_ora_pathway_filtered() %>% draw_emapplot(
+    if(!is.null(results_ora_pathways_filtered())){
+      results_ora_pathways_filtered() %>% draw_emapplot(
         show_category = 10,
         category_label = 1,
         title = paste("ORA -", input$DBSelectionORA, "pathways - EMAP plot")
@@ -303,12 +324,33 @@ function(input, output, session) {
   })
   
   output$ORAPathwaysBarPlot <- renderPlot({
-    if(!is.null(results_ora_pathway_filtered())){
-      results_ora_pathway_filtered() %>% barplot(
+    if(!is.null(results_ora_pathways_filtered())){
+      results_ora_pathways_filtered() %>% barplot(
         title = paste("ORA -", input$DBSelectionORA, "pathways - Barplot")
       )
     }
   })
+  
+  ### Management of the download of the filtered data table [ORA GO TERMS] ###
+  output$download_ora_pathway <- downloadHandler(
+    filename = function() {
+      paste("ora-", input$DBSelectionORA, "-pathways-", Sys.Date(), ".csv", sep = "")
+    },
+    content = function(file) {
+      # Write the filtered data to the specified file
+      write.csv(results_ora_pathways(), file, row.names = FALSE)
+    }
+  )
+  
+  output$download_ora_pathway_filtered <- downloadHandler(
+    filename = function() {
+      paste("ora-", input$DBSelectionORA, "-pathways-filtered-", Sys.Date(), ".csv", sep = "")
+    },
+    content = function(file) {
+      # Write the filtered data to the specified file
+      write.csv(results_ora_pathways_filtered(), file, row.names = FALSE)
+    }
+  )
   
 }
 
