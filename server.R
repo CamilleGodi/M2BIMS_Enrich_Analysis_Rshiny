@@ -415,6 +415,68 @@ function(input, output, session) {
     }
   })
   
+  
+  ### GSEA KEGG/REACTOME results ###
+  results_gsea_pathways <- reactive({ 
+    if (!is.null(filtered_data()) & input$DBSelectionGSEA == "kegg") {
+      res_gsea_pathways <- do_gsea_kegg(
+        filtered_data(),
+        organism_library_go(),
+        organism_kegg_code(),
+        reactive_abs = input$metricAbsoluteValGSEAPathways
+      )
+    } else if (!is.null(filtered_data()) & input$DBSelectionGSEA == "reactome") {
+      if (is.na(organism_reactome_name()) ) {
+        shinyalert_wrapper(title = "Error: organism doesn't have Reactome data available. Please use KEGG instead.",
+                           message = "",
+                           type = "error")
+      } else {
+        res_gsea_pathways <- do_gsea_reactome(
+          filtered_data(),
+          organism_reactome_name(),
+          reactive_abs = input$metricAbsoluteValGSEAPathways
+        )
+        print(res_gsea_pathways)
+      }
+      
+      return(res_gsea_pathways)
+    }
+  })
+  
+  results_gsea_pathways_filtered <- reactive({ 
+    if(!is.null(results_gsea_pathways())){
+      res_gsea_pathways_filtered <- filter_table_enrich_results(results_gsea_pathways(), 
+                                                                p_value_cutoff = input$PValueCutoffGSEAPathways, 
+                                                                p_adj_cutoff   = input$adjustedPValueCutoffGSEAPathways, 
+                                                                q_value_cutoff = input$QValueGSEAPathways
+      )
+      return(res_gsea_pathways_filtered)
+    }
+  })
+  
+  output$GSEAPathwaysCNETPlot <- renderPlot({
+    if(!is.null(results_gsea_pathways_filtered())){
+      results_gsea_pathways_filtered() %>% draw_cnetplot(
+        category_label = 1,
+        gene_list = results_gsea_pathways_filtered()@result$geneID,
+        category_color = "red",
+        node_label = "category",
+        title = paste("GSEA -", input$DBSelectionGSEA, "pathways - CNET plot")
+      )
+    }
+  })
+
+  output$GSEAPathwaysEmapPlot <- renderPlot({
+    if(!is.null(results_gsea_pathways_filtered())){
+      results_gsea_pathways_filtered() %>% draw_emapplot(
+        show_category = 10,
+        category_label = 1,
+        title = paste("GSEA -", input$DBSelectionGSEA, "pathways - EMAP plot")
+      )
+    }
+  })
+  
+  
 }
 
 

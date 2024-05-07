@@ -518,7 +518,19 @@ dashboardPage(
                       sliderInput("adjustedPValueCutoffGSEAPathways", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05)),
                     column(
                       width = 12,
-                      checkboxInput("metricAbsoluteValGSEAPathways", "Absolute value", value = TRUE))))))))))))
+                      checkboxInput("metricAbsoluteValGSEAPathways", "Absolute value", value = TRUE)))))))),
+        # ORA KEGG OUTPUTS
+        fluidRow(
+          box(width = 12,
+              plotOutput("GSEAPathwaysEmapPlot", height="600px"),
+          ),
+          box(width = 12,
+              plotOutput("GSEAPathwaysCNETPlot", height="600px"),
+          )
+        )
+        ))
+  )
+)
 
 
 ################################################################################
