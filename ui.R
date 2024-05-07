@@ -236,19 +236,19 @@ dashboardPage(
       
         # ORA GO OUTPUTS
         fluidRow(
-          box(width = 10,
+          box(width = 12,
               plotOutput("ORAgoDotPlot", height="600px"),
              ),
-          box(width = 10,
+          box(width = 12,
               plotOutput("ORAgoCNETPlot", height="800px"),
           ),
-          box(width = 10,
+          box(width = 12,
               plotOutput("ORAgoTreePlot", height="800px"),
           ),
-          box(width = 10,
+          box(width = 12,
               plotOutput("ORAgoEmapPlot", height="800px"),
           ),
-          box(width = 10,
+          box(width = 12,
               plotOutput("ORAgoBarPlot", height="800px"),
           ),
           
@@ -415,19 +415,19 @@ dashboardPage(
       
       # ORA KEGG OUTPUTS
       fluidRow(
-        box(width = 10,
+        box(width = 12,
             plotOutput("ORAPathwaysDotPlot", height="600px"),
         ),
-        box(width = 10,
+        box(width = 12,
             plotOutput("ORAPathwaysCNETPlot", height="800px"),
         ),
-        box(width = 10,
+        box(width = 12,
             plotOutput("ORAPathwaysTreePlot", height="800px"),
         ),
-        box(width = 10,
+        box(width = 12,
             plotOutput("ORAPathwaysEmapPlot", height="800px"),
         ),
-        box(width = 10,
+        box(width = 12,
             plotOutput("ORAPathwaysBarPlot", height="800px"),
         ),
         
