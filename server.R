@@ -381,6 +381,15 @@ function(input, output, session) {
     }
   })
   
+  output$GSEAPlot <- renderPlot({
+    if(!is.null(results_gsea_go_filtered())){
+      results_gsea_go_filtered() %>% draw_gsea_plot(
+        show_category = 5,
+        title = paste("GSEA - GO termes -", paste(input$goAnnotationGSEA, collapse="&"), "- GSEA plot")
+        )
+    }
+  })
+  
   output$GSEAgoCNETPlot <- renderPlot({
     if(!is.null(results_gsea_go_filtered())){
       results_gsea_go_filtered() %>% draw_cnetplot(
@@ -393,6 +402,18 @@ function(input, output, session) {
     }
   })
   
+  output$GSEAgoTreePlot <- renderPlot({
+    if(!is.null(results_gsea_go_filtered())){
+      results_gsea_go_filtered() %>% draw_treeplot(
+        gradient_col = c("red", "blue"),
+        show_category = 30,
+        n_cluster = 10,
+        label_words_n = 4,
+        h_clust_method = "ward.D2",
+        title = paste("GSEA - GO termes -", paste(input$goAnnotationGSEA, collapse="&"), "- Tree plot")
+      )
+    }
+  })
   
 }
 

@@ -351,10 +351,16 @@ dashboardPage(
                       width = 12,
                       checkboxInput("metricAbsoluteValGSEA", "Absolute value", value = FALSE)))))))),
         
-        # ORA GO OUTPUTS
+        # GSEA GO OUTPUTS
         fluidRow(
           box(width = 10,
-              plotOutput("ORAgoCNETPlot", height="800px"),
+              plotOutput("GSEAPlot", height="800px"),
+          ),
+          box(width = 10,
+              plotOutput("GSEAgoCNETPlot", height="800px"),
+          ),
+          box(width = 10,
+              plotOutput("GSEAgoTreePlot", height="800px"),
           )
         )
         
