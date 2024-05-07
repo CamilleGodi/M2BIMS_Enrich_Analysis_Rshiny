@@ -349,7 +349,17 @@ dashboardPage(
                       sliderInput("adjustedPValueCutoffGSEA", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05)),
                     column(
                       width = 12,
-                      checkboxInput("metricAbsoluteValGSEA", "Absolute value", value = TRUE))))))))),
+                      checkboxInput("metricAbsoluteValGSEA", "Absolute value", value = FALSE)))))))),
+        
+        # ORA GO OUTPUTS
+        fluidRow(
+          box(width = 10,
+              plotOutput("ORAgoCNETPlot", height="800px"),
+          )
+        )
+        
+        
+        ),
       
       ### Pathway Enrichment : ORA ###
       tabItem(

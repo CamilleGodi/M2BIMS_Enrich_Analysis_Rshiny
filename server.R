@@ -12,6 +12,7 @@ source("./utils/global.R")
 source("./utils/inspection.R")
 source("./utils/ORA.R")
 source("./utils/enrichment.R")
+source("./utils/GSEA.R")
 
 ################################################################################
 ################################################################################
@@ -145,7 +146,7 @@ function(input, output, session) {
     if(!is.null(results_ora_go())){
       
       ora_go_after_filter_ontologies <- filter_go_enrich_results(results_ora_go(), ontology = input$goAnnotationORA)
-
+ 
       res_ora_go_filtered <- filter_table_enrich_results(ora_go_after_filter_ontologies, 
                                   p_value_cutoff = input$PValueORA, 
                                   p_adj_cutoff   = input$adjustedPValueCutoffORA, 
@@ -351,6 +352,47 @@ function(input, output, session) {
       write.csv(results_ora_pathways_filtered(), file, row.names = FALSE)
     }
   )
+  
+  
+  ### GSEA GO results ###
+  results_gsea_go <- reactive({ 
+    if(!is.null(filtered_data())){
+      res_gsea_go <- do_gsea_go_terms(
+        filtered_data(),
+        organism_library_go(),
+        reactive_abs = input$metricAbsoluteValGSEA
+      )
+      return(res_gsea_go)
+    }
+  })
+  
+  results_gsea_go_filtered <- reactive({ 
+    if(!is.null(results_gsea_go())){
+      
+      res_gsea_go_filtered <- filter_table_enrich_results(results_gsea_go(), 
+                                                          p_value_cutoff = input$PValueCutoffGSEA, 
+                                                          p_adj_cutoff   = input$adjustedPValueCutoffGSEA, 
+                                                          q_value_cutoff = input$QValueGSEA)
+      
+      gsea_go_after_filter_ontologies <- filter_go_enrich_results(res_gsea_go_filtered, ontology = input$goAnnotationGSEA)
+      
+
+      return(gsea_go_after_filter_ontologies)
+    }
+  })
+  
+  output$GSEAgoCNETPlot <- renderPlot({
+    if(!is.null(results_gsea_go_filtered())){
+      results_gsea_go_filtered() %>% draw_cnetplot(
+        category_label = 1,
+        gene_list = results_gsea_go()@result$geneID,
+        category_color = "red",
+        node_label = "category",
+        title = paste("GSEA - GO termes -", paste(input$goAnnotationGSEA, collapse="&"), "- CNET plot")
+      )
+    }
+  })
+  
   
 }
 
