@@ -382,6 +382,13 @@ function(input, output, session) {
     }
   })
   
+  
+  output$GSEAgoDotPlot <- renderPlot({
+    if(!is.null(results_gsea_go_filtered())){
+      results_gsea_go_filtered() %>% draw_gsea_dotplot()
+    }
+  })
+  
   output$GSEAPlot <- renderPlot({
     if(!is.null(results_gsea_go_filtered())){
       results_gsea_go_filtered() %>% draw_gsea_plot(
@@ -421,6 +428,28 @@ function(input, output, session) {
     # Preview of the filtered data table ( "escape = FALSE" allows HTML formatting )
     DT::datatable(preview_table, options = list(scrollX = TRUE, pageLength = 25), escape = FALSE)
   })
+  
+  
+  ### Management of the download of the filtered data table [GSEA GO TERMS] ###
+  output$download_gsea_go <- downloadHandler(
+    filename = function() {
+      paste("gsea-", "-go-", Sys.Date(), ".csv", sep = "")
+    },
+    content = function(file) {
+      # Write the filtered data to the specified file
+      write.csv(results_gsea_go(), file, row.names = FALSE)
+    }
+  )
+  
+  output$download_gsea_go_filtered <- downloadHandler(
+    filename = function() {
+      paste("gsea-", "-go-filtered-", Sys.Date(), ".csv", sep = "")
+    },
+    content = function(file) {
+      # Write the filtered data to the specified file
+      write.csv(results_gsea_go_filtered(), file, row.names = FALSE)
+    }
+  )
   
   
   ### GSEA KEGG/REACTOME results ###
@@ -490,14 +519,32 @@ function(input, output, session) {
     }
   })
   
-  output$GSEAPathwaysTable <- renderTable({
-    if(!is.null(results_gsea_go_filtered())){
-      results_gsea_pathways_filtered() %>%
-        show_table_gsea() %>%
-        DT::datatable(preview_table, options = list(scrollX = TRUE, pageLength = 25), escape = FALSE)
-    }
+  output$results_gsea_pathways_preview_table <- DT::renderDT({
+    preview_table <- results_gsea_pathways_filtered() %>% show_table_gsea()
+    # Preview of the filtered data table ( "escape = FALSE" allows HTML formatting )
+    DT::datatable(preview_table, options = list(scrollX = TRUE, pageLength = 25), escape = FALSE)
   })
   
+  ### Management of the download of the filtered data table [GSEA PATHWAYS] ###
+  output$download_gsea_pathways <- downloadHandler(
+    filename = function() {
+      paste("gsea-", input$DBSelectionGSEA, "-pathways-", Sys.Date(), ".csv", sep = "")
+    },
+    content = function(file) {
+      # Write the filtered data to the specified file
+      write.csv(results_gsea_pathways(), file, row.names = FALSE)
+    }
+  )
+  
+  output$download_gsea_pathways_filtered <- downloadHandler(
+    filename = function() {
+      paste("gsea-", input$DBSelectionGSEA, "-pathways-filtered-", Sys.Date(), ".csv", sep = "")
+    },
+    content = function(file) {
+      # Write the filtered data to the specified file
+      write.csv(results_gsea_pathways_filtered(), file, row.names = FALSE)
+    }
+  )
 }
 
 

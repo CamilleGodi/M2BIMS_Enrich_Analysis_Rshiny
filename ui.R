@@ -354,6 +354,9 @@ dashboardPage(
         # GSEA GO OUTPUTS
         fluidRow(
           box(width = 10,
+              plotOutput("GSEAgoDotPlot", height="800px"),
+          ),
+          box(width = 10,
               plotOutput("GSEAPlot", height="800px"),
           ),
           box(width = 10,
@@ -364,9 +367,9 @@ dashboardPage(
           ),
           
           box(width =12,
-              title = "ORA GSEA-terms results table (filtered view)",
-              # downloadButton("download_ora_go", label = "Download ORA results", icon = shiny::icon("download")),
-              # downloadButton("download_ora_go_filtered", label = "Download ORA filtered results", icon = shiny::icon("download")),
+              title = "GSEA GO-terms results table (filtered view)",
+              downloadButton("download_gsea_go", label = "Download GSEA results", icon = shiny::icon("download")),
+              downloadButton("download_gsea_go_filtered", label = "Download GSEA filtered results", icon = shiny::icon("download")),
               DTOutput("results_gsea_go_preview_table", height = "1000px")
           )
         )
@@ -524,7 +527,7 @@ dashboardPage(
                     column(
                       width = 12,
                       checkboxInput("metricAbsoluteValGSEAPathways", "Absolute value", value = TRUE)))))))),
-        # ORA KEGG OUTPUTS
+        # GSEA KEGG OUTPUTS
         fluidRow(
           box(width = 12,
               plotOutput("GSEAPathwaysDotPlot", height="600px"),
@@ -534,6 +537,13 @@ dashboardPage(
           ),
           box(width = 12,
               plotOutput("GSEAPathwaysCNETPlot", height="600px"),
+          ),
+          
+          box(width =12,
+              title = "GSEA Pathways results table (filtered view)",
+              downloadButton("download_gsea_pathways", label = "Download GSEA results", icon = shiny::icon("download")),
+              downloadButton("download_gsea_pathways_filtered", label = "Download GSEA filtered results", icon = shiny::icon("download")),
+              DTOutput("results_gsea_pathways_preview_table", height = "1000px")
           )
         )
         ))
