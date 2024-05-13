@@ -416,6 +416,12 @@ function(input, output, session) {
     }
   })
   
+  output$results_gsea_go_preview_table <- DT::renderDT({
+    preview_table <- results_gsea_go_filtered() %>% show_table_gsea()
+    # Preview of the filtered data table ( "escape = FALSE" allows HTML formatting )
+    DT::datatable(preview_table, options = list(scrollX = TRUE, pageLength = 25), escape = FALSE)
+  })
+  
   
   ### GSEA KEGG/REACTOME results ###
   results_gsea_pathways <- reactive({ 
@@ -484,6 +490,11 @@ function(input, output, session) {
     }
   })
   
+  output$GSEAPathwaysTable <- renderTable({
+    if(!is.null(results_gsea_go_filtered())){
+      results_gsea_pathways_filtered() %>% show_table_gsea()
+    }
+  })
   
 }
 

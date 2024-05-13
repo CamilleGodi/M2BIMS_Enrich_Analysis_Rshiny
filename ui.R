@@ -361,10 +361,15 @@ dashboardPage(
           ),
           box(width = 10,
               plotOutput("GSEAgoTreePlot", height="800px"),
+          ),
+          
+          box(width =12,
+              title = "ORA GSEA-terms results table (filtered view)",
+              # downloadButton("download_ora_go", label = "Download ORA results", icon = shiny::icon("download")),
+              # downloadButton("download_ora_go_filtered", label = "Download ORA filtered results", icon = shiny::icon("download")),
+              DTOutput("results_gsea_go_preview_table", height = "1000px")
           )
         )
-        
-        
         ),
       
       ### Pathway Enrichment : ORA ###
