@@ -492,7 +492,9 @@ function(input, output, session) {
   
   output$GSEAPathwaysTable <- renderTable({
     if(!is.null(results_gsea_go_filtered())){
-      results_gsea_pathways_filtered() %>% show_table_gsea()
+      results_gsea_pathways_filtered() %>%
+        show_table_gsea() %>%
+        DT::datatable(preview_table, options = list(scrollX = TRUE, pageLength = 25), escape = FALSE)
     }
   })
   

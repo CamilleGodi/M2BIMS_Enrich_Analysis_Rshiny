@@ -117,13 +117,12 @@ add_rich_factor_to_gsea = function(gsea_results_as_input){
   return(gsea_output)
 }
 
-
 show_table_gsea = function(gsea_results_as_input){
   add_rich_factor_to_gsea(gsea_results_as_input) %>%
   slot("result") %>% 
     dplyr::select(Description,number_of_gene,setSize,richFactor,enrichmentScore,NES,pvalue,p.adjust,rank) %>%
     format(digits = 3) %>%
-    DT::datatable(options = list(scrollX = TRUE))  %>%
+    # DT::datatable(options = list(scrollX = TRUE,pageLength = 25))  %>%
     # htmltools::tagList() %>%
-    show()
+    return()
 }
