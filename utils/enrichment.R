@@ -6,6 +6,28 @@ library(tidyverse)
 #' @description
 #'
 #' @param results_from_de_analysis dataframe from differential analysis
+#' @param choice - character, coming from radiobutton ""
+#' @example select_deg(results_from_de_analysis,"overDEG")
+#'
+select_deg = function(results_from_de_analysis,
+                      choice){
+  print(choice)
+  if(choice == "OverDEG"){
+    print(results_from_de_analysis[results_from_de_analysis[,"diff_expressed"] == "UP",])
+    return(results_from_de_analysis[results_from_de_analysis[,"diff_expressed"] == "UP",])
+  } else if(choice == "UnderDEG"){
+    print(results_from_de_analysis[results_from_de_analysis[,"diff_expressed"] == "DOWN",])
+    return(results_from_de_analysis[results_from_de_analysis[,"diff_expressed"] == "DOWN",])
+  } else {
+    
+    print(results_from_de_analysis[results_from_de_analysis[,"diff_expressed"] != "NO_DE",])
+    return(results_from_de_analysis[results_from_de_analysis[,"diff_expressed"] != "NO_DE",])
+  }
+}
+
+#' @description
+#'
+#' @param results_from_de_analysis dataframe from differential analysis
 #' @example independent_filtering(analysis_of_cd4_vs_cd8)
 #'
 independent_filtering = function(results_from_de_analysis) {

@@ -8,7 +8,7 @@ tableau %>% head()
 table_filtered <- tableau %>% independent_filtering()
 
 table_filtered_new_ids = prepare_pipe(table_filtered,organism_db = "org.Mm.eg.db","ENSEMBL")
-
+table_filtered_new_ids %>% select_deg(choice = "underDEG")
 ora_ids = prepare_ora(table_filtered_new_ids)
 gsea_ids = prepare_gsea(table_filtered_new_ids, metric = "log2FC",abs = TRUE)
 universe = prepare_universe(tableau,"org.Mm.eg.db","ENSEMBL")

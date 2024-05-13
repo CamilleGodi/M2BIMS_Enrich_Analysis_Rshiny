@@ -87,10 +87,10 @@ dashboardPage(
           status = "warning", # Cosmetic purpose only : orange box
           solidHeader = TRUE, 
           width = 12,
-          h4("1/ Select a CSV (or CSV2) file. It must have the following columns and no others : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj'."),
+          h4("1/ Select a CSV (or CSV2) file. It must have the following columns and none others : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj'."),
           h4("2/ Select the scientific name of the organism from which the data originates. Tip : you can type to search in the box."),
-          h4("3/ (Optionnal) Explore your data through the 'Whole data inspection' tab"),
-          h4("4/ Perform desired analysis through the appropriate tab."),
+          h4("3/ (Optional) Explore your data through the 'Whole data inspection' tab"),
+          h4("4/ Perform desired analysis (ORA or GSEA) through the appropriate tab."),
           br(),
           h4("Note : any plot can be downloaded by doing right-click > 'save image as'.")
         )
@@ -212,7 +212,7 @@ dashboardPage(
                   column(
                     width = 12,
                     radioButtons("DEGSelectionORAGo", "Select the correct DEG processing:", 
-                                 choices = c("Over expressed DEG only" = "OverDEG", "Under expressed DEG only" = "UnderDEG", "Both" = "BothDEG")))))),
+                                 choices = c("Over expressed DEG only" = "OverDEG", "Under expressed DEG only" = "UnderDEG", "Both" = "BothDEG"),selected = "BothDEG"))))),
             
             # Parameters
             box(
@@ -314,18 +314,18 @@ dashboardPage(
           
           column(
             width = 6,
-            box(
-              title = "DEG profile Selection",
-              status = "warning",
-              solidHeader = TRUE,
-              width = 12,
-              column(
-                width = 8,
-                fluidRow(
-                  column(
-                    width = 12,
-                    radioButtons("DEGSelectionORAPathways", "Select the correct DEG processing:", 
-                                 choices = c("Over expressed DEG only" = "OverDEG", "Under expressed DEG only" = "UnderDEG", "Both" = "BothDEG")))))),
+            # box(
+            #   title = "DEG profile Selection",
+            #   status = "warning",
+            #   solidHeader = TRUE,
+            #   width = 12,
+            #   column(
+            #     width = 8,
+            #     fluidRow(
+            #       column(
+            #         width = 12,
+            #         radioButtons("DEGSelectionGSEAGo", "Select the correct DEG processing:", 
+            #                      choices = c("Over expressed DEG only" = "OverDEG", "Under expressed DEG only" = "UnderDEG", "Both" = "BothDEG"),selected = "BothDEG"))))),
             
             # Parameters
             
@@ -402,8 +402,8 @@ dashboardPage(
                 fluidRow(
                   column(
                     width = 12,
-                    radioButtons("DEGSelectionORA", "Select the correct DEG processing:", 
-                                 choices = c("Over expressed DEG only" = "OverDEGORA", "Under expressed DEG only" = "UnderDEGORA", "Both" = "BothDEG")))))))),
+                    radioButtons("DEGSelectionORAPathway", "Select the correct DEG processing:", 
+                                 choices = c("Over expressed DEG only" = "OverDEG", "Under expressed DEG only" = "UnderDEG", "Both" = "BothDEG"),selected = "BothDEG"))))))),
         
         #parameters
         fluidRow(
@@ -468,31 +468,31 @@ dashboardPage(
               title = "Databases",
               status = "warning",
               solidHeader = TRUE,
-              width = 12,    
+              width = 12,
               fluidRow(
                 column(
                   width = 12,
                   fluidRow(
                     column(
                       width = 12,
-                      radioButtons("DBSelectionGSEA", "Select a Database", 
-                                   choices = c("KEGG" = "kegg", "REACTOME" = "reactome"), selected = "kegg"))))))),
-          
-          
-          column(
-            width = 6,
-            box(
-              title = "DEG profile Selection",
-              status = "warning",
-              solidHeader = TRUE,
-              width = 12,
-              column(
-                width = 12,
-                fluidRow(
-                  column(
-                    width = 12,
-                    radioButtons("DEGSelectionGSEAPathways", "Select the correct DEG processing:", 
-                                 choices = c("Over expressed DEG only" = "OverDEGGSEA", "Under expressed DEG only" = "UnderDEGGSEA", "Both" = "BothDEG")))))))),
+                      radioButtons("DBSelectionGSEA", "Select a Database",
+                                   choices = c("KEGG" = "kegg", "REACTOME" = "reactome"), selected = "kegg")))))))),
+
+
+        #   column(
+        #     width = 6,
+        #     box(
+        #       title = "DEG profile Selection",
+        #       status = "warning",
+        #       solidHeader = TRUE,
+        #       width = 12,
+        #       column(
+        #         width = 12,
+        #         fluidRow(
+        #           column(
+        #             width = 12,
+        #             radioButtons("DEGSelectionGSEAPathways", "Select the correct DEG processing:", 
+        #                          choices = c("Over expressed DEG only" = "OverDEG", "Under expressed DEG only" = "UnderDEG", "Both" = "BothDEG"),selected = "BothDEG"))))))),
         
         # Parameters
         fluidRow(

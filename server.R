@@ -130,13 +130,14 @@ function(input, output, session) {
   })
   
   
-  ### ORA GO results ###
+  #' @title ORA GO results
   results_ora_go <- reactive({ 
     if(!is.null(filtered_data())){
-      res_ora_go <- do_ora_go_terms(
-        filtered_data(),
-        organism_library_go(),
-        organism_universe()
+      res_ora_go <- filtered_data() %>%
+        select_deg(choice = input$DEGSelectionORAGo) %>%
+        do_ora_go_terms(
+          organism_library_go(),
+          organism_universe()
       )
       return(res_ora_go)
     }
@@ -145,12 +146,12 @@ function(input, output, session) {
   results_ora_go_filtered <- reactive({ 
     if(!is.null(results_ora_go())){
       
-      ora_go_after_filter_ontologies <- filter_go_enrich_results(results_ora_go(), ontology = input$goAnnotationORA)
- 
-      res_ora_go_filtered <- filter_table_enrich_results(ora_go_after_filter_ontologies, 
-                                  p_value_cutoff = input$PValueORA, 
-                                  p_adj_cutoff   = input$adjustedPValueCutoffORA, 
-                                  q_value_cutoff = input$QValueORA)
+      #' @title filter for ORA go
+      res_ora_go_filtered <- results_ora_go() %>%
+        filter_go_enrich_results(ontology = input$goAnnotationORA) %>%
+        filter_table_enrich_results(p_value_cutoff = input$PValueORA, 
+                                    p_adj_cutoff   = input$adjustedPValueCutoffORA, 
+                                    q_value_cutoff = input$QValueORA)
       return(res_ora_go_filtered)
     }
   })
@@ -235,14 +236,14 @@ function(input, output, session) {
   )
   
   
-  ### ORA KEGG/REACTOME results ###
+  #' @title ORA pathways results
   results_ora_pathways <- reactive({ 
     if (!is.null(filtered_data()) & input$DBSelectionORA == "kegg") {
-      res_ora_pathways <- do_ora_kegg(
-        filtered_data(),
-        organism_library_go(),
-        organism_universe(),
-        organism_kegg_code()
+      res_ora_pathways <- filtered_data() %>%
+        select_deg(choice = input$DEGSelectionORAPathway) %>%
+        do_ora_kegg(organism_library_go(),
+                    organism_universe(),
+                    organism_kegg_code()
       )
     } else if (!is.null(filtered_data()) & input$DBSelectionORA == "reactome") {
       if (is.na(organism_reactome_name()) ) {
@@ -250,10 +251,10 @@ function(input, output, session) {
                            message = "",
                            type = "error")
       } else {
-        res_ora_pathways <- do_ora_reactome(
-          filtered_data(),
-          organism_reactome_name(),
-          organism_universe()
+        res_ora_pathways <- filtered_data() %>%
+          select_deg(choice = input$DEGSelectionORAPathway) %>%
+          do_ora_reactome(organism_reactome_name(),
+                          organism_universe()
         )
         print(res_ora_pathways)
       }
@@ -265,11 +266,10 @@ function(input, output, session) {
   
   results_ora_pathways_filtered <- reactive({ 
     if(!is.null(results_ora_pathways())){
-      res_ora_pathways_filtered <- filter_table_enrich_results(results_ora_pathways(), 
-                                                         p_value_cutoff = input$PValueORAPathways, 
-                                                         p_adj_cutoff   = input$adjustedPValueCutoffORAPathways, 
-                                                         q_value_cutoff = input$QValueORAPathways
-                                                         )
+      res_ora_pathways_filtered <-  filter_table_enrich_results(results_ora_pathways(),
+                                                                p_value_cutoff = input$PValueORAPathways,
+                                                                p_adj_cutoff   = input$adjustedPValueCutoffORAPathways, 
+                                                                q_value_cutoff = input$QValueORAPathways)
       return(res_ora_pathways_filtered)
     }
   })
@@ -369,10 +369,11 @@ function(input, output, session) {
   results_gsea_go_filtered <- reactive({ 
     if(!is.null(results_gsea_go())){
       
-      res_gsea_go_filtered <- filter_table_enrich_results(results_gsea_go(), 
-                                                          p_value_cutoff = input$PValueCutoffGSEA, 
-                                                          p_adj_cutoff   = input$adjustedPValueCutoffGSEA, 
-                                                          q_value_cutoff = input$QValueGSEA)
+      #' @title filter for GSEA GO
+      res_gsea_go_filtered <-  filter_table_enrich_results(results_gsea_go(),
+                                                           p_value_cutoff = input$PValueCutoffGSEA, 
+                                                           p_adj_cutoff   = input$adjustedPValueCutoffGSEA, 
+                                                           q_value_cutoff = input$QValueGSEA)
       
       gsea_go_after_filter_ontologies <- filter_go_enrich_results(res_gsea_go_filtered, ontology = input$goAnnotationGSEA)
       
@@ -445,9 +446,10 @@ function(input, output, session) {
   
   results_gsea_pathways_filtered <- reactive({ 
     if(!is.null(results_gsea_pathways())){
-      res_gsea_pathways_filtered <- filter_table_enrich_results(results_gsea_pathways(), 
-                                                                p_value_cutoff = input$PValueCutoffGSEAPathways, 
-                                                                p_adj_cutoff   = input$adjustedPValueCutoffGSEAPathways, 
+      #' @title filter for GSEA pathways
+      res_gsea_pathways_filtered <- filter_table_enrich_results(results_gsea_pathways(),
+                                                                p_value_cutoff = input$PValueCutoffGSEAPathways,
+                                                                p_adj_cutoff   = input$adjustedPValueCutoffGSEAPathways,
                                                                 q_value_cutoff = input$QValueGSEAPathways
       )
       return(res_gsea_pathways_filtered)
