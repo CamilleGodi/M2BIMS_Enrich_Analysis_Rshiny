@@ -456,6 +456,12 @@ function(input, output, session) {
     }
   })
   
+  output$GSEAPathwaysDotPlot <- renderPlot({
+    if(!is.null(results_gsea_pathways_filtered())){
+      results_gsea_pathways_filtered() %>% draw_gsea_dotplot()
+    }
+ })
+   
   output$GSEAPathwaysCNETPlot <- renderPlot({
     if(!is.null(results_gsea_pathways_filtered())){
       results_gsea_pathways_filtered() %>% draw_cnetplot(

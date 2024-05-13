@@ -522,6 +522,9 @@ dashboardPage(
         # ORA KEGG OUTPUTS
         fluidRow(
           box(width = 12,
+              plotOutput("GSEAPathwaysDotPlot", height="600px"),
+          ),
+          box(width = 12,
               plotOutput("GSEAPathwaysEmapPlot", height="600px"),
           ),
           box(width = 12,
