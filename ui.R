@@ -87,9 +87,9 @@ dashboardPage(
           status = "warning", # Cosmetic purpose only : orange box
           solidHeader = TRUE, 
           width = 12,
-          h4("1/ Select a CSV (or CSV2) file. It must have the following columns and no others : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj'."),
+          h4("1/ Select a CSV (or CSV2) file. It must have the following columns and none others : 'GeneName', 'ID', 'baseMean', 'log2FC', 'pval', 'padj'."),
           h4("2/ Select the scientific name of the organism from which the data originates. Tip : you can type to search in the box."),
-          h4("3/ (Optionnal) Explore your data through the 'Whole data inspection' tab"),
+          h4("3/ (Optional) Explore your data through the 'Whole data inspection' tab"),
           h4("4/ Perform desired analysis through the appropriate tab."),
           br(),
           h4("Note : any plot can be downloaded by doing right-click > 'save image as'.")
