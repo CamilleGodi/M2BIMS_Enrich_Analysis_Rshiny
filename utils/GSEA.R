@@ -55,3 +55,64 @@ do_gsea_reactome <- function(reactive_annotated_data, reactome_organism_name, re
                                     organism_db = reactome_organism_name)
   return(gsea_reactome)
 }
+
+#' @description
+#' dessine le dotplot issu d'un enrichissement, pour une catégorie donnée trié selon ce qu'on choisi
+#' @param ora_df: objet issus de l'enrichissement
+#' @param order : paramètre selon lequel on veut ordonné, peut être pvalue, p.adjust, qvalue (dans ce cas ordre croissant), ou un autre paramètre numérique (dans ce cas décroissant)
+#' @param category : catégorie qu'on veut montrer sur le dotplot (doit être numérique ou un ratio)
+#' @param show_category : les n premieres categories a montrer
+#' @param alpha : seuil de significativité pour accepter nos valeurs (important pour le trie)
+#' @param title : titre
+#' @param ylab : nom de l'axe y
+#' @param xlab : nom de l'axe x
+#' @param gradient_col : vecteur de couleur pour le gradient
+#' @param y_text_size : taille du texte en ordonnée
+#' 
+#' @example draw_dotplot(ora.bp)
+#' 
+draw_gsea_dotplot = function(gsea_results_as_input,
+                        order = "p.adjust",
+                        category = "richFactor",
+                        show_category = 10,
+                        alpha = 0.05,
+                        ylab = "Ontologies",
+                        xlab = category,
+                        title = paste("Dotplot of Gene Ontologies sorted by",order),
+                        gradient_col = c("#f7ca64", "#46bac2", "#7e62a3"),
+                        y_text_size = 10) {
+  if(nrow(slot(gsea_results_as_input,"result")) < show_category){
+    show_category = nrow(slot(gsea_results_as_input,"result"))
+  }
+  gsea_results = add_rich_factor_to_gsea(gsea_results_as_input)
+  results_for_graph = slot(gsea_results,"result")[1:show_category,]
+  df = data.frame("x" = results_for_graph[,category],
+                  "y" = results_for_graph[,"Description"],
+                  "order" = results_for_graph[,order],
+                  "size" = results_for_graph[,"setSize"],
+                  "color" = results_for_graph[,"p.adjust"],
+                  "discriminant" = results_for_graph[,"NES"])
+  df[,"x"][df[,"discriminant"] < 0] = -df[,"x"]
+  ggplot2::ggplot(df, aes(x = x,y = fct_reorder(y,order))) +
+    ggplot2::geom_point(aes(color = color, size = size)) +
+    ggplot2::scale_y_discrete(label = function(y) stringr::str_trunc(y, 40))+
+    ggplot2::scale_color_gradientn (
+      colours = gradient_col,
+      trans = "log10",
+      guide = ggplot2::guide_colorbar(reverse =
+                                        TRUE, order = 1)
+    ) +
+    ggplot2::theme(axis.text = element_text(size = 6))+
+    ggplot2::labs(y = ylab, title = title, x = xlab,size = "Number of genes\nin set", color = "p.adjust") +
+    ggplot2::geom_vline(xintercept = 0)+
+    DOSE::theme_dose(12) +
+    ggplot2::theme(axis.text.y = ggplot2::element_text(size = y_text_size))
+}
+
+add_rich_factor_to_gsea = function(gsea_results_as_input){
+  gsea_output = gsea_results_as_input
+  core_enrichment = slot(gsea_output,"result")$core_enrichment
+  slot(gsea_output,"result")$number_of_gene = sapply(core_enrichment,function(x) length(unlist(str_split(x,"\\/")))) %>% unname()
+  slot(gsea_output,"result")$richFactor = slot(gsea_output,"result")$number_of_gene/slot(gsea_output,"result")$setSize
+  return(gsea_output)
+}
