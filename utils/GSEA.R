@@ -52,6 +52,6 @@ do_gsea_kegg <- function(reactive_annotated_data, organism_db, kegg_organism_cod
 do_gsea_reactome <- function(reactive_annotated_data, reactome_organism_name, reactive_abs) {
   gsea_ids <- prepare_gsea(reactive_annotated_data, abs = reactive_abs)
   gsea_reactome <- load_gsea_reactome_enrichment(gene_list = gsea_ids,
-                                    organism_db = reactome_organism_namee)
+                                    organism_db = reactome_organism_name)
   return(gsea_reactome)
 }
