@@ -15,6 +15,7 @@ universe = prepare_universe(tableau,"org.Mm.eg.db","ENSEMBL")
 
 res = load_gsea_reactome_enrichment(gsea_ids, organism_db = "mouse")
 draw_gsea_dotplot(res)
+show_table_gsea(res)
 res = load_ora_reactome(ora_ids,universe = universe, organism_db = "mouse")
 gsea_go = load_gsea_GO_enrichment(gsea_ids, organism_db = "org.Mm.eg.db")
 gsea_go_2 = load_gsea_GO_enrichment(
