@@ -76,9 +76,10 @@ In `global.R` :
 
 3/ (Optional) Explore your data through the 'Whole data inspection' tab.
 
-4/ Perform desired analysis through the appropriate tab.
+4/ Perform desired analysis (ORA or GSEA) through the appropriate tab.
 
-Note : any plot can be downloaded by doing right-click > 'save image as'.
+
+**Note :** any plot can be downloaded by doing right-click > 'save image as'.
           
 ------------------------------------------------------------------------
           
