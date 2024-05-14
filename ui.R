@@ -349,7 +349,7 @@ dashboardPage(
                       sliderInput("adjustedPValueCutoffGSEA", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05)),
                     column(
                       width = 12,
-                      checkboxInput("metricAbsoluteValGSEA", "Absolute value", value = FALSE)))))))),
+                      checkboxInput("metricAbsoluteValGSEA", "Use Fold Change absolute value", value = FALSE)))))))),
         
         # GSEA GO OUTPUTS
         fluidRow(
@@ -526,7 +526,7 @@ dashboardPage(
                       sliderInput("adjustedPValueCutoffGSEAPathways", "Select an adjusted P-Value Cutoff:", min = 0, max = 1, value = 0.05)),
                     column(
                       width = 12,
-                      checkboxInput("metricAbsoluteValGSEAPathways", "Absolute value", value = TRUE)))))))),
+                      checkboxInput("metricAbsoluteValGSEAPathways", "Use Fold Change absolute value", value = TRUE)))))))),
         # GSEA KEGG OUTPUTS
         fluidRow(
           box(width = 12,
